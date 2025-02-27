@@ -2,9 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Optional
 from anthropic import Anthropic
 from openai import AzureOpenAI
+from pydantic import SecretStr
 from utils.singleton import singleton
 from dotenv import load_dotenv
 import os
+from langchain_openai import AzureChatOpenAI
+
 
 load_dotenv()
 
@@ -47,6 +50,7 @@ class AzureGPT4(BaseLLM):
 class LLMService:
     def __init__(self):
         self.llm_instance: Optional[BaseLLM] = None
+        self.llm_agent_instance = None
 
     def init_llm(self, llm_type: str, **kwargs) -> BaseLLM:
         if llm_type == "claude":
@@ -66,3 +70,16 @@ class LLMService:
         if not self.llm_instance:
             raise RuntimeError("LLM instance not initialized")
         return self.llm_instance
+
+    def init_agent_llm(self, llm_type: str):
+        if llm_type == "azure-gpt4":
+            self.llm_agent_instance = AzureChatOpenAI(
+                api_key=SecretStr(os.getenv("AZURE_OPENAI_API_KEY")),
+                azure_endpoint=os.getenv("AZURE_OPENAI_API_BASE"),
+                azure_deployment=os.getenv("AZURE_OPENAI_MODEL_NAME"),
+                api_version=os.getenv("AZURE_OPENAI_API_VERSION")
+            )
+        else:
+            raise ValueError(f"Unsupported LLM type: {llm_type}")
+
+        return self.llm_agent_instance

@@ -23,7 +23,8 @@ class ChatService:
 
 用户问题：{query}
 
-请基于以上知识库内容，简洁准确地回答问题，去除重复内容。"""
+请基于以上知识库内容，简洁准确地回答问题，去除重复内容。
+"""
             
             # 调用LLM生成回答
             llm = self.llm_service.get_llm()

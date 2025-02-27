@@ -1,53 +1,88 @@
+from langchain_community.utilities import SQLDatabase
 from typing import List, Dict, Any
 from utils.singleton import singleton
 from abc import ABC, abstractmethod
+from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from service.llm_service import LLMService
+from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
+from langchain.agents import AgentType
+
+
+CHROMA_PATH = r"C:\Users\pinjing.wu\OneDrive - Accenture\Project\Takeda\TakedaProject\GenAI\bot_service\chroma_db"
 
 class BaseRetriever(ABC):
     @abstractmethod
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
         pass
 
+
 class OpenSearchRetriever(BaseRetriever):
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
         # 模拟OpenSearch检索结果
         results = [
             {"content": "OpenSearch是一个分布式搜索引擎，支持全文检索和实时分析。", "score": 0.95},
-            {"content": "Python的异步编程使用async/await语法，能够高效处理I/O密集型任务。", "score": 0.88},
-            {"content": "FastAPI框架基于Python 3.6+的类型提示构建，具有极高的性能。", "score": 0.82},
-            {"content": "PostgreSQL数据库支持JSON数据类型，适合存储半结构化数据。", "score": 0.75},
-            {"content": "Docker容器化技术简化了应用程序的部署和扩展过程。", "score": 0.68}
+            # {"content": "Python的异步编程使用async/await语法，能够高效处理I/O密集型任务。", "score": 0.88},
+            # {"content": "FastAPI框架基于Python 3.6+的类型提示构建，具有极高的性能。", "score": 0.82},
+            # {"content": "PostgreSQL数据库支持JSON数据类型，适合存储半结构化数据。", "score": 0.75},
+            # {"content": "Docker容器化技术简化了应用程序的部署和扩展过程。", "score": 0.68}
         ]
         return results
 
+
 class PostgreSQLRetriever(BaseRetriever):
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
-        # 模拟PostgreSQL检索结果
-        results = [
-            {"content": "PostgreSQL是一个功能强大的开源关系型数据库系统。", "score": 0.92},
-            {"content": "Neo4j图数据库在社交网络分析中表现出色。", "score": 0.85},
-            {"content": "JavaScript是网页开发中最常用的编程语言。", "score": 0.78},
-            {"content": "Redis内存数据库提供了高性能的缓存解决方案。", "score": 0.72},
-            {"content": "Vue.js是一个流行的前端框架，易于学习和使用。", "score": 0.65}
-        ]
-        return results
+        db_uri = "postgresql+psycopg2://postgres:123456@localhost:5432/test_rag"
+        db = SQLDatabase.from_uri(db_uri)
+        llm = LLMService().init_agent_llm("azure-gpt4")
+        toolkit = SQLDatabaseToolkit(db=db, llm=llm)
+        agent_executor = create_sql_agent(
+            llm=llm,
+            toolkit=toolkit,
+            verbose=True,
+            agent_type=AgentType.OPENAI_FUNCTIONS,
+            top_k=10000
+        )
+
+        result = agent_executor.invoke({"input": query})
+
+        return [{"content": result['output'], "score": 0.99}]
+
 
 class Neo4jRetriever(BaseRetriever):
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
         # 模拟Neo4j检索结果
         results = [
             {"content": "Neo4j是一个高性能的图数据库，专门用于处理关联数据。", "score": 0.98},
-            {"content": "MongoDB文档数据库适合处理大规模非结构化数据。", "score": 0.89},
-            {"content": "React框架采用虚拟DOM技术提升渲染性能。", "score": 0.83},
-            {"content": "Go语言以其出色的并发处理能力而闻名。", "score": 0.76},
-            {"content": "Elasticsearch提供强大的全文搜索和分析能力。", "score": 0.70}
+            # {"content": "MongoDB文档数据库适合处理大规模非结构化数据。", "score": 0.89},
+            # {"content": "React框架采用虚拟DOM技术提升渲染性能。", "score": 0.83},
+            # {"content": "Go语言以其出色的并发处理能力而闻名。", "score": 0.76},
+            # {"content": "Elasticsearch提供强大的全文搜索和分析能力。", "score": 0.70}
         ]
         return results
+
+
+class ChromaRetriever(BaseRetriever):
+    async def retrieve(self, query: str) -> List[Dict[str, Any]]:
+        embd = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
+        vectorstore = Chroma(persist_directory=CHROMA_PATH, embedding_function=embd)
+        search_results = vectorstore.similarity_search(query, k=5)
+
+        results = []
+        for i, doc in enumerate(search_results):
+            results.append({"content": doc.page_content, "score": 0.9})
+
+        print("chroma: ", str(results))
+
+        return results
+
 
 @singleton
 class RAGService:
     def __init__(self):
         # 初始化检索器
         self.retrievers = {
+            'chroma': ChromaRetriever(),
             'opensearch': OpenSearchRetriever(),
             'postgresql': PostgreSQLRetriever(),
             'neo4j': Neo4jRetriever()
