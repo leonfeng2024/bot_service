@@ -101,7 +101,7 @@ class PostgreSQLRetriever(BaseRetriever):
                 # Check if table exists
                 cur.execute("""
                     SELECT EXISTS (
-                        SELECT FROM information_schema.tables 
+                        SELECT 1 FROM information_schema.tables 
                         WHERE table_schema = 'public' AND table_name = %s
                     );
                 """, (table_name,))
