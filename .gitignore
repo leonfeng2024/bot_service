@@ -65,3 +65,8 @@ debug.log
 ### 文档生成 ### 
 # Sphinx文档构建产物 
 docs/_build/
+
+# Project specific
+config.py
+app.log
+server.pid
