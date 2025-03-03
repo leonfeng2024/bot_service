@@ -29,13 +29,14 @@ class ChatService:
             # 调用LLM生成回答
             llm = self.llm_service.get_llm()
             response = await llm.generate(prompt)
-            
+            print(response)
             return {
                 "status": "success",
                 "username": self.bot_name,
                 "message": response
             }
         except Exception as e:
+            print(str(e))
             return {
                 "status": "failed",
                 "username": self.bot_name,

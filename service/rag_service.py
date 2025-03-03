@@ -6,6 +6,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from service.llm_service import LLMService
 from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
 from langchain.agents import AgentType
+import config
 
 
 class BaseRetriever(ABC):
@@ -29,21 +30,144 @@ class OpenSearchRetriever(BaseRetriever):
 
 class PostgreSQLRetriever(BaseRetriever):
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
-        db_uri = "postgresql+psycopg2://postgres:Automation2025@localhost:5432/test_rag"
-        db = SQLDatabase.from_uri(db_uri)
-        llm = LLMService().init_agent_llm("azure-gpt4")
-        toolkit = SQLDatabaseToolkit(db=db, llm=llm)
-        agent_executor = create_sql_agent(
-            llm=llm,
-            toolkit=toolkit,
-            verbose=True,
-            agent_type=AgentType.OPENAI_FUNCTIONS,
-            top_k=10000
-        )
-
-        result = agent_executor.invoke({"input": query})
-
-        return [{"content": result['output'], "score": 0.99}]
+        try:
+            import psycopg2
+            import re
+            
+            # Connect to the database using config
+            conn = psycopg2.connect(
+                dbname=config.POSTGRESQL_DBNAME,
+                user=config.POSTGRESQL_USER,
+                password=config.POSTGRESQL_PASSWORD,
+                host=config.POSTGRESQL_HOST,
+                port=config.POSTGRESQL_PORT
+            )
+            
+            # Create a cursor
+            cur = conn.cursor()
+            
+            # Simple query handling based on keywords
+            query_lower = query.lower()
+            
+            # Check for structure query first (more specific)
+            if re.search(r'(结构|schema|columns|字段)', query_lower):
+                # Try to extract table name
+                match = re.search(r'(表|table)\s*[：:]*\s*(\w+)', query_lower)
+                
+                if match:
+                    table_name = match.group(2)
+                    
+                    cur.execute("""
+                        SELECT column_name, data_type, is_nullable
+                        FROM information_schema.columns
+                        WHERE table_name = %s
+                        ORDER BY ordinal_position;
+                    """, (table_name,))
+                    
+                    columns = cur.fetchall()
+                    if columns:
+                        column_info = []
+                        for col in columns:
+                            nullable = "可为空" if col[2] == "YES" else "非空"
+                            column_info.append(f"{col[0]} ({col[1]}, {nullable})")
+                        
+                        result_content = f"表 {table_name} 的结构:\n" + "\n".join(column_info)
+                    else:
+                        result_content = f"未找到表 {table_name}"
+                else:
+                    result_content = "请指定要查询的表名"
+            
+            # Check for general tables query (more specific than data query for "数据库中有哪些表")
+            elif re.search(r'(数据库.*表|database.*tables|所有.*表|all.*tables)', query_lower):
+                # Get the list of tables
+                cur.execute("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public'
+                    ORDER BY table_name;
+                """)
+                
+                tables = cur.fetchall()
+                table_list = [table[0] for table in tables]
+                result_content = f"数据库中的表: {', '.join(table_list)}"
+            
+            # Then check for data query (more specific)
+            elif re.search(r'(数据|data|内容|content)', query_lower) and re.search(r'(表|table)\s*[：:]*\s*(\w+)', query_lower):
+                # Extract table name
+                match = re.search(r'(表|table)\s*[：:]*\s*(\w+)', query_lower)
+                
+                table_name = match.group(2)
+                
+                # Check if table exists
+                cur.execute("""
+                    SELECT EXISTS (
+                        SELECT FROM information_schema.tables 
+                        WHERE table_schema = 'public' AND table_name = %s
+                    );
+                """, (table_name,))
+                
+                if cur.fetchone()[0]:
+                    # Get sample data (first 5 rows)
+                    cur.execute(f"""
+                        SELECT * FROM {table_name} LIMIT 5;
+                    """)
+                    
+                    rows = cur.fetchall()
+                    
+                    # Get column names
+                    cur.execute("""
+                        SELECT column_name
+                        FROM information_schema.columns
+                        WHERE table_name = %s
+                        ORDER BY ordinal_position;
+                    """, (table_name,))
+                    
+                    columns = [col[0] for col in cur.fetchall()]
+                    
+                    # Format the result
+                    result_content = f"表 {table_name} 的示例数据 (最多5行):\n"
+                    result_content += "列名: " + ", ".join(columns) + "\n"
+                    
+                    for row in rows:
+                        result_content += str(row) + "\n"
+                else:
+                    result_content = f"未找到表 {table_name}"
+            
+            # Then check for general tables query (less specific)
+            elif "表" in query_lower or "tables" in query_lower:
+                # Get the list of tables
+                cur.execute("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public'
+                    ORDER BY table_name;
+                """)
+                
+                tables = cur.fetchall()
+                table_list = [table[0] for table in tables]
+                result_content = f"数据库中的表: {', '.join(table_list)}"
+            
+            # Default response
+            else:
+                # Default response with database summary
+                cur.execute("""
+                    SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';
+                """)
+                table_count = cur.fetchone()[0]
+                
+                result_content = f"PostgreSQL数据库包含 {table_count} 个表。您可以查询特定表的结构或数据。"
+            
+            # Close the connection
+            cur.close()
+            conn.close()
+            
+            return [{"content": result_content, "score": 0.99}]
+        except Exception as e:
+            import traceback
+            print(f"PostgreSQL retriever error: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            # Return an error message instead of raising an exception
+            return [{"content": f"Error querying PostgreSQL: {str(e)}", "score": 0.0}]
 
 
 class Neo4jRetriever(BaseRetriever):
@@ -62,12 +186,12 @@ class Neo4jRetriever(BaseRetriever):
 @singleton
 class RAGService:
     def __init__(self):
-        # 初始化检索器
-        self.retrievers = {
-            'opensearch': OpenSearchRetriever(),
-            'postgresql': PostgreSQLRetriever(),
-            'neo4j': Neo4jRetriever()
-        }
+        # Initialize LLM service
+        self.llm_service = LLMService()
+        # 初始化 Azure GPT-4 LLM
+        self.llm_service.init_llm("azure-gpt4")
+        # Initialize retrievers will be done in retrieve method
+        pass
     
     async def _multi_source_retrieve(self, query: str) -> List[Dict[str, Any]]:
         """从多个数据源获取检索结果
@@ -78,15 +202,24 @@ class RAGService:
         Returns:
             List[Dict[str, Any]]: 包含所有数据源检索结果的列表
         """
+        # Initialize retrievers
+        retrievers = {
+            'opensearch': OpenSearchRetriever(),
+            'postgresql': PostgreSQLRetriever(),
+            'neo4j': Neo4jRetriever()
+        }
+        
         results = []
-        for source, retriever in self.retrievers.items():
+        for source, retriever in retrievers.items():
             try:
                 source_results = await retriever.retrieve(query)
                 for result in source_results:
                     result['source'] = source  # 添加来源标记
                 results.extend(source_results)
             except Exception as e:
+                import traceback
                 print(f"Error retrieving from {source}: {str(e)}")
+                print(f"Detailed error: {traceback.format_exc()}")
         return results
 
     async def _rerank(self, results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
@@ -103,6 +236,39 @@ class RAGService:
         ranked_results = sorted(results, key=lambda x: x['score'], reverse=True)
         return ranked_results
 
+    async def _process_with_llm(self, query: str, context: List[str]) -> str:
+        """使用LLM处理查询和上下文
+
+        Args:
+            query: 用户的查询字符串
+            context: 检索到的上下文信息
+
+        Returns:
+            str: LLM生成的回答
+        """
+        # 构建提示词
+        prompt = f"""
+        基于以下信息回答问题:
+        
+        问题: {query}
+        
+        上下文信息:
+        {' '.join(context)}
+        
+        请提供详细、准确的回答。如果上下文信息不足以回答问题，请说明。
+        """
+        
+        # 调用LLM服务
+        try:
+            llm = self.llm_service.get_llm()
+            response = await llm.generate(prompt)
+            return response
+        except Exception as e:
+            import traceback
+            print(f"LLM处理错误: {str(e)}")
+            print(f"详细错误: {traceback.format_exc()}")
+            return f"处理查询时出错: {str(e)}"
+
     async def retrieve(self, query: str) -> List[str]:
         """主检索方法
 
@@ -117,6 +283,24 @@ class RAGService:
         
         # 2. 对结果进行重排序
         ranked_results = await self._rerank(results, query)
-        print(ranked_results)
-        # 3. 返回所有结果的内容
-        return [result['content'] for result in ranked_results]
+        
+        # 3. 获取所有结果的内容
+        context = [result['content'] for result in ranked_results]
+        
+        # 4. 检查是否需要LLM处理
+        needs_llm = False
+        query_lower = query.lower()
+        llm_keywords = ['解释', '比较', '区别', '分析', '为什么', '如何', 'explain', 'compare', 'difference', 'analyze', 'why', 'how']
+        
+        for keyword in llm_keywords:
+            if keyword in query_lower:
+                needs_llm = True
+                break
+        
+        # 5. 如果需要LLM处理，则调用LLM
+        if needs_llm:
+            llm_response = await self._process_with_llm(query, context)
+            return [llm_response]
+        
+        # 6. 否则直接返回检索结果
+        return context
