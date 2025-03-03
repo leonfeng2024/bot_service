@@ -7,6 +7,8 @@ from service.llm_service import LLMService
 from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
 from langchain.agents import AgentType
 import config
+import psycopg2
+import re
 
 
 class BaseRetriever(ABC):
@@ -31,9 +33,6 @@ class OpenSearchRetriever(BaseRetriever):
 class PostgreSQLRetriever(BaseRetriever):
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
         try:
-            import psycopg2
-            import re
-            
             # Connect to the database using config
             conn = psycopg2.connect(
                 dbname=config.POSTGRESQL_DBNAME,
@@ -108,9 +107,11 @@ class PostgreSQLRetriever(BaseRetriever):
                 
                 if cur.fetchone()[0]:
                     # Get sample data (first 5 rows)
-                    cur.execute(f"""
-                        SELECT * FROM {table_name} LIMIT 5;
-                    """)
+                    cur.execute(
+                        "SELECT * FROM {} LIMIT 5".format(
+                            psycopg2.extensions.AsIs(table_name)
+                        )
+                    )
                     
                     rows = cur.fetchall()
                     
