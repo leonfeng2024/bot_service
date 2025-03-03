@@ -2,14 +2,11 @@ from langchain_community.utilities import SQLDatabase
 from typing import List, Dict, Any
 from utils.singleton import singleton
 from abc import ABC, abstractmethod
-from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from service.llm_service import LLMService
 from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
 from langchain.agents import AgentType
 
-
-CHROMA_PATH = r"C:\Users\pinjing.wu\OneDrive - Accenture\Project\Takeda\TakedaProject\GenAI\bot_service\chroma_db"
 
 class BaseRetriever(ABC):
     @abstractmethod
@@ -62,27 +59,11 @@ class Neo4jRetriever(BaseRetriever):
         return results
 
 
-class ChromaRetriever(BaseRetriever):
-    async def retrieve(self, query: str) -> List[Dict[str, Any]]:
-        embd = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
-        vectorstore = Chroma(persist_directory=CHROMA_PATH, embedding_function=embd)
-        search_results = vectorstore.similarity_search(query, k=5)
-
-        results = []
-        for i, doc in enumerate(search_results):
-            results.append({"content": doc.page_content, "score": 0.9})
-
-        print("chroma: ", str(results))
-
-        return results
-
-
 @singleton
 class RAGService:
     def __init__(self):
         # 初始化检索器
         self.retrievers = {
-            'chroma': ChromaRetriever(),
             'opensearch': OpenSearchRetriever(),
             'postgresql': PostgreSQLRetriever(),
             'neo4j': Neo4jRetriever()
