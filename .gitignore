@@ -1,0 +1,67 @@
+### 开发环境与IDE ### 
+# 虚拟环境目录 
+venv/
+.venv/
+env/
+ENV/
+env.bak/ 
+ 
+# IDE配置 
+.vscode/
+.idea/
+*.swp 
+*.swo 
+*.sublime-*
+.DS_Store  # macOS系统文件 
+ 
+ 
+### Python编译与缓存 ### 
+# 编译后的文件 
+__pycache__/
+*.py[cod]
+*.pyd 
+*.pyo 
+*.so 
+ 
+# Jupyter临时文件 
+.ipynb_checkpoints/ 
+ 
+ 
+### 测试与覆盖率 ### 
+# 单元测试输出 
+.coverage 
+htmlcov/
+.pytest_cache/
+.mypy_cache/ 
+ 
+ 
+### 打包与依赖管理 ### 
+# 打包产物 
+dist/
+build/
+*.egg-info/
+*.egg 
+ 
+# Poetry/Pipenv等工具生成文件 
+Pipfile.lock  
+poetry.lock  
+.python-version 
+pip-wheel-metadata/ 
+ 
+ 
+### 配置文件与敏感数据 ### 
+# 本地环境变量 
+.env 
+.env.local  
+.env.development  
+.env.test  
+secrets.yml  
+ 
+# 日志与调试文件 
+*.log 
+debug.log  
+ 
+ 
+### 文档生成 ### 
+# Sphinx文档构建产物 
+docs/_build/

@@ -32,7 +32,7 @@ class OpenSearchRetriever(BaseRetriever):
 
 class PostgreSQLRetriever(BaseRetriever):
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
-        db_uri = "postgresql+psycopg2://postgres:123456@localhost:5432/test_rag"
+        db_uri = "postgresql+psycopg2://postgres:Automation2025@localhost:5432/test_rag"
         db = SQLDatabase.from_uri(db_uri)
         llm = LLMService().init_agent_llm("azure-gpt4")
         toolkit = SQLDatabaseToolkit(db=db, llm=llm)

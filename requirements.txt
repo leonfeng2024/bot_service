@@ -19,4 +19,4 @@ langchain-text-splitters==0.3.0
 pydantic==2.9.2
 azure-core==1.32.0
 chromadb==0.6.3
-psycopg2==2.9.10
+psycopg2-binary==2.9.10
