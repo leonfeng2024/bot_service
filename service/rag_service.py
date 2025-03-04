@@ -31,138 +31,50 @@ class OpenSearchRetriever(BaseRetriever):
 
 
 class PostgreSQLRetriever(BaseRetriever):
+    def __init__(self):
+        # Initialize the LLM service for the agent
+        self.llm_service = LLMService()
+        # Initialize the LLM for the agent
+        self.llm_service.init_agent_llm("azure-gpt4")
+        self.llm = self.llm_service.llm_agent_instance
+        # Create the SQL database connection string
+        self.db_uri = f"postgresql://{config.POSTGRESQL_USER}:{config.POSTGRESQL_PASSWORD}@{config.POSTGRESQL_HOST}:{config.POSTGRESQL_PORT}/{config.POSTGRESQL_DBNAME}"
+        # Initialize the database connection
+        self.db = None
+        self.toolkit = None
+        self.agent = None
+
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
         try:
-            # Connect to the database using config
-            conn = psycopg2.connect(
-                dbname=config.POSTGRESQL_DBNAME,
-                user=config.POSTGRESQL_USER,
-                password=config.POSTGRESQL_PASSWORD,
-                host=config.POSTGRESQL_HOST,
-                port=config.POSTGRESQL_PORT
-            )
+            # Initialize the database connection if not already done
+            if self.db is None:
+                self.db = SQLDatabase.from_uri(
+                    self.db_uri,
+                    sample_rows_in_table_info=5
+                )
+                # Create the SQL toolkit
+                self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
+                # Create the SQL agent
+                self.agent = create_sql_agent(
+                    llm=self.llm,
+                    toolkit=self.toolkit,
+                    agent_type=AgentType.OPENAI_FUNCTIONS,
+                    verbose=True
+                )
+
+            # Process the query with the agent
+            # Translate the query to make it more SQL-friendly if needed
+            sql_query = f"Based on the database schema, answer this question about the database: {query}"
             
-            # Create a cursor
-            cur = conn.cursor()
+            # Run the agent
+            result = await self.agent.ainvoke({"input": sql_query})
             
-            # Simple query handling based on keywords
-            query_lower = query.lower()
+            # Extract the agent's response
+            agent_response = result.get("output", "No response from SQL agent")
             
-            # Check for structure query first (more specific)
-            if re.search(r'(结构|schema|columns|字段)', query_lower):
-                # Try to extract table name
-                match = re.search(r'(表|table)\s*[：:]*\s*(\w+)', query_lower)
-                
-                if match:
-                    table_name = match.group(2)
-                    
-                    cur.execute("""
-                        SELECT column_name, data_type, is_nullable
-                        FROM information_schema.columns
-                        WHERE table_name = %s
-                        ORDER BY ordinal_position;
-                    """, (table_name,))
-                    
-                    columns = cur.fetchall()
-                    if columns:
-                        column_info = []
-                        for col in columns:
-                            nullable = "可为空" if col[2] == "YES" else "非空"
-                            column_info.append(f"{col[0]} ({col[1]}, {nullable})")
-                        
-                        result_content = f"表 {table_name} 的结构:\n" + "\n".join(column_info)
-                    else:
-                        result_content = f"未找到表 {table_name}"
-                else:
-                    result_content = "请指定要查询的表名"
+            # Return the result in the expected format
+            return [{"content": agent_response, "score": 0.99}]
             
-            # Check for general tables query (more specific than data query for "数据库中有哪些表")
-            elif re.search(r'(数据库.*表|database.*tables|所有.*表|all.*tables)', query_lower):
-                # Get the list of tables
-                cur.execute("""
-                    SELECT table_name 
-                    FROM information_schema.tables 
-                    WHERE table_schema = 'public'
-                    ORDER BY table_name;
-                """)
-                
-                tables = cur.fetchall()
-                table_list = [table[0] for table in tables]
-                result_content = f"数据库中的表: {', '.join(table_list)}"
-            
-            # Then check for data query (more specific)
-            elif re.search(r'(数据|data|内容|content)', query_lower) and re.search(r'(表|table)\s*[：:]*\s*(\w+)', query_lower):
-                # Extract table name
-                match = re.search(r'(表|table)\s*[：:]*\s*(\w+)', query_lower)
-                
-                table_name = match.group(2)
-                
-                # Check if table exists
-                cur.execute("""
-                    SELECT EXISTS (
-                        SELECT 1 FROM information_schema.tables 
-                        WHERE table_schema = 'public' AND table_name = %s
-                    );
-                """, (table_name,))
-                
-                if cur.fetchone()[0]:
-                    # Get sample data (first 5 rows)
-                    cur.execute(
-                        "SELECT * FROM {} LIMIT 5".format(
-                            psycopg2.extensions.AsIs(table_name)
-                        )
-                    )
-                    
-                    rows = cur.fetchall()
-                    
-                    # Get column names
-                    cur.execute("""
-                        SELECT column_name
-                        FROM information_schema.columns
-                        WHERE table_name = %s
-                        ORDER BY ordinal_position;
-                    """, (table_name,))
-                    
-                    columns = [col[0] for col in cur.fetchall()]
-                    
-                    # Format the result
-                    result_content = f"表 {table_name} 的示例数据 (最多5行):\n"
-                    result_content += "列名: " + ", ".join(columns) + "\n"
-                    
-                    for row in rows:
-                        result_content += str(row) + "\n"
-                else:
-                    result_content = f"未找到表 {table_name}"
-            
-            # Then check for general tables query (less specific)
-            elif "表" in query_lower or "tables" in query_lower:
-                # Get the list of tables
-                cur.execute("""
-                    SELECT table_name 
-                    FROM information_schema.tables 
-                    WHERE table_schema = 'public'
-                    ORDER BY table_name;
-                """)
-                
-                tables = cur.fetchall()
-                table_list = [table[0] for table in tables]
-                result_content = f"数据库中的表: {', '.join(table_list)}"
-            
-            # Default response
-            else:
-                # Default response with database summary
-                cur.execute("""
-                    SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';
-                """)
-                table_count = cur.fetchone()[0]
-                
-                result_content = f"PostgreSQL数据库包含 {table_count} 个表。您可以查询特定表的结构或数据。"
-            
-            # Close the connection
-            cur.close()
-            conn.close()
-            
-            return [{"content": result_content, "score": 0.99}]
         except Exception as e:
             import traceback
             print(f"PostgreSQL retriever error: {str(e)}")
