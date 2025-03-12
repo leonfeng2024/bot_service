@@ -1,5 +1,5 @@
 from typing import Optional, List
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, PreTrainedModel
 import torch
 import os
 from utils.singleton import singleton
@@ -7,7 +7,7 @@ from utils.singleton import singleton
 @singleton
 class EmbeddingService:
     def __init__(self):
-        self.model: Optional[AutoModel] = None
+        self.model: Optional[PreTrainedModel] = None
         self.tokenizer: Optional[AutoTokenizer] = None
         self.model_name = "BAAI/bge-m3"
         self.cache_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "cache")
