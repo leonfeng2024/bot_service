@@ -26,7 +26,7 @@ llm_service = LLMService()
 neo4j_service = Neo4jService()
 export_service = ExportExcelService()
 ppt_service = ExportPPTService()
-# embedding_service = EmbeddingService()
+embedding_service = EmbeddingService()
 
 logger = logging.getLogger(__name__)
 

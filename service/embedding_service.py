@@ -2,7 +2,7 @@ from typing import Optional, List
 from transformers import AutoModel, AutoTokenizer, PreTrainedModel
 import torch
 import os
-from utils.singleton import singleton
+from service.utils import singleton
 
 @singleton
 class EmbeddingService:

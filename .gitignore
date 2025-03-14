@@ -70,3 +70,4 @@ docs/_build/
 config.py
 app.log
 server.pid
+cache/
