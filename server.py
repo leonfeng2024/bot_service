@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from service.chat_service import ChatService
@@ -10,6 +10,8 @@ from service.export_ppt_service import ExportPPTService
 from models.models import ChatRequest, DatabaseSchemaRequest
 import logging
 import os
+import shutil
+from typing import List
 
 app = FastAPI()
 
@@ -137,6 +139,53 @@ async def export_relationships_to_ppt():
             status_code=500,
             detail=f"Error creating PPT presentation: {str(e)}"
         )
+
+@app.post("/file/upload")
+async def upload_file(file: UploadFile = File(...)):
+    """
+    Upload a single file and save it to the upload_documents directory
+    """
+    try:
+        # Create upload directory if it doesn't exist
+        upload_dir = "upload_documents"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Save the uploaded file
+        file_path = os.path.join(upload_dir, file.filename)
+        
+        # Write the file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        return {"status": "success", "message": "done"}
+    
+    except Exception as e:
+        logger.error(f"Error uploading file: {str(e)}")
+        return {"status": "failed", "message": f"system error details: {str(e)}"}
+
+@app.post("/file/upload/multiple")
+async def upload_multiple_files(files: List[UploadFile] = File(...)):
+    """
+    Upload multiple files and save them to the upload_documents directory
+    """
+    try:
+        # Create upload directory if it doesn't exist
+        upload_dir = "upload_documents"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Save all uploaded files
+        for file in files:
+            file_path = os.path.join(upload_dir, file.filename)
+            
+            # Write the file
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+        
+        return {"status": "success", "message": "done"}
+    
+    except Exception as e:
+        logger.error(f"Error uploading files: {str(e)}")
+        return {"status": "failed", "message": f"system error details: {str(e)}"}
 
 if __name__ == "__main__":
     import uvicorn

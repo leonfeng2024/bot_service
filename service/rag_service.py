@@ -1,8 +1,14 @@
 from typing import List, Dict, Any
 from utils.singleton import singleton
 from service.llm_service import LLMService
+import sys
+import os
 
-# Import retrievers from new structure
+# Add project root to Python path to ensure Retriever can be imported
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import retrievers from new structure with absolute imports
+from Retriever.base_retriever import BaseRetriever
 from Retriever.opensearch_retriever import OpenSearchRetriever
 from Retriever.postgresql_retriever import PostgreSQLRetriever
 from Retriever.neo4j_retriever import Neo4jRetriever
@@ -70,7 +76,7 @@ class RAGService:
     async def retrieve(self, query: str) -> List[str]:
         # 1. Get results from multiple data sources
         results = await self._multi_source_retrieve(query)
-        print(results)
+        
         # 2. Rerank the results
         ranked_results = await self._rerank(results, query)
         

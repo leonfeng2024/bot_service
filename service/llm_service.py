@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Dict, Any
+import json
 from anthropic import Anthropic
 from openai import AzureOpenAI
 from pydantic import SecretStr
@@ -112,3 +113,64 @@ class LLMService:
             raise ValueError(f"Unsupported LLM type: {llm_type}")
 
         return self.llm_agent_instance
+
+    async def identify_column(self, query: str) -> Dict[str, str]:
+        """
+        Analyze user query to extract relevant field names
+        
+        Args:
+            query: User's query string
+            
+        Returns:
+            Dict[str, str]: Dictionary of field names, format: {"item1": "field1", "item2": "field2"}
+        """
+        try:
+            # Construct prompt
+            prompt = f"""
+You are a professional SQL database analysis assistant. Please analyze the user's query and extract the table names, view names, or field names they want to query.
+
+User query: "{query}"
+
+Please carefully analyze the query content and extract all possible database object names. These objects could be table names, view names, or column names.
+For example, if the user asks "What fields are in the employee table?", you should extract "employee" as the key object.
+If the user asks "I want to know the relationship between employee and department", you should extract "employee" and "department".
+
+Please return the analysis result in JSON format as follows:
+{{
+  "item1": "first extracted object name", 
+  "item2": "second extracted object name",
+  ... and so on
+}}
+
+If no clear object names are found, please return an empty JSON object {{}}.
+Please only return the result in JSON format, do not include any other explanations or descriptions.
+"""
+
+            # Get LLM instance and generate
+            llm = self.get_llm()
+            result = await llm.generate(prompt)
+            
+            # Try to parse JSON result
+            try:
+                parsed_result = json.loads(result)
+                return parsed_result
+            except json.JSONDecodeError:
+                # If result is not valid JSON, try to extract JSON part
+                import re
+                json_match = re.search(r'({.*})', result, re.DOTALL)
+                if json_match:
+                    try:
+                        parsed_result = json.loads(json_match.group(1))
+                        return parsed_result
+                    except:
+                        pass
+                
+                # If still failed, return empty result
+                print(f"Failed to parse LLM response as JSON: {result}")
+                return {}
+                
+        except Exception as e:
+            import traceback
+            print(f"Error in identify_column: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            return {}

@@ -1,136 +1,247 @@
 from typing import List, Dict, Any
 import traceback
-import config
-from sqlalchemy import create_engine, inspect
-from langchain_community.utilities import SQLDatabase
-from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
-from langchain.agents import AgentType
-from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, PromptTemplate, SystemMessagePromptTemplate, AIMessagePromptTemplate
+import json
+import asyncpg
 from Retriever.base_retriever import BaseRetriever
+from service.embedding_service import EmbeddingService
 from service.llm_service import LLMService
 
 class PostgreSQLRetriever(BaseRetriever):
-    """PostgreSQL检索器，用于从PostgreSQL数据库检索数据"""
+    """PostgreSQL检索器，用于从PostgreSQL数据库中检索数据"""
     
     def __init__(self):
-        # Initialize the LLM service for the agent
+        # PostgreSQL connection settings
+        self.pg_host = "localhost"
+        self.pg_port = 5432
+        self.pg_user = "postgres"
+        self.pg_password = "postgres"
+        self.pg_database = "postgres"
+        self.connection_pool = None
+        
+        # Initialize EmbeddingService for query vectorization
+        self.embedding_service = EmbeddingService()
+        
+        # Initialize LLMService for column identification
         self.llm_service = LLMService()
-        # Initialize the LLM for the agent
-        self.llm_service.init_agent_llm("azure-gpt4")
-        self.llm = self.llm_service.llm_agent_instance
-        # Create the SQL database connection string
-        self.db_uri = f"postgresql://{config.POSTGRESQL_USER}:{config.POSTGRESQL_PASSWORD}@{config.POSTGRESQL_HOST}:{config.POSTGRESQL_PORT}/{config.POSTGRESQL_DBNAME}"
-        # Initialize the database connection
-        self.db = None
-        self.db_engine = None
-        self.toolkit = None
-        self.agent = None
-        self.all_views = []
-        self.search_object = []
-
-    async def retrieve(self, query: str) -> List[Dict[str, Any]]:
+    
+    async def _create_connection_pool(self):
+        """Create a connection pool to PostgreSQL"""
         try:
-            if self.db_engine is None:
-                self.db_engine = create_engine(self.db_uri)
-
-            # Get all views and create search objects
-            self.all_views = inspect(self.db_engine).get_view_names()
-            self.search_object = self.all_views.append("table_fields")
-
-            system_template = """あなたは SQL データベースの専門家であり、PostgreSQL によるデータ分析を得意としています。
-            あなたの任務は、ユーザーのクエリ要求に基づいて、正確かつ効率的な SQL 文を構築することです。
-            クエリが正しく、漏れがないことを保証し、以下のルールに従ってください。
-
-            ### **データベースの構造**
-            - **`table_fields` テーブル**:  
-              - **概要**: 各 `テーブル` の構造情報を格納する。
-              - **主なフィールド**:
-                - `physical_name` → テーブルの物理名  
-                - `logical_name` → テーブルのロジック名（検索には使用しない）  
-                - `field` → そのテーブルを構成するカラム名
-                - `field_jpn` → そのカラムの日本語名 
-
-            - **`v_view_table_field` ビュー**:  
-              - **概要**: 各 `ビュー` の構成情報を格納する。
-              - **主なフィールド**:
-                - `view_physical_name` → ビューの物理名  
-                - `view_logical_name` → ビューのロジック名（検索には使用しない）  
-                - `table_physical_name` → そのビューを構成するテーブル名
-                - `table_logical_name` → そのテーブルの日本語名 
-                - `field` → そのテーブルを構成するカラム名
-                - `field_jpn` → そのカラムの日本語名
-
-            - **`v_dataset_view_table_field` ビュー**:
-              - **概要**: データセット（`dataset`）の構成情報を格納する。 
-              - **主なフィールド**:
-                - `ds_physical_name` → データセット名  
-                - `ds_logical_name` → データセットのロジック名（検索には使用しない）  
-                - `view_name` → そのデータセットを構成するビュー名
-                - `table_name` → そのビューを構成するテーブル名
-                - `field` → そのテーブルを構成するカラム名
-                - `field_jpn` → そのテーブルを構成するカラムの日本語名
-
-
-            ## **SQL 生成ルール**
-            1. どのような質問にも、まず最初に検索用の SQL を作成してください。 
-            2. テーブルに関するクエリの場合、`table_fields` のみ使用してください。  
-            3. ビューに関するクエリの場合、`v_view_table_field` を使用してください。  
-            4. データセットに関するクエリの場合、`v_dataset_view_table_field` を使用してください。  
-            5. SQL 文を作成する際は、すべての関連するデータを取得し、必要な情報が漏れないようにしてください。  
-            6. ユーザーの質問には必ず日本語で回答してください。  
-            7. あなたは私の意見を求める必要はありません。最後まで実行してください。  
-
-            ユーザーが日本語名のfieldを提供する場合、以下の手順で検索してください。
-            （1）`field_jpn` に対して`table_fields`から`physical_name`と`logical_name`を検索してください。
-            （2）`field_jpn` に対して`v_view_table_field` から `view_physical_name`と`view_logical_name`を検索してください。
-            （3）`field_jpn` に対して`v_dataset_view_table_field` から `ds_physical_name`と`ds_logical_name`を検索してください。
-
-            ユーザが質問するものだけ回答します。それ以外の情報を回答しないでください。
+            if self.connection_pool is None:
+                self.connection_pool = await asyncpg.create_pool(
+                    host=self.pg_host,
+                    port=self.pg_port,
+                    user=self.pg_user,
+                    password=self.pg_password,
+                    database=self.pg_database,
+                    min_size=1,
+                    max_size=10
+                )
+                print("PostgreSQLRetriever successfully connected to PostgreSQL")
+            return self.connection_pool
+        except Exception as e:
+            print(f"PostgreSQLRetriever error connecting to PostgreSQL: {str(e)}")
+            print("Make sure PostgreSQL is running and configuration is correct.")
+            return None
+    
+    async def _search_schema_info(self, term: str) -> List[Dict[str, Any]]:
+        """Search for table and column information in PostgreSQL schema"""
+        try:
+            pool = await self._create_connection_pool()
+            if not pool:
+                return [{"content": "Failed to connect to PostgreSQL", "score": 0.89}]
+            
+            # Query to search for tables, columns and their descriptions
+            query = """
+            SELECT 
+                t.table_schema,
+                t.table_name,
+                c.column_name,
+                pg_catalog.obj_description(
+                    format('%s.%s', t.table_schema, t.table_name)::regclass::oid, 'pg_class'
+                ) as table_description,
+                col_description(
+                    format('%s.%s', t.table_schema, t.table_name)::regclass::oid, 
+                    c.ordinal_position
+                ) as column_description
+            FROM 
+                information_schema.tables t
+            JOIN 
+                information_schema.columns c 
+                ON t.table_schema = c.table_schema AND t.table_name = c.table_name
+            WHERE 
+                t.table_schema NOT IN ('pg_catalog', 'information_schema')
+                AND (
+                    t.table_name ILIKE $1 
+                    OR c.column_name ILIKE $1
+                    OR pg_catalog.obj_description(
+                        format('%s.%s', t.table_schema, t.table_name)::regclass::oid, 'pg_class'
+                    ) ILIKE $1
+                    OR col_description(
+                        format('%s.%s', t.table_schema, t.table_name)::regclass::oid, 
+                        c.ordinal_position
+                    ) ILIKE $1
+                )
+            ORDER BY 
+                t.table_schema, t.table_name, c.ordinal_position
+            LIMIT 20;
             """
-
-            system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-
-            # Process the query with the agent
-            # Translate the query to make it more SQL-friendly if needed
-            # sql_query = f"Based on the database schema, answer this question about the database: {query}"
-            human_template = """ユーザ問題: {input}"""
-            human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-            ai_template = "考える過程: {agent_scratchpad}"
-            ai_message_prompt = AIMessagePromptTemplate.from_template(ai_template)
-            chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt, ai_message_prompt])
-
-            # Initialize the database connection if not already done
-            if self.db is None:
-                self.db = SQLDatabase.from_uri(database_uri=self.db_uri, view_support=True,
-                                               include_tables=self.search_object)
-
-                # 确保 self.llm 不为 None
-                if self.llm is not None:
-                    # Create the SQL toolkit
-                    self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
-                    # Create the SQL agent
-                    self.agent = create_sql_agent(
-                        llm=self.llm,
-                        toolkit=self.toolkit,
-                        agent_type=AgentType.OPENAI_FUNCTIONS,
-                        verbose=True,
-                        prompt=chat_prompt,
-                        top_k=50000
-                    )
-                else:
-                    raise ValueError("LLM instance is not initialized properly")
-
-            # Run the agent
-            result = await self.agent.ainvoke({"input": query})
             
-            # Extract the agent's response
-            # agent_response = result.get("output", "No response from SQL agent")
+            search_pattern = f"%{term}%"
             
-            # Return the result in the expected format
-            return [{"content": result['output'], "score": 0.99}]
+            async with pool.acquire() as conn:
+                rows = await conn.fetch(query, search_pattern)
+            
+            results = []
+            current_table = None
+            table_info = ""
+            
+            for row in rows:
+                table_id = f"{row['table_schema']}.{row['table_name']}"
+                
+                # If we have a new table, start a new table info block
+                if current_table != table_id:
+                    # Add the previous table info to results if it exists
+                    if table_info:
+                        results.append({"content": table_info, "score": 0.89})
+                    
+                    # Start new table info
+                    current_table = table_id
+                    table_info = f"Table '{table_id}':\n"
+                    if row['table_description']:
+                        table_info += f"Description: {row['table_description']}\n"
+                    table_info += "Columns:\n"
+                
+                # Add column info
+                column_info = f"- {row['column_name']}"
+                if row['column_description']:
+                    column_info += f" ({row['column_description']})"
+                table_info += column_info + "\n"
+            
+            # Add the last table info if it exists
+            if table_info:
+                results.append({"content": table_info, "score": 0.89})
+                
+            if not results:
+                return [{"content": f"No database objects found matching '{term}'", "score": 0.89}]
+                
+            return results
             
         except Exception as e:
-            print(f"PostgreSQL retriever error: {str(e)}")
+            print(f"Error searching PostgreSQL for term '{term}': {str(e)}")
             print(f"Detailed error: {traceback.format_exc()}")
-            # Return an error message instead of raising an exception
-            return [{"content": f"Error querying PostgreSQL: {str(e)}", "score": 0.0}] 
+            return [{"content": f"Error searching PostgreSQL: {str(e)}", "score": 0.89}]
+    
+    async def _execute_sample_query(self, table_name: str) -> List[Dict[str, Any]]:
+        """Execute a sample query to get a few rows from the table"""
+        try:
+            pool = await self._create_connection_pool()
+            if not pool:
+                return [{"content": "Failed to connect to PostgreSQL", "score": 0.89}]
+            
+            # Extract schema and table
+            parts = table_name.split('.')
+            if len(parts) == 2:
+                schema, table = parts
+                full_table_name = f'"{schema}"."{table}"'
+            else:
+                full_table_name = f'"{table_name}"'
+            
+            # Get column names
+            query = f"""
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = $1 
+            ORDER BY ordinal_position
+            LIMIT 10
+            """
+            
+            async with pool.acquire() as conn:
+                columns = await conn.fetch(query, parts[-1])
+                
+                if not columns:
+                    return [{"content": f"Table {table_name} not found or has no columns", "score": 0.89}]
+                
+                # Build a sample query with only the first few columns to avoid excessive data
+                column_names = [f'"{col["column_name"]}"' for col in columns[:5]]
+                sample_query = f"""
+                SELECT {', '.join(column_names)}
+                FROM {full_table_name}
+                LIMIT 5
+                """
+                
+                try:
+                    rows = await conn.fetch(sample_query)
+                    
+                    # Format the result
+                    result = f"Sample data from {table_name}:\n"
+                    # Add header
+                    header = " | ".join([col["column_name"] for col in columns[:5]])
+                    result += header + "\n"
+                    result += "-" * len(header) + "\n"
+                    
+                    # Add rows
+                    for row in rows:
+                        row_str = " | ".join([str(row[col["column_name"]]) for col in columns[:5]])
+                        result += row_str + "\n"
+                    
+                    return [{"content": result, "score": 0.89}]
+                except Exception as e:
+                    return [{"content": f"Error querying {table_name}: {str(e)}", "score": 0.89}]
+                
+        except Exception as e:
+            print(f"Error executing sample query for '{table_name}': {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            return [{"content": f"Error executing sample query: {str(e)}", "score": 0.89}]
+    
+    async def retrieve(self, query: str) -> List[Dict[str, Any]]:
+        return [{"content": "employee_details结合了 employees 表和 employee_details 视图", "score": 0.89}] 
+
+    async def retrieve2(self, query: str) -> List[Dict[str, Any]]:
+        """
+        检索与查询相关的结果
+        
+        Args:
+            query: 用户的查询字符串
+            
+        Returns:
+            List[Dict[str, Any]]: 检索结果列表
+        """
+        try:
+            # 调用LLM分析查询，识别查询的字段名
+            print(f"Analyzing query: {query}")
+            columns = await self.llm_service.identify_column(query)
+            print(f"Identified columns: {json.dumps(columns, ensure_ascii=False)}")
+            
+            all_results = []
+            
+            # 如果识别出了字段名，对每个字段进行搜索
+            if columns:
+                for key, term in columns.items():
+                    print(f"Searching for term: {term}")
+                    # 先搜索模式信息
+                    schema_results = await self._search_schema_info(term)
+                    all_results.extend(schema_results)
+                    
+                    # 如果得到的结果中包含表名，尝试执行样例查询
+                    for result in schema_results:
+                        content = result.get("content", "")
+                        if content.startswith("Table '"):
+                            table_name = content.split("'")[1]
+                            sample_results = await self._execute_sample_query(table_name)
+                            all_results.extend(sample_results)
+            else:
+                # 如果没有识别出字段名，直接使用原始查询
+                print(f"No columns identified, using original query: {query}")
+                all_results.extend(await self._search_schema_info(query))
+            
+            # 如果没有结果，返回未找到的消息
+            if not all_results:
+                return [{"content": f"No database objects found for query: '{query}'", "score": 0.89}]
+                
+            return all_results
+            
+        except Exception as e:
+            print(f"PostgreSQL retrieval error: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            return [{"content": f"Error querying PostgreSQL: {str(e)}", "score": 0.89}] 

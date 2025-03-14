@@ -75,6 +75,9 @@ async def create_procedure_index(client: OpenSearch, dimension: int) -> None:
                         "procedure_name": {
                             "type": "text"
                         },
+                        "sql_content": {
+                            "type": "text"
+                        },
                         "sql_embedding": {
                             "type": "knn_vector",
                             "dimension": dimension  # Use the detected dimension
@@ -174,6 +177,7 @@ async def generate_embeddings(procedures: List[Dict[str, Any]]) -> List[Dict[str
         # Create document for OpenSearch
         doc = {
             "procedure_name": proc["procedure_name"],
+            "sql_content": proc["sql_content"],
             "sql_embedding": embedding,
             "table_name": proc["tables"],
             "view_name": proc["views"]
