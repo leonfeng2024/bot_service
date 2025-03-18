@@ -16,7 +16,7 @@ class PostgreSQLRetriever(BaseRetriever):
         self.pg_host = "localhost"
         self.pg_port = 5432
         self.pg_user = "postgres"
-        self.pg_password = "postgres"
+        self.pg_password = "Automation2025"
         self.pg_database = "local_rag"
         self.db_uri = f"postgresql://{self.pg_user}:{self.pg_password}@{self.pg_host}:{self.pg_port}/{self.pg_database}"
 
@@ -84,11 +84,6 @@ class PostgreSQLRetriever(BaseRetriever):
                     6. ユーザーの質問には必ず日本語で回答してください。  
                     7. あなたは私の意見を求める必要はありません。最後まで実行してください。  
 
-                    ユーザーが日本語名のfieldを提供する場合、以下の手順で検索してください。
-                    （1）`field_jpn` に対して`table_fields`から`physical_name`と`logical_name`を検索してください。
-                    （2）`field_jpn` に対して`v_view_table_field` から `view_physical_name`と`view_logical_name`を検索してください。
-                    （3）`field_jpn` に対して`v_dataset_view_table_field` から `ds_physical_name`と`ds_logical_name`を検索してください。
-
                     ユーザが質問するものだけ回答します。それ以外の情報を回答しないでください。"""
 
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
@@ -127,7 +122,8 @@ class PostgreSQLRetriever(BaseRetriever):
 
             # Extract the agent's response
             # agent_response = result.get("output", "No response from SQL agent")
-
+            print("PostgreSQLRetriever Result:")
+            print(result['output'])
             # Return the result in the expected format
             return [{"content": result['output'], "score": 0.99}]
 

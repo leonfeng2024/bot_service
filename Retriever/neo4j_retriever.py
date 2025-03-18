@@ -39,21 +39,38 @@ class Neo4jRetriever(BaseRetriever):
             
             # 执行查询
             results = self.neo4j_service.neo4j.execute_query(cypher_query, parameters={"term": term})
+            print(f"Neo4j query results for term '{term}': {json.dumps(results, ensure_ascii=False)}")
             
             # 格式化结果
             formatted_results = []
             for record in results:
-                formatted_results.append({
-                    "content": f"表 {record['source_table']} 通过字段 {record['source_field']} 关联到表 {record['target_table']} 的字段 {record['target_field']}",
-                    "description": record['relationship_description'],
-                    "created_at": record['created_at'],
-                    "score": 1.0  # 由于是精确匹配，设置最高分数
-                })
+                try:
+                    # 使用 get 方法安全地获取字段值，提供默认值
+                    source_table = record.get('source_table', 'Unknown')
+                    target_table = record.get('target_table', 'Unknown')
+                    source_field = record.get('source_field', 'Unknown')
+                    target_field = record.get('target_field', 'Unknown')
+                    description = record.get('relationship_description', '')
+                    created_at = record.get('created_at', '')
+                    
+                    formatted_results.append({
+                        "content": f"表 {source_table} 通过字段 {source_field} 关联到表 {target_table} 的字段 {target_field}",
+                        "description": description,
+                        "created_at": created_at,
+                        "score": 1.0
+                    })
+                except Exception as record_error:
+                    print(f"Error processing record: {record}, Error: {str(record_error)}")
+                    continue
+            
+            if not formatted_results:
+                print(f"No relationships found for term '{term}'")
             
             return formatted_results
             
         except Exception as e:
             print(f"Error querying relationships for term '{term}': {str(e)}")
+            print(f"Full error details: {e.__class__.__name__}: {str(e)}")
             return []
     
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
@@ -87,8 +104,9 @@ class Neo4jRetriever(BaseRetriever):
             
             # 如果没有结果，返回未找到的消息
             if not all_results:
-                return [{"content": f"未找到与查询 '{query}' 相关的数据库关系", "score": 0.89}]
-            
+                return [{"content": f"未找到与查询 '{query}' 相关的数据库关系", "score": 0}]
+            print("Neo4jRetriever Result:")
+            print(all_results)
             # 添加一个总结性的结果
             summary = {
                 "content": f"查询 '{query}' 涉及以下数据库关系：",

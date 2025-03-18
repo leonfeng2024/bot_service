@@ -278,7 +278,8 @@ class OpenSearchRetriever(BaseRetriever):
                 if backup_results:
                     return backup_results
                 return [{"content": f"No procedures found for query: '{query}'", "score": 0}]
-                
+            print("opensearchRetriever Result:")
+            print(all_results)
             return all_results
             
         except Exception as e:
