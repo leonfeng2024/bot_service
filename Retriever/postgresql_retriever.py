@@ -84,6 +84,15 @@ class PostgreSQLRetriever(BaseRetriever):
                     6. ユーザーの質問には必ず日本語で回答してください。  
                     7. あなたは私の意見を求める必要はありません。最後まで実行してください。  
 
+                    ユーザーがfieldを提供する場合、以下の手順で検索してください。
+                    （1）`field_jpn` または`field` に対して`table_fields`から`physical_name`と`logical_name`を検索してください。　
+                    （2）`field_jpn` または`field` に対して`v_view_table_field` から `view_physical_name`と`view_logical_name`を検索してください。　
+                    （3）`field_jpn` または`field` に対して`v_dataset_view_table_field` から `ds_physical_name`と`ds_logical_name`を検索してください。　
+                    
+                    **注意点**：  
+                    1. 質問に「影響」「影響範囲」「関係するもの」などの語句が含まれる場合は、すべて（テーブル・ビュー・データセット）を対象にして検索してください。 
+                    2. ユーザーが特定の範囲を指定していない場合は、影響範囲を限定せず、すべて（テーブル・ビュー・データセット）を対象にして検索してください。 　
+                    
                     ユーザが質問するものだけ回答します。それ以外の情報を回答しないでください。"""
 
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
