@@ -4,25 +4,11 @@ import traceback
 import config
 
 
-class Neo4jConfig:
-    """Configuration for Neo4j connection."""
-    HOST = "localhost"
-    BOLT_PORT = 7687
-    HTTP_PORT = 7474
-    URI = f"bolt://{HOST}:{BOLT_PORT}"
-    USERNAME = "neo4j"
-    PASSWORD = "neo4j2025"
-
-
 class Neo4jTools:
-    def __init__(self, config: Neo4jConfig = Neo4jConfig):
+    def __init__(self):
         """
-        Initialize Neo4j client with configuration.
-        
-        Args:
-            config: Neo4j configuration class (default: Neo4jConfig)
+        Initialize Neo4j client with configuration from config.py.
         """
-        self.config = config
         self.driver = None
         self._connect()
 
@@ -30,8 +16,8 @@ class Neo4jTools:
         """Establish connection to Neo4j database."""
         try:
             self.driver = GraphDatabase.driver(
-                self.config.URI,
-                auth=(self.config.USERNAME, self.config.PASSWORD)
+                config.NEO4J_URI,
+                auth=(config.NEO4J_USERNAME, config.NEO4J_PASSWORD)
             )
             # Test the connection
             with self.driver.session() as session:
@@ -206,7 +192,7 @@ class Neo4jTools:
 
 
 if __name__ == "__main__":
-    # Initialize Neo4j client with default config
+    # Initialize Neo4j client with config from config.py
     neo4j = Neo4jTools()
     
     # Test basic operations

@@ -3,12 +3,13 @@ from tools.neo4j_tools import Neo4jTools
 from utils.singleton import singleton
 import json
 from datetime import datetime
+import config
 
 
 @singleton
 class Neo4jService:
     def __init__(self):
-        """Initialize Neo4j service with tools."""
+        """Initialize Neo4j service with tools using configuration from config.py."""
         self.neo4j = Neo4jTools()
 
     async def create_node(
