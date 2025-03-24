@@ -80,19 +80,19 @@ def get_visualization_query():
 async def main():
     # 定义关系数据
     relationships_json = {
-        "employee_details.employee_id": "employees.employee_id", 
-        "employee_details.department_name": "departments.department_name", 
-        "high_salary_employees.employee_id": "employees.employee_id", 
+        "v_employee_details.employee_id": "employees.employee_id", 
+        "v_employee_details.department_name": "departments.department_name", 
+        "v_high_salary_employees.employee_id": "employees.employee_id", 
         "active_accounts.account_id": "accounts.account_id", 
-        "transaction_summary.account_id": "accounts.account_id", 
-        "transaction_summary.account_name": "accounts.account_name", 
-        "employee_history_log.employee_id": "employees.employee_id", 
-        "employee_history_log.changed_by": "employees.employee_id", 
-        "GetEmployeeDetails.employee_id": "employee_details.employee_id", 
-        "GetAccountTransactions.account_id": "transactions.account_id", 
-        "GetAccountTransactions.account_name": "accounts.account_name", 
-        "UpdateEmployeeSalary.employee_id": "employees.employee_id", 
-        "UpdateEmployeeSalary.changed_by": "employees.employee_id" 
+        "v_transaction_summary.account_id": "accounts.account_id", 
+        "v_transaction_summary.account_name": "accounts.account_name", 
+        "v_employee_history_log.employee_id": "employees.employee_id", 
+        "v_employee_history_log.changed_by": "employees.employee_id", 
+        "p_GetEmployeeDetails.employee_id": "v_employee_details.employee_id", 
+        "p_GetAccountTransactions.account_id": "transactions.account_id", 
+        "p_GetAccountTransactions.account_name": "accounts.account_name", 
+        "p_UpdateEmployeeSalary.employee_id": "employees.employee_id", 
+        "p_UpdateEmployeeSalary.changed_by": "employees.employee_id" 
     }
     
     # 1. 清除所有数据

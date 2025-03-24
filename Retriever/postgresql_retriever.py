@@ -2,45 +2,50 @@ from typing import List, Dict, Any
 from langchain_community.utilities import SQLDatabase
 from Retriever.base_retriever import BaseRetriever
 from service.llm_service import LLMService
-from sqlalchemy import create_engine, inspect
 from langchain.agents import AgentType
 from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_agent
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate, AIMessagePromptTemplate
+import json
+import os
+from tools.redis_tools import RedisTools
+from tools.postgresql_tools import PostgreSQLTools
 
 
 class PostgreSQLRetriever(BaseRetriever):
     """PostgreSQL检索器，用于从PostgreSQL数据库中检索数据"""
     
     def __init__(self):
-        # PostgreSQL connection settings
-        self.pg_host = "localhost"
-        self.pg_port = 5432
-        self.pg_user = "postgres"
-        self.pg_password = "Automation2025"
-        self.pg_database = "local_rag"
-        self.db_uri = f"postgresql://{self.pg_user}:{self.pg_password}@{self.pg_host}:{self.pg_port}/{self.pg_database}"
-
-        self.db = None
-        self.db_engine = None
-        self.toolkit = None
-
-        self.all_views = []
-        self.search_object = []
-        self.agent = None
+        # 使用PostgreSQLTools代替直接创建连接
+        self.pg_tools = PostgreSQLTools()
+        
+        # 初始化RedisTools
+        self.redis_tools = RedisTools()
+        
+        # 初始化LLM服务
         self.llm_service = LLMService()
         self.llm_service.init_agent_llm("azure-gpt4")
         self.llm = self.llm_service.llm_agent_instance
+        
+        # 初始化其他变量
+        self.toolkit = None
+        self.agent = None
 
-
-    async def retrieve(self, query: str) -> List[Dict[str, Any]]:
+    async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
+        """
+        从 PostgreSQL 数据库检索相关信息
+        
+        Args:
+            query: 用户查询
+            uuid: 会话 ID (可选)
+            
+        Returns:
+            包含检索结果的列表
+        """
         try:
-            if self.db_engine is None:
-                self.db_engine = create_engine(self.db_uri)
-
-            # Get all views and create search objects
-            self.all_views = inspect(self.db_engine).get_view_names()
-            self.search_object = self.all_views.append("table_fields")
-
+            # 获取搜索对象（视图和表名列表）
+            search_object = self.pg_tools.get_search_objects()
+            
+            # 创建系统提示
             system_template = """あなたは SQL データベースの専門家であり、PostgreSQL によるデータ分析を得意としています。
                     あなたの任務は、ユーザーのクエリ要求に基づいて、正確かつ効率的な SQL 文を構築することです。
                     クエリが正しく、漏れがないことを保証し、以下のルールに従ってください。
@@ -97,7 +102,7 @@ class PostgreSQLRetriever(BaseRetriever):
 
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 
-            # Process the query with the agent
+            # 创建对话提示
             human_template = """ユーザ問題: {input}"""
             human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
             ai_template = "考える過程: {agent_scratchpad}"
@@ -106,40 +111,59 @@ class PostgreSQLRetriever(BaseRetriever):
                 [system_message_prompt, human_message_prompt, ai_message_prompt]
             )
 
-            # Initialize the database connection if not already done
-            if self.db is None:
-                self.db = SQLDatabase.from_uri(database_uri=self.db_uri, view_support=True, include_tables=self.search_object)
+            # 获取数据库对象
+            db = self.pg_tools.get_db(include_tables=search_object, view_support=True)
+            
+            # 确保 self.llm 不为 None
+            if self.llm is not None:
+                # 创建 SQL 工具包和代理
+                self.toolkit = SQLDatabaseToolkit(db=db, llm=self.llm)
+                self.agent = create_sql_agent(
+                    llm=self.llm,
+                    toolkit=self.toolkit,
+                    agent_type=AgentType.OPENAI_FUNCTIONS,
+                    verbose=False,  # 关闭详细输出以抑制代理输出
+                    prompt=chat_prompt,
+                    top_k=50000
+                )
+            else:
+                raise ValueError("LLM instance is not initialized properly")
 
-                # 确保 self.llm 不为 None
-                if self.llm is not None:
-                    # Create the SQL toolkit
-                    self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
-                    # Create the SQL agent
-                    self.agent = create_sql_agent(
-                        llm=self.llm,
-                        toolkit=self.toolkit,
-                        agent_type=AgentType.OPENAI_FUNCTIONS,
-                        verbose=True,
-                        prompt=chat_prompt,
-                        top_k=50000
-                    )
-                else:
-                    raise ValueError("LLM instance is not initialized properly")
-
-            # Run the agent
+            # 运行代理
             result = await self.agent.ainvoke({"input": query})
 
-            # Extract the agent's response
-            # agent_response = result.get("output", "No response from SQL agent")
-            print("PostgreSQLRetriever Result:")
-            print(result['output'])
-            # Return the result in the expected format
-            return [{"content": result['output'], "score": 0.99}]
+            # 提取代理的响应
+            postgres_results = [{"content": result['output'], "score": 0.99, "source": "postgresql"}]
+            
+            # 如果提供了 uuid，将结果存储到 Redis
+            if uuid:
+                try:
+                    # 使用 RedisTools 而不是直接使用 Redis 客户端
+                    key = f"{uuid}:postgresql"
+                    self.redis_tools.set(key, postgres_results)
+                except Exception as redis_error:
+                    print(f"Error storing PostgreSQL results in Redis: {str(redis_error)}")
+            
+            # 返回结果
+            return postgres_results
 
         except Exception as e:
             import traceback
             print(f"PostgreSQL retriever error: {str(e)}")
             print(f"Detailed error: {traceback.format_exc()}")
-            # Return an error message instead of raising an exception
-            return [{"content": f"Error querying PostgreSQL: {str(e)}", "score": 0.0}]
+            
+            # 构建错误响应
+            error_result = [{"content": f"Error querying PostgreSQL: {str(e)}", "score": 0.0, "source": "postgresql"}]
+            
+            # 如果提供了 uuid，尝试将错误结果存储到 Redis
+            if uuid:
+                try:
+                    # 使用 RedisTools 而不是直接使用 Redis 客户端
+                    key = f"{uuid}:postgresql"
+                    self.redis_tools.set(key, [])  # 存储空列表表示没有结果
+                except Exception:
+                    pass  # 忽略 Redis 存储错误，因为已经出现主要错误
+                    
+            # 返回错误信息而不是抛出异常
+            return error_result
 

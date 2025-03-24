@@ -2,10 +2,14 @@ import pandas as pd
 from service.neo4j_service import Neo4jService
 from datetime import datetime
 import os
+from typing import Dict, List, Any
 
 class ExportExcelService:
     def __init__(self):
         self.neo4j_service = Neo4jService()
+        self.output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "output")
+        # Create output directory if it doesn't exist
+        os.makedirs(self.output_dir, exist_ok=True)
 
     async def export_relationships_to_excel(self, output_file: str = "relationship.xlsx"):
         """
@@ -74,4 +78,27 @@ class ExportExcelService:
         
     async def close(self):
         """Close Neo4j connection"""
-        self.neo4j_service.close() 
+        self.neo4j_service.close()
+
+    async def export_to_excel(self, data: List[Dict[str, Any]], filename_prefix: str) -> str:
+        """
+        Export data to Excel file
+        Returns the path to the created Excel file
+        """
+        try:
+            # Convert data to DataFrame
+            # Assuming data is a list of dictionaries with 'content' and other fields
+            df = pd.DataFrame(data)
+            
+            # Define output file path
+            excel_file = os.path.join(self.output_dir, f"{filename_prefix}.xlsx")
+            
+            # Export to Excel
+            df.to_excel(excel_file, index=False)
+            
+            return excel_file
+        except Exception as e:
+            import traceback
+            print(f"Error exporting to Excel: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            raise 

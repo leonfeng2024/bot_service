@@ -1,9 +1,9 @@
 --- Procedure
 
---- GetEmployeeDetails
+--- p_GetEmployeeDetails
 --- 根据员工 ID 获取员工的详细信息，包括姓名、职位、部门名称和工资
---- 结合了 employees 表和 employee_details 视图
-CREATE OR REPLACE FUNCTION GetEmployeeDetails(emp_id INT)
+--- 结合了 employees 表和 v_employee_details 视图
+CREATE OR REPLACE FUNCTION p_GetEmployeeDetails(emp_id INT)
 RETURNS TABLE (
     employee_id INT,
     full_name TEXT,
@@ -20,18 +20,18 @@ BEGIN
         ed.department_name,  
         ed.salary  
     FROM 
-        employee_details ed 
+        v_employee_details ed 
     WHERE 
-        ed.employee_id  = GetEmployeeDetails.emp_id;  -- 明确指定参数来源 
+        ed.employee_id  = p_GetEmployeeDetails.emp_id;  -- 明确指定参数来源 
 END;
 $$ LANGUAGE plpgsql;
---- 调用示例 SELECT * FROM GetEmployeeDetails(1);
+--- 调用示例 SELECT * FROM p_GetEmployeeDetails(1);
 
 
---- GetAccountTransactions
+--- p_GetAccountTransactions
 --- 根据账户 ID 获取该账户的所有交易记录，并返回账户名称、交易类型、金额和交易时间
 --- 结合了 transactions 表和 accounts 表
-CREATE OR REPLACE FUNCTION GetAccountTransactions(acc_id INT)
+CREATE OR REPLACE FUNCTION p_GetAccountTransactions(acc_id INT)
 RETURNS TABLE (
     transaction_id INT,
     account_name VARCHAR(100),
@@ -55,13 +55,13 @@ BEGIN
         t.account_id  = acc_id;
 END;
 $$ LANGUAGE plpgsql;
---- 调用示例 SELECT * FROM GetAccountTransactions(1);
+--- 调用示例 SELECT * FROM p_GetAccountTransactions(1);
 
 
---- UpdateEmployeeSalary
+--- p_UpdateEmployeeSalary
 --- 更新员工的工资，并将变更记录插入到 employees_history 表中
 --- 结合了 employees 表和 employees_history 表
-CREATE OR REPLACE FUNCTION UpdateEmployeeSalary(
+CREATE OR REPLACE FUNCTION p_p_UpdateEmployeeSalary(
     emp_id INT,
     new_salary DECIMAL(10, 2),
     changed_by INT 
@@ -89,4 +89,4 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql;
---- 调用示例 SELECT UpdateEmployeeSalary(1, 12000, 2);
+--- 调用示例 SELECT p_UpdateEmployeeSalary(1, 12000, 2);

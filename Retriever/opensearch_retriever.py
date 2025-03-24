@@ -5,6 +5,7 @@ from opensearchpy import OpenSearch
 from Retriever.base_retriever import BaseRetriever
 from service.embedding_service import EmbeddingService
 from service.llm_service import LLMService
+from tools.redis_tools import RedisTools
 
 class OpenSearchRetriever(BaseRetriever):
     """OpenSearch检索器，用于从OpenSearch中检索数据"""
@@ -25,6 +26,9 @@ class OpenSearchRetriever(BaseRetriever):
         # Initialize LLMService for column identification
         self.llm_service = LLMService()
         
+        # Initialize Redis tools for caching
+        self.redis_tools = RedisTools()
+        
         # Initialize OpenSearch client
         self.client = self._connect_to_opensearch()
     
@@ -41,11 +45,11 @@ class OpenSearchRetriever(BaseRetriever):
             )
             # Test connection
             client.info()
-            print("OpenSearchRetriever successfully connected to OpenSearch")
+            # print("OpenSearchRetriever successfully connected to OpenSearch")
             return client
         except Exception as e:
-            print(f"OpenSearchRetriever error connecting to OpenSearch: {str(e)}")
-            print("Make sure OpenSearch is running and configuration is correct.")
+            # print(f"OpenSearchRetriever error connecting to OpenSearch: {str(e)}")
+            # print("Make sure OpenSearch is running and configuration is correct.")
             return None
     
     async def _check_and_update_index(self, embedding_dimension: int) -> bool:
@@ -66,14 +70,14 @@ class OpenSearchRetriever(BaseRetriever):
                         
                         # If dimensions match, no need to update
                         if current_dim == embedding_dimension:
-                            print(f"Index {self.procedure_index} already has correct dimension {embedding_dimension}")
+                            # print(f"Index {self.procedure_index} already has correct dimension {embedding_dimension}")
                             return True
                         
-                        print(f"Index {self.procedure_index} has dimension {current_dim}, but need {embedding_dimension}")
+                        # print(f"Index {self.procedure_index} has dimension {current_dim}, but need {embedding_dimension}")
                         
                         # Delete the index to recreate with correct dimension
                         self.client.indices.delete(index=self.procedure_index)
-                        print(f"Deleted index {self.procedure_index} to recreate with correct dimension")
+                        # print(f"Deleted index {self.procedure_index} to recreate with correct dimension")
             
             # Create or recreate the index with the correct dimension
             index_config = {
@@ -106,11 +110,11 @@ class OpenSearchRetriever(BaseRetriever):
             }
             
             self.client.indices.create(index=self.procedure_index, body=index_config)
-            print(f"Created index {self.procedure_index} with dimension {embedding_dimension}")
+            # print(f"Created index {self.procedure_index} with dimension {embedding_dimension}")
             return True
             
         except Exception as e:
-            print(f"Error checking/updating index: {str(e)}")
+            # print(f"Error checking/updating index: {str(e)}")
             return False
     
     async def _search_term(self, term: str) -> List[Dict[str, Any]]:
@@ -121,7 +125,7 @@ class OpenSearchRetriever(BaseRetriever):
             
             # Get the actual dimension of the embedding
             actual_dim = len(search_embedding)
-            print(f"Search term: {term}, embedding dimension: {actual_dim}")
+            # print(f"Search term: {term}, embedding dimension: {actual_dim}")
             
             # Update the vector_dim to match the actual dimension
             self.vector_dim = actual_dim
@@ -172,7 +176,7 @@ class OpenSearchRetriever(BaseRetriever):
             }
             
             # 首先尝试带过滤的查询
-            print(f"Executing filtered query for: {term}")
+            # print(f"Executing filtered query for: {term}")
             response = self.client.search(
                 body=filtered_query,
                 index=self.procedure_index
@@ -181,7 +185,7 @@ class OpenSearchRetriever(BaseRetriever):
             # 如果没有结果，尝试纯KNN查询
             hits = response.get("hits", {}).get("hits", [])
             if not hits:
-                print(f"No results from filtered query, trying pure KNN query for: {term}")
+                # print(f"No results from filtered query, trying pure KNN query for: {term}")
                 response = self.client.search(
                     body=knn_query,
                     index=self.procedure_index
@@ -189,13 +193,13 @@ class OpenSearchRetriever(BaseRetriever):
             
             # 打印原始结果以便调试
             hits = response.get("hits", {}).get("hits", [])
-            print(f"Found {len(hits)} results for term: {term}")
-            if hits:
-                for hit in hits:
-                    print(f"Hit score: {hit.get('_score')}, procedure: {hit.get('_source', {}).get('procedure_name')}")
-                    # 添加SQL内容调试输出
-                    sql_content = hit.get('_source', {}).get('sql_content', 'No SQL content')
-                    print(f"SQL content for {hit.get('_source', {}).get('procedure_name')}: {sql_content[:100]}...")
+            # print(f"Found {len(hits)} results for term: {term}")
+            # if hits:
+            #     for hit in hits:
+            #         print(f"Hit score: {hit.get('_score')}, procedure: {hit.get('_source', {}).get('procedure_name')}")
+            #         # 添加SQL内容调试输出
+            #         sql_content = hit.get('_source', {}).get('sql_content', 'No SQL content')
+            #         print(f"SQL content for {hit.get('_source', {}).get('procedure_name')}: {sql_content[:100]}...")
             
             # Process results
             results = []
@@ -229,16 +233,17 @@ class OpenSearchRetriever(BaseRetriever):
             return results
             
         except Exception as e:
-            print(f"Error searching for term '{term}': {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
+            # print(f"Error searching for term '{term}': {str(e)}")
+            # print(f"Detailed error: {traceback.format_exc()}")
             return [{"content": f"Error searching for '{term}': {str(e)}", "score": 0.89}]
         
-    async def retrieve(self, query: str) -> List[Dict[str, Any]]:
+    async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
         """
-        检索与查询相关的结果
+        检索与查询相关的结果并缓存到Redis
         
         Args:
             query: 用户的查询字符串
+            uuid: 用户的UUID，用于缓存结果
             
         Returns:
             List[Dict[str, Any]]: 检索结果列表
@@ -247,42 +252,99 @@ class OpenSearchRetriever(BaseRetriever):
             if not self.client:
                 self.client = self._connect_to_opensearch()
                 if not self.client:
+                    # 如果提供了UUID，将空结果存储到Redis
+                    if uuid:
+                        try:
+                            # 获取现有的缓存数据
+                            cached_data = self.redis_tools.get(uuid) or {}
+                            # 设置空字符串
+                            cached_data["opensearch"] = ""
+                            # 更新Redis缓存
+                            self.redis_tools.set(uuid, cached_data)
+                        except Exception:
+                            pass
                     return [{"content": "Failed to connect to OpenSearch", "score": 0}]
             
             # Check if index exists
             if not self.client.indices.exists(index=self.procedure_index):
+                # 如果提供了UUID，将空结果存储到Redis
+                if uuid:
+                    try:
+                        # 获取现有的缓存数据
+                        cached_data = self.redis_tools.get(uuid) or {}
+                        # 设置空字符串
+                        cached_data["opensearch"] = ""
+                        # 更新Redis缓存
+                        self.redis_tools.set(uuid, cached_data)
+                    except Exception:
+                        pass
                 return [{"content": f"Index {self.procedure_index} does not exist. Please run the procedure_embedding_test.py script first.", "score": 0}]
             
             # 调用LLM分析查询，识别查询的字段名
-            print(f"Analyzing query: {query}")
+            # print(f"Analyzing query: {query}")
             columns = await self.llm_service.identify_column(query)
-            print(f"Identified columns: {json.dumps(columns, ensure_ascii=False)}")
+            # print(f"Identified columns: {json.dumps(columns, ensure_ascii=False)}")
             
             # 如果没有识别出字段名，直接使用原始查询
             if not columns:
-                print(f"No columns identified, using original query: {query}")
-                return await self._search_term(query)
-            
-            # 对每个识别出的字段进行搜索
-            all_results = []
-            for key, term in columns.items():
-                print(f"Searching for term: {term}")
-                term_results = await self._search_term(term)
-                all_results.extend(term_results)
-                
+                # print(f"No columns identified, using original query: {query}")
+                all_results = await self._search_term(query)
+            else:
+                # 对每个识别出的字段进行搜索
+                all_results = []
+                for key, term in columns.items():
+                    # print(f"Searching for term: {term}")
+                    term_results = await self._search_term(term)
+                    all_results.extend(term_results)
+                    
             # 如果没有结果，返回未找到的消息
             if not all_results:
                 # 尝试使用原始查询作为后备方案
-                print(f"No results for identified columns, trying with original query: {query}")
+                # print(f"No results for identified columns, trying with original query: {query}")
                 backup_results = await self._search_term(query)
                 if backup_results:
-                    return backup_results
-                return [{"content": f"No procedures found for query: '{query}'", "score": 0}]
-            print("opensearchRetriever Result:")
-            print(all_results)
+                    all_results = backup_results
+                else:
+                    all_results = [{"content": f"No procedures found for query: '{query}'", "score": 0}]
+            
+            # 如果提供了UUID，将结果缓存到Redis
+            if uuid:
+                try:
+                    # 获取现有的缓存数据
+                    cached_data = self.redis_tools.get(uuid) or {}
+                    
+                    # 合并结果到缓存数据 - 如果结果为空，使用空字符串
+                    if all_results and len(all_results) > 0:
+                        opensearch_content = "\n".join([item.get("content", "") for item in all_results if item.get("content")])
+                    else:
+                        opensearch_content = ""
+                    
+                    # 更新Redis缓存
+                    cached_data["opensearch"] = opensearch_content
+                    self.redis_tools.set(uuid, cached_data)
+                    # print(f"Cached OpenSearch results for UUID: {uuid}")
+                except Exception as cache_error:
+                    # print(f"Error caching OpenSearch results: {str(cache_error)}")
+                    pass
+            
+            # print("opensearchRetriever Result:")
+            # print(all_results)
             return all_results
             
         except Exception as e:
-            print(f"OpenSearch retrieval error: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
+            # print(f"OpenSearch retrieval error: {str(e)}")
+            # print(f"Detailed error: {traceback.format_exc()}")
+            
+            # 如果提供了UUID，将空结果存储到Redis
+            if uuid:
+                try:
+                    # 获取现有的缓存数据
+                    cached_data = self.redis_tools.get(uuid) or {}
+                    # 设置空字符串
+                    cached_data["opensearch"] = ""
+                    # 更新Redis缓存
+                    self.redis_tools.set(uuid, cached_data)
+                except Exception:
+                    pass
+                
             return [{"content": f"Error querying OpenSearch: {str(e)}", "score": 0}] 

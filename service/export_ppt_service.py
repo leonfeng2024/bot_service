@@ -7,12 +7,17 @@ from datetime import datetime
 import requests
 import base64
 from io import BytesIO
+from pptx.dml.color import RGBColor
+from typing import Dict, List, Any
 
 class ExportPPTService:
     def __init__(self):
         self.temp_dir = "temp"
         if not os.path.exists(self.temp_dir):
             os.makedirs(self.temp_dir)
+        self.output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "output")
+        # Create output directory if it doesn't exist
+        os.makedirs(self.output_dir, exist_ok=True)
 
     async def create_mermaid_diagram(self, relationships_df: pd.DataFrame) -> str:
         """
@@ -289,3 +294,120 @@ linkStyle default stroke:#000,stroke-width:1.5px;
         except Exception as e:
             print(f"Error creating PPT: {str(e)}")
             return False 
+
+    async def export_to_ppt(self, excel_file: str, filename_prefix: str) -> str:
+        """
+        Export Excel data to PowerPoint
+        Returns the path to the created PowerPoint file
+        """
+        try:
+            # Create a new presentation
+            prs = Presentation()
+            
+            # Import pandas here to read the Excel file
+            import pandas as pd
+            df = pd.read_excel(excel_file)
+            
+            # Add a title slide
+            title_slide_layout = prs.slide_layouts[0]
+            slide = prs.slides.add_slide(title_slide_layout)
+            title = slide.shapes.title
+            subtitle = slide.placeholders[1]
+            
+            title.text = "Database Query Results"
+            subtitle.text = f"Generated from {os.path.basename(excel_file)}"
+            
+            # Add content slides
+            # We'll create a table slide for the data
+            slide_layout = prs.slide_layouts[5]  # Title and Content layout
+            slide = prs.slides.add_slide(slide_layout)
+            title = slide.shapes.title
+            title.text = "Database Relationships"
+            
+            # Add table
+            rows, cols = df.shape
+            left = Inches(0.5)
+            top = Inches(1.5)
+            width = Inches(9.0)
+            height = Inches(5.0)
+            
+            # Add a table with headers
+            shapes = slide.shapes
+            table = shapes.add_table(rows + 1, cols, left, top, width, height).table
+            
+            # Set header row
+            for i, col_name in enumerate(df.columns):
+                table.cell(0, i).text = col_name
+                # Format the header row
+                for paragraph in table.cell(0, i).text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        run.font.bold = True
+                        run.font.size = Pt(12)
+            
+            # Fill in the data rows
+            for i in range(rows):
+                for j in range(cols):
+                    cell_value = str(df.iloc[i, j])
+                    table.cell(i + 1, j).text = cell_value
+            
+            # Define output file path
+            ppt_file = os.path.join(self.output_dir, f"{filename_prefix}.pptx")
+            
+            # Save the presentation
+            prs.save(ppt_file)
+            
+            return ppt_file
+        except Exception as e:
+            import traceback
+            print(f"Error exporting to PowerPoint: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            raise
+    
+    async def append_to_ppt(self, data: List[Dict[str, Any]], ppt_file: str) -> str:
+        """
+        Append additional data to an existing PowerPoint file
+        Returns the path to the updated PowerPoint file
+        """
+        try:
+            # Open the existing presentation
+            prs = Presentation(ppt_file)
+            
+            # Add a new slide for OpenSearch data
+            slide_layout = prs.slide_layouts[5]  # Title and Content layout
+            slide = prs.slides.add_slide(slide_layout)
+            title = slide.shapes.title
+            title.text = "Additional Search Results"
+            
+            # Add content
+            # Create a text box for each search result
+            top = Inches(1.5)
+            for item in data:
+                content = item.get('content', '')
+                if content:
+                    left = Inches(0.5)
+                    width = Inches(9.0)
+                    height = Inches(1.0)
+                    
+                    txBox = slide.shapes.add_textbox(left, top, width, height)
+                    tf = txBox.text_frame
+                    tf.text = content
+                    
+                    # Move down for the next item
+                    top += Inches(1.2)
+                    
+                    # If we're running out of space, add a new slide
+                    if top > Inches(6.5):
+                        slide = prs.slides.add_slide(slide_layout)
+                        title = slide.shapes.title
+                        title.text = "Additional Search Results (Continued)"
+                        top = Inches(1.5)
+            
+            # Save the updated presentation
+            prs.save(ppt_file)
+            
+            return ppt_file
+        except Exception as e:
+            import traceback
+            print(f"Error appending to PowerPoint: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            raise 

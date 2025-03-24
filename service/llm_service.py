@@ -125,15 +125,17 @@ class LLMService:
             Dict[str, str]: Dictionary of field names, format: {"item1": "field1", "item2": "field2"}
         """
         try:
-            # Construct prompt
+            # Construct prompt with multilingual support
             prompt = f"""
-You are a professional SQL database analysis assistant. Please analyze the user's query and extract the table names, view names, or field names they want to query.
+You are a professional SQL database analysis assistant. You can analyze queries in any language, including English, Japanese, Chinese, etc.
+Please analyze the user's query and extract the table names, view names, or field names they want to query.
 
 User query: "{query}"
 
 Please carefully analyze the query content and extract all possible database object names. These objects could be table names, view names, or column names.
 For example, if the user asks "What fields are in the employee table?", you should extract "employee" as the key object.
 If the user asks "I want to know the relationship between employee and department", you should extract "employee" and "department".
+If the user asks in Japanese "従業員テーブルのフィールドは何ですか？", you should extract "従業員" as the key object.
 
 Please return the analysis result in JSON format as follows:
 {{
@@ -143,30 +145,70 @@ Please return the analysis result in JSON format as follows:
 }}
 
 If no clear object names are found, please return an empty JSON object {{}}.
-Please only return the result in JSON format, do not include any other explanations or descriptions.
+IMPORTANT: Please ONLY return a valid JSON object. Do not include any other text before or after the JSON.
+Do not include any explanations, preamble, or conclusion outside the JSON structure.
+
+EXAMPLE
+user_query : "please tell me something about change view column employees"
+return {{"item1":"employees"}}
+
+user_query : please tell me something about change table column employee_id"
+return {{"item1":"employee_id"}}
+
 """
 
             # Get LLM instance and generate
             llm = self.get_llm()
             result = await llm.generate(prompt)
             
+            # Debugging: Print raw response
+            print(f"Raw LLM response: {result}")
+            
+            # Strip any leading/trailing whitespace and non-JSON content
+            result = result.strip()
+            
             # Try to parse JSON result
             try:
                 parsed_result = json.loads(result)
                 return parsed_result
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as json_err:
+                print(f"JSON decode error: {str(json_err)}")
+                
                 # If result is not valid JSON, try to extract JSON part
                 import re
-                json_match = re.search(r'({.*})', result, re.DOTALL)
-                if json_match:
-                    try:
-                        parsed_result = json.loads(json_match.group(1))
-                        return parsed_result
-                    except:
-                        pass
                 
-                # If still failed, return empty result
-                print(f"Failed to parse LLM response as JSON: {result}")
+                # Try to find anything that looks like a JSON object
+                json_pattern = r'({[\s\S]*?})'
+                json_matches = re.findall(json_pattern, result, re.DOTALL)
+                
+                for potential_json in json_matches:
+                    try:
+                        parsed_result = json.loads(potential_json)
+                        print(f"Successfully extracted JSON: {potential_json}")
+                        return parsed_result
+                    except json.JSONDecodeError:
+                        continue
+                
+                # If extraction failed but result contains curly braces, try to manually fix common JSON errors
+                if '{' in result and '}' in result:
+                    # Extract content between first { and last }
+                    start = result.find('{')
+                    end = result.rfind('}') + 1
+                    json_content = result[start:end]
+                    
+                    # Replace single quotes with double quotes
+                    json_content = json_content.replace("'", '"')
+                    
+                    # Try parsing again
+                    try:
+                        parsed_result = json.loads(json_content)
+                        print(f"Manually fixed JSON: {json_content}")
+                        return parsed_result
+                    except json.JSONDecodeError:
+                        print(f"Failed to fix JSON: {json_content}")
+                
+                # If all attempts failed, return empty result
+                print(f"All JSON parsing attempts failed for: {result}")
                 return {}
                 
         except Exception as e:

@@ -1,19 +1,41 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from service.chat_service import ChatService
 from service.llm_service import LLMService
 from service.embedding_service import EmbeddingService
 from service.neo4j_service import Neo4jService
 from service.export_excel_service import ExportExcelService
 from service.export_ppt_service import ExportPPTService
-from models.models import ChatRequest, DatabaseSchemaRequest
+from models.models import ChatRequest, DatabaseSchemaRequest, TokenData, LogoutRequest
 import logging
 import os
 import shutil
 from typing import List
+import jwt
+import uuid
+import time
+from flask import request, jsonify
+from tools.mongo_tools import UserMongoTools
+from tools.redis_tools import RedisTools
+import json
+from contextlib import asynccontextmanager
+from config import JWT_SECRET, JWT_EXPIRATION
 
-app = FastAPI()
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup logic
+    yield
+    # Shutdown logic
+    neo4j_service.close()
+    await export_service.close()
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,22 +51,95 @@ neo4j_service = Neo4jService()
 export_service = ExportExcelService()
 ppt_service = ExportPPTService()
 embedding_service = EmbeddingService()
+redis_tools = RedisTools()
 
-logger = logging.getLogger(__name__)
+# 设置JWT密钥和过期时间(秒)
+# JWT_SECRET = "your_jwt_secret_key"  # 请修改为安全的密钥
+# JWT_EXPIRATION = 3600  # 1小时过期
 
-@app.on_event("startup")
-async def startup_event():
-    pass
+# 添加中间件记录API调用
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    # 记录请求开始
+    path = request.url.path
+    method = request.method
+    
+    # 记录请求参数
+    request_params = {}
+    if method == "GET":
+        request_params = dict(request.query_params)
+    else:
+        try:
+            body = await request.body()
+            if body:
+                try:
+                    # 尝试解析为JSON
+                    request_params = json.loads(body)
+                except:
+                    request_params = {"raw_body": str(body)}
+        except Exception as e:
+            request_params = {"error": f"无法读取请求体: {str(e)}"}
+    
+    logger.info(f"API调用: {method} {path}, 参数: {request_params}")
+    
+    # 处理请求
+    response = await call_next(request)
+    
+    # 记录响应
+    logger.info(f"API完成: {method} {path}, 状态码: {response.status_code}")
+    
+    return response
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Clean up resources on server shutdown."""
-    neo4j_service.close()
-    await export_service.close()
+# 添加 HTTP Bearer 认证
+security = HTTPBearer()
+
+async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        # 检查令牌是否过期
+        if payload.get("exp") < int(time.time()):
+            raise HTTPException(status_code=401, detail="Token has expired")
+        
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
 
 @app.post("/chat")
-async def chat(request: ChatRequest):
-    return await chat_service.handle_chat(request.username, request.query)
+async def chat(request: ChatRequest, token_data: dict = Depends(verify_token)):
+    # 从请求中获取uuid并比较
+    if request.uuid != token_data.get("uuid"):
+        raise HTTPException(status_code=403, detail="UUID mismatch")
+    
+    # 传递用户的UUID到chat_service
+    return await chat_service.handle_chat(request.username, request.query, request.uuid)
+
+@app.post("/logout")
+async def logout(request: LogoutRequest, token_data: dict = Depends(verify_token)):
+    """
+    用户登出，清除Redis缓存
+    """
+    try:
+        # 从请求中获取uuid
+        uuid_to_delete = request.uuid
+        logger.info(f"接收到登出请求，UUID: {uuid_to_delete}")
+        
+        # 删除Redis缓存
+        success = redis_tools.delete(uuid_to_delete)
+        
+        if success:
+            logger.info(f"成功删除用户缓存数据，UUID: {uuid_to_delete}")
+            return {"message": "Logout successful", "status": "success"}
+        else:
+            logger.warning(f"未找到用户缓存数据，UUID: {uuid_to_delete}")
+            return {"message": "No cache data found for user", "status": "warning"}
+            
+    except Exception as e:
+        logger.error(f"登出过程中发生错误: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error during logout: {str(e)}"
+        )
 
 @app.post("/database/schema/import")
 async def import_database_schema(request: DatabaseSchemaRequest):
@@ -186,6 +281,73 @@ async def upload_multiple_files(files: List[UploadFile] = File(...)):
     except Exception as e:
         logger.error(f"Error uploading files: {str(e)}")
         return {"status": "failed", "message": f"system error details: {str(e)}"}
+
+# 修改为FastAPI风格的路由，而不是Flask风格
+@app.post('/token')
+async def login(request: Request):
+    try:
+        data = await request.json()
+        username = data.get('username')
+        password = data.get('password')
+        
+        logger.info(f"登录尝试: 用户名 = {username}")
+        
+        # 创建MongoDB工具并验证用户
+        mongo_tools = UserMongoTools()
+        user_info = mongo_tools.verification(username, password)
+        
+        # 验证失败
+        if user_info['user_id'] == 0:
+            logger.warning(f"登录失败: 用户名 = {username}")
+            return {}
+        
+        # 生成唯一UUID
+        user_uuid = str(uuid.uuid4())
+        
+        # 计算过期时间
+        current_time = int(time.time())
+        expiry_time = current_time + JWT_EXPIRATION
+        
+        # 生成JWT令牌
+        payload = {
+            "user_id": user_info['user_id'],
+            "role": user_info['role'],
+            "uuid": user_uuid,
+            "exp": expiry_time
+        }
+        
+        # 创建访问令牌
+        access_token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+        
+        # 创建刷新令牌 (通常有更长的过期时间)
+        refresh_payload = {
+            "user_id": user_info['user_id'],
+            "uuid": user_uuid,
+            "exp": current_time + (JWT_EXPIRATION * 24 * 7)  # 7天
+        }
+        refresh_token = jwt.encode(refresh_payload, JWT_SECRET, algorithm="HS256")
+        
+        # 在Redis中存储用户信息
+        initial_data = {
+            "user_id": user_info['user_id'],
+            "role": user_info['role'],
+            "username": username,
+            "login_time": current_time
+        }
+        redis_tools.set(user_uuid, initial_data)
+        
+        logger.info(f"登录成功: 用户ID = {user_info['user_id']}, 角色 = {user_info['role']}")
+        
+        # 返回令牌信息
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "expired_date": expiry_time,
+            "uuid": user_uuid
+        }
+    except Exception as e:
+        logger.error(f"登录过程中发生错误: {str(e)}")
+        return {}
 
 if __name__ == "__main__":
     import uvicorn
