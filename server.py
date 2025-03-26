@@ -10,6 +10,7 @@ from service.export_excel_service import ExportExcelService
 from service.export_ppt_service import ExportPPTService
 from models.models import ChatRequest, DatabaseSchemaRequest, TokenData, LogoutRequest
 import logging
+import logging.config
 import os
 import shutil
 from typing import List
@@ -17,14 +18,24 @@ import jwt
 import uuid
 import time
 from flask import request, jsonify
-from tools.mongo_tools import UserMongoTools
+from tools.postgresql_tools import PostgreSQLTools
 from tools.redis_tools import RedisTools
 import json
 from contextlib import asynccontextmanager
 from config import JWT_SECRET, JWT_EXPIRATION
 
 # 配置日志
-logging.basicConfig(level=logging.INFO)
+import yaml
+import os
+
+# 确保logs目录存在
+os.makedirs('logs', exist_ok=True)
+
+# 加载日志配置
+with open('logs/logging_config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+    logging.config.dictConfig(config)
+
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
@@ -107,12 +118,21 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 
 @app.post("/chat")
 async def chat(request: ChatRequest, token_data: dict = Depends(verify_token)):
+    logger.info(f"Received chat request - User: {request.username}, UUID: {request.uuid}")
+    
     # 从请求中获取uuid并比较
     if request.uuid != token_data.get("uuid"):
+        logger.warning(f"UUID mismatch - Request UUID: {request.uuid}, Token UUID: {token_data.get('uuid')}")
         raise HTTPException(status_code=403, detail="UUID mismatch")
     
-    # 传递用户的UUID到chat_service
-    return await chat_service.handle_chat(request.username, request.query, request.uuid)
+    try:
+        # 传递用户的UUID到chat_service
+        response = await chat_service.handle_chat(request.username, request.query, request.uuid)
+        logger.info(f"Chat request completed successfully - User: {request.username}, UUID: {request.uuid}")
+        return response
+    except Exception as e:
+        logger.error(f"Error processing chat request - User: {request.username}, UUID: {request.uuid}, Error: {str(e)}")
+        raise
 
 @app.post("/logout")
 async def logout(request: LogoutRequest, token_data: dict = Depends(verify_token)):
@@ -241,18 +261,41 @@ async def upload_file(file: UploadFile = File(...)):
     Upload a single file and save it to the upload_documents directory
     """
     try:
+        # 验证文件类型
+        allowed_types = ["text/plain", "application/pdf", "application/msword", 
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+        content_type = file.content_type
+        if content_type not in allowed_types:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File type {content_type} not allowed. Allowed types: {allowed_types}"
+            )
+        
+        # 验证文件大小（限制为10MB）
+        MAX_SIZE = 10 * 1024 * 1024  # 10MB in bytes
+        file_size = 0
+        file_data = await file.read()
+        file_size = len(file_data)
+        
+        if file_size > MAX_SIZE:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File size {file_size} bytes exceeds maximum allowed size of {MAX_SIZE} bytes"
+            )
+        
         # Create upload directory if it doesn't exist
         upload_dir = "upload_documents"
         os.makedirs(upload_dir, exist_ok=True)
         
         # Save the uploaded file
-        file_path = os.path.join(upload_dir, file.filename)
+        # 使用字符串类型参数调用os.path.join
+        file_path = os.path.join(str(upload_dir), str(file.filename))
         
         # Write the file
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+            buffer.write(file_data)
         
-        return {"status": "success", "message": "done"}
+        return {"status": "success", "message": "done", "file_size": file_size}
     
     except Exception as e:
         logger.error(f"Error uploading file: {str(e)}")
@@ -270,7 +313,7 @@ async def upload_multiple_files(files: List[UploadFile] = File(...)):
         
         # Save all uploaded files
         for file in files:
-            file_path = os.path.join(upload_dir, file.filename)
+            file_path = os.path.join(str(upload_dir), str(file.filename))
             
             # Write the file
             with open(file_path, "wb") as buffer:
@@ -290,16 +333,25 @@ async def login(request: Request):
         username = data.get('username')
         password = data.get('password')
         
-        logger.info(f"登录尝试: 用户名 = {username}")
+        logger.info(f"Login attempt - Username: {username}")
         
-        # 创建MongoDB工具并验证用户
-        mongo_tools = UserMongoTools()
-        user_info = mongo_tools.verification(username, password)
-        
+        # 创建PostgreSQL工具并验证用户
+        pg_tools = PostgreSQLTools()
+        result = pg_tools.validate_user_credentials(username, password)
+        print(result)
         # 验证失败
-        if user_info['user_id'] == 0:
-            logger.warning(f"登录失败: 用户名 = {username}")
-            return {}
+        if not result:
+            logger.warning(f"Login failed - Invalid credentials for username: {username}")
+            return {
+                "status": "error",
+                "message": "Invalid username or password",
+                "code": 401
+            }
+            
+        user_info = {
+            'user_id': result['user_id'],
+            'role': result['role']
+        }
         
         # 生成唯一UUID
         user_uuid = str(uuid.uuid4())

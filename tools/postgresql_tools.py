@@ -39,10 +39,17 @@ class PostgreSQLTools:
         建立到PostgreSQL数据库的连接
         """
         try:
-            self.db_engine = create_engine(self.db_uri)
-            connection = self.db_engine.connect()
-            connection.close()
-            logger.info(f"Successfully connected to PostgreSQL database at {self.pg_host}:{self.pg_port}")
+            if not self.db_engine:
+                self.db_engine = create_engine(self.db_uri)
+            
+            # 使用上下文管理器模式测试连接
+            if self.db_engine is not None:
+                # 使用with语句确保连接正确关闭
+                with self.db_engine.connect() as connection:
+                    # 连接成功建立
+                    logger.info(f"Successfully connected to PostgreSQL database at {self.pg_host}:{self.pg_port}")
+            else:
+                logger.warning("Database engine is None")
         except Exception as e:
             logger.error(f"Failed to connect to PostgreSQL: {str(e)}")
             logger.error(traceback.format_exc())
@@ -73,52 +80,107 @@ class PostgreSQLTools:
                 raise
         return self.db
     
-    def get_search_objects(self):
+    def get_search_objects(self) -> List[str]:
         """
         获取搜索对象（视图和表）
+        
+        Returns:
+            List[str]: 包含所有视图名称和table_fields的列表
         """
         try:
             # 确保引擎连接
             engine = self.get_db_engine()
-            # 获取所有视图
-            self.all_views = inspect(engine).get_view_names()
-            # 创建搜索对象列表
-            self.search_object = self.all_views + ["table_fields"]
-            return self.search_object
+            if engine is None:
+                logger.warning("Database engine is None, returning default list")
+                return ["table_fields"]
+            
+            # 使用上下文管理器模式处理连接
+            with engine.connect() as connection:
+                inspector = inspect(engine)
+                if inspector is None:
+                    logger.warning("Inspector is None, returning default list")
+                    return ["table_fields"]
+                
+                # 获取所有视图，使用正确的方法调用
+                try:
+                    # 使用schema=None作为默认参数调用get_view_names
+                    views = inspector.get_view_names(schema=None)
+                    self.all_views = [] if views is None else list(views)
+                except Exception as view_error:
+                    logger.warning(f"Error getting view names: {str(view_error)}")
+                    self.all_views = []
+                
+                # 创建搜索对象列表
+                self.search_object = self.all_views + ["table_fields"]
+                return self.search_object
         except Exception as e:
             logger.error(f"Error getting search objects: {str(e)}")
+            logger.error(traceback.format_exc())
             return ["table_fields"]  # 默认返回table_fields表
     
-    def execute_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        """
-        执行SQL查询
-        
-        Args:
-            query: SQL查询语句
-            parameters: 查询参数
-            
-        Returns:
-            查询结果列表
-        """
+    def validate_user_credentials(self, username: str, password: str) -> Optional[Dict[str, Any]]:
         try:
+            from sqlalchemy import text
             engine = self.get_db_engine()
+            if not engine:
+                logger.error("Database engine not available for authentication")
+                return None
+
+            query = text("""
+                SELECT user_id, role, isactive AS is_active 
+                FROM user_info 
+                WHERE user_id = :username 
+                AND password = :password
+            """)
+
             with engine.connect() as connection:
-                if parameters:
-                    result = connection.execute(query, parameters)
-                else:
-                    result = connection.execute(query)
+                result = connection.execute(query, {"username": username, "password": password})
+                user_data = result.fetchone()
+
+                if user_data and user_data.is_active:
+                    return {"user_id": user_data.user_id, "role": user_data.role}
+                return None
+
+        except Exception as e:
+            logger.error(f"Authentication error for {username}: {str(e)}")
+            logger.error(traceback.format_exc())
+            return None
+
+    def execute_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        try:
+            from sqlalchemy import text
+            engine = self.get_db_engine()
+            if not engine:
+                raise RuntimeError("Database engine is not available")
+            
+            # 使用上下文管理器模式处理连接和事务
+            with engine.connect() as connection:
+                with connection.begin() as transaction:
+                    # 将SQL字符串转换为可执行对象，并处理参数占位符
+                    if parameters:
+                        # 将%s占位符替换为:param形式
+                        param_count = query.count('%s')
+                        named_params = {f'param{i}': val for i, val in enumerate(parameters.values(), 1)}
+                        # 逐个替换%s为命名参数
+                        query = query.replace('%s', ':param{}').format(*range(1, param_count+1))
+                        sql = text(query)
+                        result = connection.execute(sql, named_params)
+                    else:
+                        sql = text(query)
+                        result = connection.execute(sql)
                     
-                # 获取列名
-                columns = result.keys()
-                
-                # 转换结果为字典列表
-                results = []
-                for row in result:
-                    results.append(dict(zip(columns, row)))
+                    # 获取列名
+                    columns = result.keys()
                     
-                return results
+                    # 转换结果为字典列表
+                    results = []
+                    for row in result:
+                        results.append(dict(zip(columns, row)))
+                    
+                    # 事务会在with块结束时自动提交
+                    return results
         except Exception as e:
             logger.error(f"Error executing query: {str(e)}")
             logger.error(f"Query: {query}")
             logger.error(traceback.format_exc())
-            return [] 
+            return []

@@ -1,10 +1,8 @@
 import logging
 import os
 import sys
-
-# Add parent directory to path to import config
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import LOGGING_LEVEL, LOGGING_FORMAT
+import yaml
+from logging.config import dictConfig
 
 def get_logger(name):
     """
@@ -16,22 +14,20 @@ def get_logger(name):
     Returns:
         A configured logger
     """
-    logger = logging.getLogger(name)
+    # 确保logs目录存在
+    logs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'logs')
+    os.makedirs(logs_dir, exist_ok=True)
     
-    # Set log level from config
-    log_level = getattr(logging, LOGGING_LEVEL, logging.INFO)
-    logger.setLevel(log_level)
+    # 加载日志配置文件
+    config_path = os.path.join(logs_dir, 'logging_config.yaml')
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            config = yaml.safe_load(f)
+            # 更新日志文件路径为绝对路径
+            config['handlers']['file']['filename'] = os.path.join(logs_dir, 'app.log')
+            dictConfig(config)
+    else:
+        # 如果配置文件不存在，使用默认配置
+        logging.basicConfig(level=logging.INFO)
     
-    # Create handler if logger doesn't have handlers
-    if not logger.handlers:
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(log_level)
-        
-        # Create formatter using format from config
-        formatter = logging.Formatter(LOGGING_FORMAT)
-        handler.setFormatter(formatter)
-        
-        # Add handler to logger
-        logger.addHandler(handler)
-    
-    return logger 
+    return logging.getLogger(name)
