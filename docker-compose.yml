@@ -1,0 +1,126 @@
+# docker network create bibot
+# docker compose -f docker-compose.yml up -d --build
+# docker compose -f docker-compose.yml down
+
+networks:
+  bibot:
+    external: true
+
+services:
+  bibot_opensearch:
+    container_name: bibot_opensearch
+    image: 'docker.io/opensearchproject/opensearch:2.11.1'
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - 'discovery.type=single-node'
+      - 'plugins.security.disabled=true'
+      - 'OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m'
+      - 'OPENSEARCH_INITIAL_ADMIN_PASSWORD=Leonfeng@2025'
+      - 'OPENSEARCH_INITIAL_ADMIN_USERNAME=admin'
+    networks:
+      - bibot
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://bibot_opensearch:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bibot_redis:
+    container_name: bibot_redis
+    image: 'docker.io/redis:7.2.4'
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 12345678
+    networks:
+      - bibot
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bibot_nginx:
+    container_name: bibot_nginx
+    image: docker.io/nginx:1.25.4-alpine
+    ports:
+      - "8080:8080"
+      - "443:443"
+    networks:
+      - bibot
+    volumes:
+      - ./nginx/nginx_local.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bibot_postgres:
+    image: docker.io/postgres:16.2
+    container_name: bibot_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Automation2025
+      POSTGRES_DB: identity_management
+    ports:
+      - "5432:5432"
+    networks:
+      - bibot
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s 
+      timeout: 5s 
+      retries: 3 
+
+  bibot_neo4j:  # 新增服务 
+    container_name: bibot_neo4j 
+    image: docker.io/neo4j:5.18.1
+    ports:
+      - "7474:7474"  # HTTP接口 
+      - "7473:7473"  # HTTPS接口 
+      - "7687:7687"  # Bolt协议端口 
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j2025 
+      - NEO4J_apoc_export_file_enabled=true 
+      - NEO4J_apoc_import_file_enabled=true 
+      - NEO4J_PLUGINS=apoc 
+    networks:
+      - bibot 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://bibot_neo4j:7474"]
+      interval: 30s 
+      timeout: 10s 
+      retries: 3 
+
+  bot_service:
+    container_name: bot_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - bibot
+    depends_on:
+      bibot_opensearch:
+        condition: service_healthy
+      bibot_redis:
+        condition: service_healthy
+      bibot_postgres:
+        condition: service_healthy
+      bibot_neo4j:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://bot_service:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  pg_data:
+    name: pg_data

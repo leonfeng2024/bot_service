@@ -1,0 +1,98 @@
+2025-03-27 15:47:25,920 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:47:31,253 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432
+2025-03-27 15:47:31,256 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:48:53,438 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:48:53,565 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432
+2025-03-27 15:48:53,568 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:50:40,595 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:50:40,805 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432
+2025-03-27 15:50:40,808 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:50:43,996 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:06,457 - __main__ - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-03-27 15:51:06,459 - __main__ - INFO - Login attempt - Username: admin
+2025-03-27 15:51:06,503 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432
+2025-03-27 15:51:06,509 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:06,509 - __main__ - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-03-27 15:51:06,510 - __main__ - INFO - API完成: POST /token, 状态码: 200
+2025-03-27 15:51:25,869 - __main__ - INFO - API调用: POST /chat, 参数: {'username': 'user', 'query': 'please tell me something when i change the table column employees ?', 'uuid': '77006fd4-787b-4b4a-87d7-0868c0db89c2'}
+2025-03-27 15:51:25,872 - __main__ - INFO - Received chat request - User: user, UUID: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:28,876 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:28,885 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:28,906 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.020s]
+2025-03-27 15:51:28,945 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432
+2025-03-27 15:51:28,949 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:28,987 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:29,187 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.199s]
+2025-03-27 15:51:30,177 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:30,560 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.018s]
+2025-03-27 15:51:30,598 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.037s]
+2025-03-27 15:51:31,674 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:1.075s]
+2025-03-27 15:51:31,676 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:31,840 - Retriever.postgresql_retriever - ERROR - PostgreSQL retriever error: `SQLDatabaseToolkit` is not fully defined; you should define `BaseCache`, then call `SQLDatabaseToolkit.model_rebuild()`.
+
+For further information visit https://errors.pydantic.dev/2.10/u/class-not-fully-defined
+2025-03-27 15:51:31,844 - Retriever.postgresql_retriever - ERROR - Detailed error: Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/Retriever/postgresql_retriever.py", line 123, in retrieve
+    self.toolkit = SQLDatabaseToolkit(db=db, llm=self.llm)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/pydantic/main.py", line 214, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/pydantic/_internal/_mock_val_ser.py", line 100, in __getattr__
+    raise PydanticUserError(self._error_message, code=self._code)
+pydantic.errors.PydanticUserError: `SQLDatabaseToolkit` is not fully defined; you should define `BaseCache`, then call `SQLDatabaseToolkit.model_rebuild()`.
+
+For further information visit https://errors.pydantic.dev/2.10/u/class-not-fully-defined
+
+2025-03-27 15:51:31,847 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:32,738 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:32,754 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:32,784 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2:opensearch
+2025-03-27 15:51:32,785 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2:postgresql
+2025-03-27 15:51:32,786 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2:neo4j
+2025-03-27 15:51:33,623 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:33,626 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:33,626 - service.chat_service - INFO - Updated final_check 'yes' for UUID: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:33,626 - __main__ - INFO - Chat request completed successfully - User: user, UUID: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:33,627 - __main__ - INFO - API完成: POST /chat, 状态码: 200
+2025-03-27 15:51:54,261 - __main__ - INFO - API调用: POST /chat, 参数: {'username': 'user', 'query': 'please tell me something when i change the table column employees ?', 'uuid': '77006fd4-787b-4b4a-87d7-0868c0db89c2'}
+2025-03-27 15:51:54,263 - __main__ - INFO - Received chat request - User: user, UUID: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:56,764 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:56,768 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:56,776 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.007s]
+2025-03-27 15:51:56,823 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432
+2025-03-27 15:51:56,826 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:56,862 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-03-27 15:51:56,883 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.021s]
+2025-03-27 15:51:57,713 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:57,962 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.068s]
+2025-03-27 15:51:57,972 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.010s]
+2025-03-27 15:51:58,254 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.280s]
+2025-03-27 15:51:58,265 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:58,461 - Retriever.postgresql_retriever - ERROR - PostgreSQL retriever error: `SQLDatabaseToolkit` is not fully defined; you should define `BaseCache`, then call `SQLDatabaseToolkit.model_rebuild()`.
+
+For further information visit https://errors.pydantic.dev/2.10/u/class-not-fully-defined
+2025-03-27 15:51:58,461 - Retriever.postgresql_retriever - ERROR - Detailed error: Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/Retriever/postgresql_retriever.py", line 123, in retrieve
+    self.toolkit = SQLDatabaseToolkit(db=db, llm=self.llm)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/pydantic/main.py", line 214, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/pydantic/_internal/_mock_val_ser.py", line 100, in __getattr__
+    raise PydanticUserError(self._error_message, code=self._code)
+pydantic.errors.PydanticUserError: `SQLDatabaseToolkit` is not fully defined; you should define `BaseCache`, then call `SQLDatabaseToolkit.model_rebuild()`.
+
+For further information visit https://errors.pydantic.dev/2.10/u/class-not-fully-defined
+
+2025-03-27 15:51:58,464 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:59,357 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:51:59,380 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:51:59,402 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2:opensearch
+2025-03-27 15:51:59,403 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2:postgresql
+2025-03-27 15:51:59,404 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2:neo4j
+2025-03-27 15:52:00,179 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-03-27 15:52:00,182 - tools.redis_tools - INFO - Successfully set key in Redis: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:52:00,182 - service.chat_service - INFO - Updated final_check 'yes' for UUID: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:52:00,182 - __main__ - INFO - Chat request completed successfully - User: user, UUID: 77006fd4-787b-4b4a-87d7-0868c0db89c2
+2025-03-27 15:52:00,183 - __main__ - INFO - API完成: POST /chat, 状态码: 200
