@@ -16,11 +16,11 @@ CLAUDE_MODEL_NAME = "claude-3-sonnet-20240229"
 POSTGRESQL_DBNAME = "local_rag"
 POSTGRESQL_USER = "postgres"
 POSTGRESQL_PASSWORD = "Automation2025"
-POSTGRESQL_HOST = "localhost"
+POSTGRESQL_HOST = "bibot_postgres"
 POSTGRESQL_PORT = "5432"
 
 # Neo4j 配置
-NEO4J_HOST = "localhost"
+NEO4J_HOST = "bibot_neo4j"
 NEO4J_BOLT_PORT = 7687
 NEO4J_HTTP_PORT = 7474
 NEO4J_URI = f"bolt://{NEO4J_HOST}:{NEO4J_BOLT_PORT}"
@@ -28,7 +28,7 @@ NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "neo4j2025"
 
 # Redis Configuration
-REDIS_HOST = "localhost"  # 本地Docker容器，通过localhost访问
+REDIS_HOST = "bibot_redis"  # bibot_redis 是 Redis 容器的名称
 REDIS_PORT = 6379
 REDIS_PASSWORD = "12345678"  # 本地容器需要密码认证
 REDIS_DATABASE = 0
