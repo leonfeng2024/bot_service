@@ -45,7 +45,7 @@ services:
     container_name: bibot_nginx
     image: nginx:alpine
     ports:
-      - "8080:8080"
+      - "8088:8088"
       - "443:443"
     networks:
       - bibot
@@ -101,7 +101,7 @@ services:
     container_name: bot_service
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_local
     ports:
       - "8000:8000"
     networks:
