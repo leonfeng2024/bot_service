@@ -504,3 +504,40 @@ INSERT INTO dataset_view_tables (physical_name, logical_name, nm, nm_jpn) VALUES
 ('dataset_transaction', '取引データセット', 'v_transaction_summary', '取引概要'),
 ('dataset_history', '履歴データセット', 'employees_history', '従業員履歴'),
 ('dataset_history', '履歴データセット', 'v_employee_history_log', '従業員履歴ログ');
+
+
+
+CREATE SEQUENCE user_info_id_seq 
+    INCREMENT 1 
+    START 1 
+    MINVALUE 1 
+    MAXVALUE 9223372036854775807  -- PostgreSQL BIGINT最大值 
+    CACHE 1;
+
+-- Table: public.user_info
+
+-- DROP TABLE IF EXISTS public.user_info;
+
+CREATE TABLE IF NOT EXISTS public.user_info
+(
+    id integer NOT NULL DEFAULT nextval('user_info_id_seq'::regclass),
+    user_id character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    role character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(15) COLLATE pg_catalog."default",
+    isactive character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    comment text COLLATE pg_catalog."default",
+    email character varying(100) COLLATE pg_catalog."default",
+    username character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT user_info_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.user_info
+    OWNER to postgres;
+
+
+INSERT INTO public.user_info(
+	user_id, password, role, phone, isactive, comment, email, username)
+	VALUES ( 'admin', '123', 'admin', '1234567890', 'active', 'admin', 'admin@takeda.com', 'admin');
