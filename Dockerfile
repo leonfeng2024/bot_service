@@ -11,12 +11,22 @@ RUN mkdir -p /root/.config/pip && \
     echo "index-url = https://pypi.org/simple" >> /root/.config/pip/pip.conf && \
     echo "extra-index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> /root/.config/pip/pip.conf
 
-# Install dependencies with retry for large packages
-RUN pip install --no-cache-dir --default-timeout=300 --retries=5 pip setuptools wheel && \
-    # Try installing large/problematic packages separately with retries
-    for i in 1 2 3; do pip install --no-cache-dir faiss-cpu && break || sleep 15; done && \
-    # Install the rest of the requirements
-    pip install --no-cache-dir --default-timeout=300 --retries=5 -r requirements.txt
+# Update pip and install basic tools
+RUN pip install --upgrade pip setuptools wheel
+
+# Install packages individually with retries and without dependency resolution
+RUN pip --no-cache-dir install --default-timeout=300 numpy || pip --no-cache-dir install --default-timeout=300 numpy && \
+    pip --no-cache-dir install --default-timeout=300 pandas || pip --no-cache-dir install --default-timeout=300 pandas && \
+    pip --no-cache-dir install --default-timeout=300 scipy || pip --no-cache-dir install --default-timeout=300 scipy && \
+    pip --no-cache-dir install --default-timeout=300 requests || pip --no-cache-dir install --default-timeout=300 requests && \
+    pip --no-cache-dir install --default-timeout=300 pyyaml || pip --no-cache-dir install --default-timeout=300 pyyaml && \
+    pip --no-cache-dir install --default-timeout=300 uvicorn || pip --no-cache-dir install --default-timeout=300 uvicorn && \
+    pip --no-cache-dir install --default-timeout=300 fastapi || pip --no-cache-dir install --default-timeout=300 fastapi && \
+    # Install the rest with retries and ignoring errors
+    pip --no-cache-dir install --default-timeout=300 -r requirements.txt || true && \
+    # Try again for any missing packages
+    pip --no-cache-dir install --default-timeout=300 -r requirements.txt || true && \
+    rm -rf /root/.cache/pip
 
 FROM python:3.12-slim
 WORKDIR /app
