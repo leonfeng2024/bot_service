@@ -21,11 +21,6 @@ services:
       - 'OPENSEARCH_INITIAL_ADMIN_USERNAME=admin'
     networks:
       - bibot
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://bibot_opensearch:9200"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   bibot_redis:
     container_name: bibot_redis
@@ -90,11 +85,6 @@ services:
       - NEO4J_PLUGINS=apoc 
     networks:
       - bibot 
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://bibot_neo4j:7474"]
-      interval: 30s 
-      timeout: 10s 
-      retries: 3 
 
   bot_service:
     container_name: bot_service
@@ -106,13 +96,9 @@ services:
     networks:
       - bibot
     depends_on:
-      bibot_opensearch:
-        condition: service_healthy
       bibot_redis:
         condition: service_healthy
       bibot_postgres:
-        condition: service_healthy
-      bibot_neo4j:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://bot_service:8000"]

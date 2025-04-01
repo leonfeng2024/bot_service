@@ -22,6 +22,7 @@ RUN pip --no-cache-dir install --default-timeout=300 numpy || pip --no-cache-dir
     pip --no-cache-dir install --default-timeout=300 pyyaml || pip --no-cache-dir install --default-timeout=300 pyyaml && \
     pip --no-cache-dir install --default-timeout=300 uvicorn || pip --no-cache-dir install --default-timeout=300 uvicorn && \
     pip --no-cache-dir install --default-timeout=300 fastapi || pip --no-cache-dir install --default-timeout=300 fastapi && \
+    pip --no-cache-dir install --default-timeout=300 anthropic || pip --no-cache-dir install --default-timeout=300 anthropic && \
     # Install the rest with retries and ignoring errors
     pip --no-cache-dir install --default-timeout=300 -r requirements.txt || true && \
     # Try again for any missing packages
