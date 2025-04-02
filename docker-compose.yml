@@ -38,7 +38,7 @@ services:
 
   bibot_nginx:
     container_name: bibot_nginx
-    image: docker.io/nginx:1.25.4-alpine
+    image: nginx:alpine
     ports:
       - "8088:8088"
     networks:
