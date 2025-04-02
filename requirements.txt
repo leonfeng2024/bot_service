@@ -1,29 +1,42 @@
+# FastAPI and related packages 
 fastapi>=0.104.0 
 uvicorn>=0.23.2 
+ 
+# OpenAI and related packages 
 anthropic>=0.18.0 
 openai>=1.12.0 
---index-url https://pypi.tuna.tsinghua.edu.cn/simple  
---trusted-host pypi.tuna.tsinghua.edu.cn  
+ 
+# PyPI Mirror settings 
+--index-url https://pypi.tuna.tsinghua.edu.cn/simple   
+--trusted-host pypi.tuna.tsinghua.edu.cn   
+--extra-index-url https://download.pytorch.org/whl/cpu  
+ 
+# Machine learning and AI-related packages 
 transformers>=4.38.0 
 torch==2.2.0 
---extra-index-url https://download.pytorch.org/whl/cpu  
+ 
+# Environment variables and utilities 
 python-dotenv>=1.0.0 
-langchain==0.0.348  # 降级到更稳定的版本 
-langchain-core==0.0.31  # 匹配的core版本 
-langchain-openai==0.0.8  # 匹配的openai集成版本 
-langchain-huggingface==0.0.5  # 匹配的huggingface集成版本 
+ 
+# Langchain and related packages (aligned versions)
+langchain>=0.3.21,<1.0.0  # 符合 langchain-community 的要求 
+langchain-core>=0.3.41,<1.0.0 
+langchain-openai==0.2.0 
+langchain-huggingface==0.1.2 
+langchain-community==0.3.20 
+langchain-text-splitters==0.3.7 
+ 
+# Other libraries 
 requests==2.32.3 
 RAGatouille==0.0.9 
 beautifulsoup4==4.12.3 
-langchain-community==0.0.21  # 匹配的社区版本 
-tiktoken==0.5.2  # 更稳定的版本 
+tiktoken==0.9.0 
 numpy==1.26.4 
-langchain-text-splitters==0.0.1  # 匹配的text splitters版本 
-pydantic==1.10.13  # 降级到更兼容的版本 
+pydantic>=2.7.4,<3.0.0 
 azure-core==1.32.0 
-chromadb==0.4.24  # 更兼容的版本 
+chromadb==0.6.3 
 psycopg2-binary==2.9.10 
-neo4j>=5.14.0 
+neo4j==5.14.0 
 opensearch-py==2.8.0 
 python-multipart>=0.0.6 
 pandas>=2.0.0 
