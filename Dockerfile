@@ -9,8 +9,7 @@ RUN mkdir -p /root/.config/pip && \
     echo "timeout = 300" >> /root/.config/pip/pip.conf && \
     echo "retries = 5" >> /root/.config/pip/pip.conf && \
     echo "index-url = https://pypi.org/simple" >> /root/.config/pip/pip.conf && \
-    echo "extra-index-url = https://pypi.tuna.tsinghua.edu.cn/simple" >> /root/.config/pip/pip.conf && \
-    echo "extra-index-url = https://download.pytorch.org/whl/cpu" >> /root/.config/pip/pip.conf
+    echo "extra-index-url = https://pypi.tuna.tsinghua.edu.cn/simple https://download.pytorch.org/whl/cpu" >> /root/.config/pip/pip.conf
 
 # Update pip and install dependencies from requirements.txt
 RUN pip install --upgrade pip setuptools wheel && \
