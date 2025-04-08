@@ -5,6 +5,7 @@ from service.export_excel_service import ExportExcelService
 from service.export_ppt_service import ExportPPTService
 from tools.redis_tools import RedisTools
 from tools.postgresql_tools import PostgreSQLTools
+from tools.token_counter import TokenCounter
 import json
 import sys
 import os
@@ -30,6 +31,8 @@ class RAGService:
         self.excel_service = ExportExcelService()
         self.ppt_service = ExportPPTService()
         self.postgresql_tools = PostgreSQLTools()
+        # 初始化token计数器
+        self.token_counter = TokenCounter()
         pass
     
     async def _multi_source_retrieve(self, query: str, uuid: Optional[str]) -> List[str]:
@@ -74,9 +77,6 @@ class RAGService:
                     doc_counter += 1
             except Exception as e:
                 import traceback
-                print(f"Error retrieving from {source}: {str(e)}")
-                print(f"Detailed error: {traceback.format_exc()}")
-                
                 error_content = f"从 {source} 检索数据时出错: {str(e)}"
                 results.append(f"Doc#{doc_counter}: {error_content}")
                 
@@ -189,7 +189,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             }
             
         except Exception as e:
-            print(f"Error processing with LLM: {str(e)}")
+            pass
             return {
                 "final_check": "unknown",
                 "answer": f"Error processing your query: {str(e)}"
@@ -198,8 +198,6 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
     async def _generate_excel_and_ppt(self, query: str, uuid: str) -> str:
         try:
             os.makedirs(self.ppt_service.output_dir, exist_ok=True)
-            print(f"Output directory ensured: {self.ppt_service.output_dir}")
-            
             def process_redis_data(data: Any) -> List[Dict[str, Any]]:
                 if not data:
                     return []
@@ -216,8 +214,6 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 return [item for item in data if isinstance(item, dict)]
             
             neo4j_data = process_redis_data(self.redis_tools.get(f"{uuid}:neo4j"))
-            print(f"Neo4j data from Redis: {neo4j_data}")
-            
             data_to_use: List[Dict[str, Any]] = []
             data_source = None
             
@@ -226,22 +222,17 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 data_source = "neo4j"
             else:
                 opensearch_data = process_redis_data(self.redis_tools.get(f"{uuid}:opensearch"))
-                print(f"OpenSearch data: {opensearch_data}")
                 if opensearch_data:
                     data_to_use = opensearch_data
                     data_source = "opensearch"
                 else:
                     postgresql_data = process_redis_data(self.redis_tools.get(f"{uuid}:postgresql"))
-                    print(f"PostgreSQL data: {postgresql_data}")
                     if postgresql_data:
                         data_to_use = postgresql_data
                         data_source = "postgresql"
             
             if data_to_use:
-                print(f"Using data from {data_source} with {len(data_to_use)} items")
-                
                 if len(data_to_use) == 0 or not isinstance(data_to_use[0], dict):
-                    print("Creating fallback data since data format is invalid")
                     data_to_use = [
                         {"content": "Generated dummy data 1", "score": 0.95, "source": data_source},
                         {"content": "Generated dummy data 2", "score": 0.90, "source": data_source}
@@ -249,49 +240,38 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 
                 filename_prefix = f"{uuid}_{data_source}"
                 excel_path = os.path.join(self.ppt_service.output_dir, f"{filename_prefix}.xlsx")
-                print(f"Will create Excel file at: {excel_path}")
                 
                 excel_file = await self.excel_service.export_to_excel(data_to_use, filename_prefix)
-                print(f"Excel file created: {excel_file}")
                 
                 if not os.path.exists(excel_file):
-                    print(f"WARNING: Excel file was not created at {excel_file}")
                     import pandas as pd
                     df = pd.DataFrame(data_to_use)
                     excel_path = os.path.join(self.ppt_service.output_dir, f"{filename_prefix}.xlsx")
                     df.to_excel(excel_path, index=False)
                     excel_file = excel_path
-                    print(f"Directly created Excel file: {excel_file}")
                 
                 ppt_file = await self.ppt_service.export_to_ppt(excel_file, filename_prefix)
-                print(f"PPT file created: {ppt_file}")
                 
                 if not os.path.exists(ppt_file):
-                    print(f"WARNING: PPT file was not created at {ppt_file}")
                     return "Error: PPT file was not created"
                 
                 if data_source != "opensearch":
                     opensearch_data = self.redis_tools.get(f"{uuid}:opensearch")
                     if opensearch_data and isinstance(opensearch_data, list) and len(opensearch_data) > 0:
-                        print(f"Adding OpenSearch data to PPT ({len(opensearch_data)} items)")
                         try:
                             ppt_file = await self.ppt_service.append_to_ppt(opensearch_data, ppt_file)
-                            print(f"PPT file updated with OpenSearch data: {ppt_file}")
-                        except Exception as append_error:
-                            print(f"Error appending OpenSearch data: {str(append_error)}")
+                        except Exception:
+                            pass
                 
                 full_path = os.path.abspath(ppt_file)
-                print(f"Final PPT file path: {full_path}")
                 
                 return os.path.basename(ppt_file)
             else:
-                print("No data available to generate documents - all data sources returned empty results")
                 return "No data available to generate documents"
                 
         except Exception as e:
             import traceback
-            print(f"Error generating Excel and PPT: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
+            pass
             return f"Error generating document: {str(e)}"
 
     async def _store_in_redis(self, results: List[Dict[str, Any]], uuid: str):
@@ -315,14 +295,43 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             print(f"Error in _store_in_redis: {str(e)}")
             print(f"Detailed error: {traceback.format_exc()}")
 
-    async def retrieve(self, query: str, uuid: str):
-        print(f"Starting RAG process for query: {query}, uuid: {uuid}")
-        
-        results = await self._multi_source_retrieve(query, uuid)
-        print("Retrieved documents:")
-        for doc in results[:3]:
-            print(f"  {doc[:100]}..." if len(doc) > 100 else f"  {doc}")
-        print(f"  ... (total {len(results)} documents)")
+    async def retrieve(self, query: str, uuid: Optional[str] = None) -> Dict[str, Any]:
+        """检索相关文档并生成回答"""
+        try:
+            print(f"Starting RAG process for query: {query}, uuid: {uuid}")
+            
+            # 获取文档
+            docs = await self._multi_source_retrieve(query, uuid)
+            print("Retrieved documents:")
+            for doc in docs[:3]:
+                print(f"  {doc[:100]}..." if len(doc) > 100 else f"  {doc}")
+            print(f"  ... (total {len(docs)} documents)")
+            
+            # 使用LLM处理文档
+            llm_result = await self._process_with_llm(docs, query)
+            
+            # 获取token使用情况
+            token_usage = self.llm_service.get_formatted_token_usage()
+            
+            # 构建响应
+            response = {
+                "status": "success",
+                "docs": docs,
+                "answer": llm_result.get("answer", ""),
+                "final_check": llm_result.get("final_check", "unknown"),
+                "token_usage": token_usage
+            }
+            
+            return response
+        except Exception as e:
+            import traceback
+            error_msg = f"Error in RAG service: {str(e)}\n{traceback.format_exc()}"
+            print(error_msg)
+            return {
+                "status": "error",
+                "error": error_msg,
+                "token_usage": self.llm_service.get_formatted_token_usage()
+            }
         
         if not results:
             return {"status": "error", "message": "No results found"}

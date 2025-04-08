@@ -11,6 +11,7 @@ CONTAINER_ID=$(docker ps -q -f name=bot_service)
 
 # 定义要同步的目录和文件
 DIRS=(
+    "Retriever"
     "service"
     "utils"
     "tools"
@@ -45,7 +46,7 @@ done
 
 # 重启 uvicorn 服务
 echo "Restarting uvicorn service..."
-docker exec "$CONTAINER_ID" pkill -f uvicorn
+docker exec "$CONTAINER_ID" sh -c "kill $(ps aux | grep 'uvicorn' | grep -v grep | awk '{print $2}')"
 docker exec "$CONTAINER_ID" uvicorn server:app --host 0.0.0.0 --port 8000 &
 
-echo "Update completed successfully!" 
+echo "Update completed successfully!"

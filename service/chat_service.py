@@ -111,12 +111,9 @@ Response:
             
             # 解析JSON响应
             intent_result = json.loads(response)
-            print(f"Intent analysis result: {intent_result}")
             return intent_result
             
         except Exception as e:
-            print(f"Error analyzing user intent: {str(e)}")
-            print(f"Raw response: {response}")
             return {"category": "unknown", "message": "NG"}
     
     async def handle_chat(self, username: str, query: str, uuid: str = None) -> dict:
@@ -124,9 +121,7 @@ Response:
             # 分析用户意图
             try:
                 intent_result = await self._analyze_user_intent(query)
-                print(intent_result)
             except Exception as e:
-                print(f"Error analyzing user intent: {str(e)}")
                 intent_result = {"category": "unknown", "message": "NG"}
                 
             # 根据意图返回相应消息
@@ -146,139 +141,61 @@ Response:
                 if retrieval_response.get("status") != "success":
                     raise Exception(f"Error retrieving documents: {retrieval_response.get('error', 'Unknown error')}")
                 
-                # 由于修改了rag_service的返回格式，这里需要直接使用RAG的_multi_source_retrieve方法获取文档列表
-                docs = await self.rag_service._multi_source_retrieve(query, uuid)
+                # 获取token使用情况
+                token_usage = retrieval_response.get("token_usage", "")
                 
-                # 构建prompt
-                prompt = f"""Answer user questions **strictly** based on the following knowledge base content. Only use provided documents to respond.
- ### Processing Rules  
-1. Return * * in string format only**
-2. First, determine whether the table fields included in the user's question match the fields in the knowledge base:
--If the table fields are inconsistent, return 'no' as the category value
--If the table field exists and the table field names are consistent, return 'yes' as the category value
-3. * * Prohibited * *:
--Other interpretations beyond String response
--Use external knowledge beyond the provided files 
- 
-### Response Format  
-"no" or "yes"
-
-### Example1
-Example User Question:
-"I want to change column [avg_file_size] of table documents_info "
-Example Knowledge Base:
-Doc#1: 表 GetEmployeeDetails 通过字段 employee_id 关联到表 employee_details 的字段 employee_id
-Doc#2: 
-    SELECT ok_key INTO old_salary FROM ABCD_no WHERE oder_key = id;
-    UPDATE ABCD_no SET ok_key = ok_key WHERE oder_key = id;
-    INSERT INTO ABCD_noi (
-        ok_id,
-        key_id,
-        ok_key,
-        oder_key 
-    ) VALUES (
-        ok_id,
-        key_id,
-        ok_key,
-        oder_key 
-    );
-END;
-
-Example Response:
-"no"
-Followed Reason 1: the columns in knowledge base are not as same as [avg_file_size].
-Followed Reason 2: column [avg_file_size] is not exist in knowledge base.
-
-### Example2
-Example User Question:
-"我想要修改employees字段"
-Example Knowledge Base:
-Doc#1: 表 p_UpdateEmployeeSalary 通过字段 changed_by 关联到表 employees 的字段 employee_id
-Example Response:
-"yes"
-Followed Reason: column [employees] is exist in knowledge base.
-
-### Knowledge Base Content  
-{chr(10).join([f'- {doc}' for doc in docs])}
- 
-### User Question  
-{query}  
-"""
-                
-                # 调用LLM生成回答
-                llm = self.llm_service.get_llm()
-                response = await llm.generate(prompt)
-                print(response)
-                
-                # 清理响应，提取"yes"或"no"
-                cleaned_response = response.strip().lower()
-                # 移除引号和其他格式符号
-                cleaned_response = cleaned_response.replace('"', '').replace("'", '')
-                cleaned_response = cleaned_response.split('\n')[0]  # 只保留第一行
-                
-                # 判断是yes还是no
-                if "yes" in cleaned_response:
-                    final_check = "yes"
-                elif "no" in cleaned_response:
-                    final_check = "no"
+                # 构建响应消息
+                final_check = retrieval_response.get("final_check", "unknown")
+                if final_check == "yes":
+                    message = f"yes\n{token_usage}"
+                    return {
+                        "status": "success",
+                        "username": self.bot_name,
+                        "message": message
+                    }
                 else:
-                    final_check = "unknown"
-                # TODO
-                # 如果提供了UUID，将final_check保存到Redis
-                if uuid:
-                    try:
-                        # 获取现有的缓存数据
-                        cached_data = self.redis_tools.get(uuid) or {}
-                        
-                        # 添加final_check结果
-                        cached_data["final_check"] = final_check
-                        
-                        # 更新Redis缓存
-                        self.redis_tools.set(uuid, cached_data)
-                        print(f"Updated final_check '{final_check}' for UUID: {uuid}")
-                    except Exception as cache_error:
-                        print(f"Error updating final_check in Redis: {str(cache_error)}")
+                    message = f"no\n{token_usage}"
+                    return {
+                        "status": "success",
+                        "username": self.bot_name,
+                        "message": message
+                    }
                 
-                # 返回结果
-                return {
-                    "status": "success",
-                    "username": self.bot_name,
-                    "message": response
-                }
-                
-            except Exception as retrieval_error:
+            except Exception as e:
                 error_traceback = traceback.format_exc()
-                print(f"Error during retrieval: {str(retrieval_error)}")
-                print(f"Detailed error traceback: \n{error_traceback}")
-                
                 # 为开发环境返回详细错误信息
-                detailed_error_message = f"Error type: {type(retrieval_error).__name__}\nError message: {str(retrieval_error)}\n\nTraceback:\n{error_traceback}"
-                
-                # 检查是否为认证错误
-                if "Authentication required" in str(retrieval_error) or "Unauthorized" in str(retrieval_error):
-                    error_details = "認証エラーが発生しました。データベース接続の認証情報を確認してください。"
-                    error_details += f"\n\nTechnical details: {str(retrieval_error)}"
-                else:
-                    error_details = "申し訳ありませんが、データ取得中にエラーが発生しました。もう一度お試しください。"
+                detailed_error_message = f"Error type: {type(e).__name__}\nError message: {str(e)}\n\nTraceback:\n{error_traceback}"
                 
                 return {
-                    "status": "error",
+                    "status": "failed",
                     "username": self.bot_name,
-                    "message": error_details,
-                    "debug_info": detailed_error_message  # 添加调试信息字段
+                    "message": f"Error: {str(e)}",
+                    "debug_info": detailed_error_message
                 }
                 
         except Exception as e:
             error_traceback = traceback.format_exc()
-            print(f"Unhandled error: {str(e)}")
-            print(f"Detailed error traceback: \n{error_traceback}")
-            
             # 为开发环境返回详细错误信息
             detailed_error_message = f"Error type: {type(e).__name__}\nError message: {str(e)}\n\nTraceback:\n{error_traceback}"
             
             return {
                 "status": "failed",
                 "username": self.bot_name,
-                "message": "システムエラーが発生しました。サポートにお問い合わせください。",
-                "debug_info": detailed_error_message  # 添加调试信息字段
+                "message": f"Error: {str(e)}",
+                "debug_info": detailed_error_message
+            }
+    
+    async def logout(self, username: str, uuid: str) -> dict:
+        try:
+            # 删除Redis中的会话数据
+            self.redis_tools.delete(uuid)
+            
+            return {
+                "status": "success",
+                "message": "Logged out successfully"
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Error during logout: {str(e)}"
             }

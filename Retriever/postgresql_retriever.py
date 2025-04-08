@@ -9,6 +9,7 @@ import json
 import os
 from tools.redis_tools import RedisTools
 from tools.postgresql_tools import PostgreSQLTools
+from tools.token_counter import TokenCounter
 
 
 class PostgreSQLRetriever(BaseRetriever):
@@ -42,6 +43,17 @@ class PostgreSQLRetriever(BaseRetriever):
             包含检索结果的列表
         """
         try:
+            # 记录开始时的token使用情况
+            start_usage = self.llm_service.get_token_usage()
+            
+            # 构建并打印prompt
+            prompt = f"PostgreSQL检索查询:\n{query}"
+            print(prompt)
+            
+            # 确保token计数器已初始化
+            if not hasattr(self, 'token_counter'):
+                self.token_counter = TokenCounter()
+            
             # 获取搜索对象（视图和表名列表）
             search_object = self.pg_tools.get_search_objects()
             
@@ -143,6 +155,36 @@ class PostgreSQLRetriever(BaseRetriever):
                     self.redis_tools.set(key, postgres_results)
                 except Exception as redis_error:
                     print(f"Error storing PostgreSQL results in Redis: {str(redis_error)}")
+            
+            # 记录结束时的token使用情况
+            end_usage = self.llm_service.get_token_usage()
+            
+            # 计算本次调用消耗的token
+            input_tokens = end_usage["input_tokens"] - start_usage["input_tokens"]
+            output_tokens = end_usage["output_tokens"] - start_usage["output_tokens"]
+            
+            # 打印token使用情况
+            print(f"[PostgreSQL Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
+            
+            # 记录token使用情况到计数器
+            self.token_counter.total_input_tokens += input_tokens
+            self.token_counter.total_output_tokens += output_tokens
+            
+            # 记录本次调用
+            call_record = {
+                "source": "postgresql-retriever",
+                "model": "azure-gpt4",
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens
+            }
+            self.token_counter.calls_history.append(call_record)
+            
+            # 添加token使用信息到结果中
+            for result in postgres_results:
+                result["token_usage"] = {
+                    "input_tokens": input_tokens,
+                    "output_tokens": output_tokens
+                }
             
             # 返回结果
             return postgres_results

@@ -3,6 +3,7 @@ from Retriever.base_retriever import BaseRetriever
 from service.neo4j_service import Neo4jService
 from service.llm_service import LLMService
 from tools.redis_tools import RedisTools
+from tools.token_counter import TokenCounter
 import json
 
 class Neo4jRetriever(BaseRetriever):
@@ -13,6 +14,8 @@ class Neo4jRetriever(BaseRetriever):
         self.neo4j_service = Neo4jService()
         self.llm_service = LLMService()
         self.redis_tools = RedisTools()
+        # 初始化token计数器
+        self.token_counter = TokenCounter()
     
     async def _query_relationships(self, term: str) -> List[Dict[str, Any]]:
         """
@@ -152,6 +155,13 @@ class Neo4jRetriever(BaseRetriever):
             包含相关关系信息的列表
         """
         try:
+            # 记录开始时的token使用情况
+            start_usage = self.llm_service.get_token_usage()
+            
+            # 构建并打印prompt
+            prompt = f"Neo4j检索查询:\n{query}"
+            print(prompt)
+            
             # 调用LLM分析查询，识别查询意图
             # print(f"Analyzing query: {query}")
             intent_analysis = await self.llm_service.identify_column(query)
@@ -170,10 +180,26 @@ class Neo4jRetriever(BaseRetriever):
                 # print(f"No intent identified, using original query: {query}")
                 all_results.extend(await self._query_relationships(query))
             
+            # 记录结束时的token使用情况
+            end_usage = self.llm_service.get_token_usage()
+            
+            # 计算本次调用消耗的token
+            input_tokens = end_usage["input_tokens"] - start_usage["input_tokens"]
+            output_tokens = end_usage["output_tokens"] - start_usage["output_tokens"]
+            
+            # 打印token使用情况
+            print(f"[Neo4j Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
+            
             # 如果没有结果，返回未找到的消息
             if not all_results:
-                result_message = [{"content": "", "score": 0, "source": "neo4j"}]
+                result_message = [{"content": "", "score": 0, "source": "neo4j", "token_usage": {"input_tokens": input_tokens, "output_tokens": output_tokens}}]
             else:
+                # 添加token使用信息到结果中
+                for result in all_results:
+                    result["token_usage"] = {
+                        "input_tokens": input_tokens,
+                        "output_tokens": output_tokens
+                    }
                 result_message = all_results
             
             # 如果提供了UUID，将结果缓存到Redis
@@ -219,4 +245,4 @@ class Neo4jRetriever(BaseRetriever):
                 self.neo4j_service.close()
             except Exception as close_error:
                 # print(f"Error closing Neo4j connection: {str(close_error)}")
-                pass 
+                pass

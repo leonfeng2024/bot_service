@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 import json
 from anthropic import Anthropic
 from openai import AzureOpenAI
@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 from langchain_openai import AzureChatOpenAI
 import config
+from tools.token_counter import TokenCounter
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = os.path.join(ROOT_DIR, '.env')
@@ -23,6 +24,7 @@ class Claude(BaseLLM):
     def __init__(self, api_key: str):
         self.client = Anthropic(api_key=api_key)
         self.model = config.CLAUDE_MODEL_NAME
+        self.token_counter = TokenCounter()
 
     async def generate(self, prompt: str) -> str:
         try:
@@ -32,11 +34,13 @@ class Claude(BaseLLM):
                 max_tokens=1000
             )
             res = str(message.content)
+            
+            # 计算并记录token使用情况
+            self.token_counter.log_tokens(self.model, prompt, res, source="claude")
+            
             return res if res is not None else "Empty Response Error"
         except Exception as e:
             import traceback
-            print(f"Claude error: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
             return "LLM Error"
 
 class AzureGPT4(BaseLLM):
@@ -47,10 +51,10 @@ class AzureGPT4(BaseLLM):
             api_version=api_version
         )
         self.model = config.AZURE_OPENAI_MODEL_NAME
+        self.token_counter = TokenCounter()
 
     async def generate(self, prompt: str) -> str:
         try:
-            print(prompt)
             completion = self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
@@ -58,11 +62,13 @@ class AzureGPT4(BaseLLM):
             )
             # 确保返回内容不为空，如果为空则返回错误信息
             content = completion.choices[0].message.content
+            
+            # 计算并记录token使用情况
+            self.token_counter.log_tokens(self.model, prompt, content, source="azure-gpt4")
+            
             return content if content is not None else "Empty Response Error"
         except Exception as e:
             import traceback
-            print(f"Azure OpenAI error: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
             return "LLM Error"
 
 
@@ -71,6 +77,7 @@ class LLMService:
     def __init__(self):        
         self.llm_instance: Optional[BaseLLM] = None
         self.llm_agent_instance = None
+        self.token_counter = TokenCounter()
 
     def init_llm(self, llm_type: str, **kwargs) -> BaseLLM:
         if llm_type == "claude":
@@ -102,17 +109,64 @@ class LLMService:
             if not api_key:
                 raise ValueError("AZURE_OPENAI_API_KEY not configured")
                 
-            # 直接使用字符串而不是 SecretStr，避免可能的序列化问题
+            # 创建BaseCallbackHandler实例
+            from langchain_core.callbacks import BaseCallbackHandler
+            class TokenCallbackHandler(BaseCallbackHandler):
+                def __init__(self, callback_func):
+                    super().__init__()
+                    self.callback_func = callback_func
+                
+                def on_llm_end(self, response, **kwargs):
+                    """正确处理langchain的LLM结束回调"""
+                    if hasattr(response, 'llm_output') and 'token_usage' in response.llm_output:
+                        self.callback_func(token_usage=response.llm_output['token_usage'])
+                    else:
+                        self.callback_func(**kwargs)
+            
+            # 初始化AzureChatOpenAI
             self.llm_agent_instance = AzureChatOpenAI(
                 api_key=SecretStr(api_key),
                 azure_endpoint=config.AZURE_OPENAI_API_BASE,
                 azure_deployment=config.AZURE_OPENAI_MODEL_NAME,
-                api_version=config.AZURE_OPENAI_API_VERSION
+                api_version=config.AZURE_OPENAI_API_VERSION,
+                callbacks=[TokenCallbackHandler(self._token_callback)]
             )
         else:
             raise ValueError(f"Unsupported LLM type: {llm_type}")
 
         return self.llm_agent_instance
+    
+    def _token_callback(self, **kwargs):
+        """回调函数，用于记录langchain调用的token使用情况"""
+        # 检查是否包含token使用信息
+        if "token_usage" in kwargs:
+            usage = kwargs["token_usage"]
+            input_tokens = usage.get("prompt_tokens", 0)
+            output_tokens = usage.get("completion_tokens", 0)
+            
+            # 记录token使用情况
+            print(f"[Token Usage] langchain - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
+            
+            # 更新总计数
+            self.token_counter.total_input_tokens += input_tokens
+            self.token_counter.total_output_tokens += output_tokens
+            
+            # 记录本次调用
+            call_record = {
+                "source": "langchain",
+                "model": config.AZURE_OPENAI_MODEL_NAME,
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens
+            }
+            self.token_counter.calls_history.append(call_record)
+
+    def get_token_usage(self) -> Dict[str, Any]:
+        """获取token使用情况"""
+        return self.token_counter.get_total_usage()
+    
+    def get_formatted_token_usage(self) -> str:
+        """获取格式化的token使用情况"""
+        return self.token_counter.get_formatted_usage()
 
     async def identify_column(self, query: str) -> Dict[str, str]:
         """
@@ -161,9 +215,6 @@ return {{"item1":"employee_id"}}
             llm = self.get_llm()
             result = await llm.generate(prompt)
             
-            # Debugging: Print raw response
-            print(f"Raw LLM response: {result}")
-            
             # Strip any leading/trailing whitespace and non-JSON content
             result = result.strip()
             
@@ -172,8 +223,6 @@ return {{"item1":"employee_id"}}
                 parsed_result = json.loads(result)
                 return parsed_result
             except json.JSONDecodeError as json_err:
-                print(f"JSON decode error: {str(json_err)}")
-                
                 # If result is not valid JSON, try to extract JSON part
                 import re
                 
@@ -184,7 +233,6 @@ return {{"item1":"employee_id"}}
                 for potential_json in json_matches:
                     try:
                         parsed_result = json.loads(potential_json)
-                        print(f"Successfully extracted JSON: {potential_json}")
                         return parsed_result
                     except json.JSONDecodeError:
                         continue
@@ -202,17 +250,13 @@ return {{"item1":"employee_id"}}
                     # Try parsing again
                     try:
                         parsed_result = json.loads(json_content)
-                        print(f"Manually fixed JSON: {json_content}")
                         return parsed_result
                     except json.JSONDecodeError:
-                        print(f"Failed to fix JSON: {json_content}")
+                        pass
                 
                 # If all attempts failed, return empty result
-                print(f"All JSON parsing attempts failed for: {result}")
                 return {}
                 
         except Exception as e:
             import traceback
-            print(f"Error in identify_column: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
             return {}

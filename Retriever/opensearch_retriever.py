@@ -6,6 +6,7 @@ from Retriever.base_retriever import BaseRetriever
 from service.embedding_service import EmbeddingService
 from service.llm_service import LLMService
 from tools.redis_tools import RedisTools
+from tools.token_counter import TokenCounter
 
 class OpenSearchRetriever(BaseRetriever):
     """OpenSearch检索器，用于从OpenSearch中检索数据"""
@@ -28,6 +29,9 @@ class OpenSearchRetriever(BaseRetriever):
         
         # Initialize Redis tools for caching
         self.redis_tools = RedisTools()
+        
+        # Initialize token counter
+        self.token_counter = TokenCounter()
         
         # Initialize OpenSearch client
         self.client = self._connect_to_opensearch()
@@ -238,98 +242,69 @@ class OpenSearchRetriever(BaseRetriever):
             return [{"content": f"Error searching for '{term}': {str(e)}", "score": 0.89}]
         
     async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
-        """
-        检索与查询相关的结果并缓存到Redis
-        
-        Args:
-            query: 用户的查询字符串
-            uuid: 用户的UUID，用于缓存结果
-            
-        Returns:
-            List[Dict[str, Any]]: 检索结果列表
-        """
+        """从OpenSearch检索相关信息"""
         try:
-            if not self.client:
-                self.client = self._connect_to_opensearch()
-                if not self.client:
-                    # 如果提供了UUID，将空结果存储到Redis
-                    if uuid:
-                        try:
-                            # 获取现有的缓存数据
-                            cached_data = self.redis_tools.get(uuid) or {}
-                            # 设置空字符串
-                            cached_data["opensearch"] = ""
-                            # 更新Redis缓存
-                            self.redis_tools.set(uuid, cached_data)
-                        except Exception:
-                            pass
-                    return [{"content": "Failed to connect to OpenSearch", "score": 0}]
+            # 记录开始时的token使用情况
+            start_usage = self.llm_service.get_token_usage()
             
-            # Check if index exists
-            if not self.client.indices.exists(index=self.procedure_index):
-                # 如果提供了UUID，将空结果存储到Redis
-                if uuid:
-                    try:
-                        # 获取现有的缓存数据
-                        cached_data = self.redis_tools.get(uuid) or {}
-                        # 设置空字符串
-                        cached_data["opensearch"] = ""
-                        # 更新Redis缓存
-                        self.redis_tools.set(uuid, cached_data)
-                    except Exception:
-                        pass
-                return [{"content": f"Index {self.procedure_index} does not exist. Please run the procedure_embedding_test.py script first.", "score": 0}]
+            # 获取查询的嵌入向量
+            query_embedding = await self.embedding_service.get_embedding(query)
             
-            # 调用LLM分析查询，识别查询的字段名
-            # print(f"Analyzing query: {query}")
-            columns = await self.llm_service.identify_column(query)
-            # print(f"Identified columns: {json.dumps(columns, ensure_ascii=False)}")
+            # 使用嵌入向量进行搜索
+            results = await self._search_term(query)
             
-            # 如果没有识别出字段名，直接使用原始查询
-            if not columns:
-                # print(f"No columns identified, using original query: {query}")
-                all_results = await self._search_term(query)
-            else:
-                # 对每个识别出的字段进行搜索
-                all_results = []
-                for key, term in columns.items():
-                    # print(f"Searching for term: {term}")
-                    term_results = await self._search_term(term)
-                    all_results.extend(term_results)
-                    
-            # 如果没有结果，返回未找到的消息
-            if not all_results:
-                # 尝试使用原始查询作为后备方案
-                # print(f"No results for identified columns, trying with original query: {query}")
-                backup_results = await self._search_term(query)
-                if backup_results:
-                    all_results = backup_results
-                else:
-                    all_results = [{"content": f"No procedures found for query: '{query}'", "score": 0}]
+            # 记录结束时的token使用情况
+            end_usage = self.llm_service.get_token_usage()
             
-            # 如果提供了UUID，将结果缓存到Redis
+            # 计算本次调用消耗的token
+            input_tokens = end_usage["input_tokens"] - start_usage["input_tokens"]
+            output_tokens = end_usage["output_tokens"] - start_usage["output_tokens"]
+            
+            # 打印token使用情况
+            print(f"[OpenSearch Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
+            
+            # 添加token使用信息到结果中
+            for result in results:
+                result["token_usage"] = {
+                    "input_tokens": input_tokens,
+                    "output_tokens": output_tokens
+                }
+            
+            # 如果提供了uuid，将结果存储到Redis
             if uuid:
                 try:
-                    # 获取现有的缓存数据
-                    cached_data = self.redis_tools.get(uuid) or {}
-                    
-                    # 合并结果到缓存数据 - 如果结果为空，使用空字符串
-                    if all_results and len(all_results) > 0:
-                        opensearch_content = "\n".join([item.get("content", "") for item in all_results if item.get("content")])
-                    else:
-                        opensearch_content = ""
-                    
-                    # 更新Redis缓存
-                    cached_data["opensearch"] = opensearch_content
-                    self.redis_tools.set(uuid, cached_data)
-                    # print(f"Cached OpenSearch results for UUID: {uuid}")
-                except Exception as cache_error:
-                    # print(f"Error caching OpenSearch results: {str(cache_error)}")
-                    pass
+                    key = f"{uuid}:opensearch"
+                    self.redis_tools.set(key, results)
+                except Exception as redis_error:
+                    print(f"Error storing OpenSearch results in Redis: {str(redis_error)}")
             
-            # print("opensearchRetriever Result:")
-            # print(all_results)
-            return all_results
+            return results
+            
+        except Exception as e:
+            import traceback
+            print(f"OpenSearch retriever error: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            
+            # 构建错误响应
+            error_result = [{
+                "content": f"Error querying OpenSearch: {str(e)}", 
+                "score": 0.0, 
+                "source": "opensearch",
+                "token_usage": {
+                    "input_tokens": 0,
+                    "output_tokens": 0
+                }
+            }]
+            
+            # 如果提供了uuid，尝试将错误结果存储到Redis
+            if uuid:
+                try:
+                    key = f"{uuid}:opensearch"
+                    self.redis_tools.set(key, [])
+                except Exception:
+                    pass
+                    
+            return error_result
             
         except Exception as e:
             # print(f"OpenSearch retrieval error: {str(e)}")
@@ -347,4 +322,4 @@ class OpenSearchRetriever(BaseRetriever):
                 except Exception:
                     pass
                 
-            return [{"content": f"Error querying OpenSearch: {str(e)}", "score": 0}] 
+            return [{"content": f"Error querying OpenSearch: {str(e)}", "score": 0}]
