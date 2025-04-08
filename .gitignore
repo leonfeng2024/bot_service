@@ -67,7 +67,6 @@ debug.log
 docs/_build/
 
 # Project specific
-config.py
 app.log
 server.pid
 cache/
