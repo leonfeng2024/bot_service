@@ -141,20 +141,17 @@ Response:
                 if retrieval_response.get("status") != "success":
                     raise Exception(f"Error retrieving documents: {retrieval_response.get('error', 'Unknown error')}")
                 
-                # 获取token使用情况
-                token_usage = retrieval_response.get("token_usage", "")
-                
                 # 构建响应消息
                 final_check = retrieval_response.get("final_check", "unknown")
                 if final_check == "yes":
-                    message = f"yes\n{token_usage}"
+                    message = f"処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。LINK"
                     return {
                         "status": "success",
                         "username": self.bot_name,
                         "message": message
                     }
                 else:
-                    message = f"no\n{token_usage}"
+                    message = f"no"
                     return {
                         "status": "success",
                         "username": self.bot_name,
