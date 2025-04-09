@@ -120,7 +120,8 @@ Response:
         try:
             # 分析用户意图
             try:
-                intent_result = await self._analyze_user_intent(query)
+                # intent_result = await self._analyze_user_intent(query)
+                intent_result = {"category":"schema_change", "message":"OK"}
             except Exception as e:
                 intent_result = {"category": "unknown", "message": "NG"}
                 
@@ -151,7 +152,7 @@ Response:
                         "message": message
                     }
                 else:
-                    message = f"no"
+                    message = f"処理が完了いたしました。関連のデータが見つかりませんでした"
                     return {
                         "status": "success",
                         "username": self.bot_name,
