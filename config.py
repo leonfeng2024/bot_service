@@ -5,7 +5,7 @@
 # Azure OpenAI 配置
 AZURE_OPENAI_MODEL_NAME = "gpt-4o"
 AZURE_OPENAI_API_BASE = "https://openai-southus-trng-app-chatbot01.openai.azure.com/"
-AZURE_OPENAI_API_KEY = ""
+AZURE_OPENAI_API_KEY = "46dcbd5837264b38988991c0a786ca6a"
 AZURE_OPENAI_API_VERSION = "2024-02-15-preview"
 
 # Claude 配置

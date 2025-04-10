@@ -18,6 +18,7 @@ env.bak/
 ### Python编译与缓存 ### 
 # 编译后的文件 
 __pycache__/
+*.pyc
 *.py[cod]
 *.pyd 
 *.pyo 
