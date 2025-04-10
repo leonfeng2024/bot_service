@@ -1,5 +1,6 @@
 import os
 from sqlalchemy import create_engine, inspect
+from sqlalchemy.pool import QueuePool
 from langchain_community.utilities import SQLDatabase
 from typing import Dict, Any, List, Optional
 import traceback
@@ -36,18 +37,26 @@ class PostgreSQLTools:
         
     def _connect(self) -> None:
         """
-        建立到PostgreSQL数据库的连接
+        建立到PostgreSQL数据库的连接，使用连接池
         """
         try:
             if not self.db_engine:
-                self.db_engine = create_engine(self.db_uri)
+                # 创建带有连接池的引擎
+                self.db_engine = create_engine(
+                    self.db_uri,
+                    poolclass=QueuePool,
+                    pool_size=5,  # 连接池大小
+                    max_overflow=10,  # 最大溢出连接数
+                    pool_timeout=30,  # 连接超时时间（秒）
+                    pool_recycle=1800  # 连接回收时间（秒）
+                )
             
             # 使用上下文管理器模式测试连接
             if self.db_engine is not None:
                 # 使用with语句确保连接正确关闭
                 with self.db_engine.connect() as connection:
                     # 连接成功建立
-                    logger.info(f"Successfully connected to PostgreSQL database at {self.pg_host}:{self.pg_port}")
+                    logger.info(f"Successfully connected to PostgreSQL database at {self.pg_host}:{self.pg_port} with connection pool")
             else:
                 logger.warning("Database engine is None")
         except Exception as e:
@@ -118,28 +127,60 @@ class PostgreSQLTools:
             logger.error(traceback.format_exc())
             return ["table_fields"]  # 默认返回table_fields表
     
-    def validate_user_credentials(self, username: str, password: str) -> Optional[Dict[str, Any]]:
+    def execute_auth_query(self, query: str, parameters: Optional[Dict[str, Any]] = None) -> Optional[Any]:
+        logger.debug(f"Executing authentication query: {query}")
+        logger.debug(f"Query parameters: {parameters}")
+        """
+        专门用于用户认证的SQL查询执行函数
+        
+        Args:
+            query: SQL查询语句
+            parameters: 查询参数
+            
+        Returns:
+            查询结果的第一行，如果没有结果或发生错误则返回None
+        """
         try:
             from sqlalchemy import text
-            engine = self.get_db_engine()
-            if not engine:
-                logger.error("Database engine not available for authentication")
+            # 确保引擎连接
+            if self.db_engine is None:
+                self._connect()
+                
+            if not self.db_engine:
+                logger.error("Database engine not available for authentication query")
                 return None
-
-            query = text("""
+            
+            # 使用上下文管理器模式处理连接
+            with self.db_engine.connect() as connection:
+                # 将查询转换为SQLAlchemy text对象
+                sql = text(query)
+                # 执行查询
+                result = connection.execute(sql, parameters if parameters else {})
+                # 获取第一行结果
+                return result.fetchone()
+                
+        except Exception as e:
+            logger.error(f"Error executing authentication query: {str(e)}")
+            logger.error(f"Query: {query}")
+            logger.error(traceback.format_exc())
+            return None
+    def validate_user_credentials(self, username: str, password: str) -> Optional[Dict[str, Any]]:
+        try:
+            # 构建查询
+            query = """
                 SELECT user_id, role, isactive AS is_active 
                 FROM user_info 
-                WHERE user_id = :username 
+                WHERE username = :username 
                 AND password = :password
-            """)
-
-            with engine.connect() as connection:
-                result = connection.execute(query, {"username": username, "password": password})
-                user_data = result.fetchone()
-
-                if user_data and user_data.is_active:
-                    return {"user_id": user_data.user_id, "role": user_data.role}
-                return None
+            """
+            
+            # 使用专用的认证查询函数执行
+            user_data = self.execute_auth_query(query, {"username": username, "password": password})
+            
+            # 验证结果
+            if user_data and user_data.is_active:
+                return {"user_id": user_data.user_id, "role": user_data.role}
+            return None
 
         except Exception as e:
             logger.error(f"Authentication error for {username}: {str(e)}")
@@ -155,30 +196,47 @@ class PostgreSQLTools:
             
             # 使用上下文管理器模式处理连接和事务
             with engine.connect() as connection:
+                # 创建事务
                 with connection.begin() as transaction:
-                    # 将SQL字符串转换为可执行对象，并处理参数占位符
-                    if parameters:
-                        # 将%s占位符替换为:param形式
-                        param_count = query.count('%s')
-                        named_params = {f'param{i}': val for i, val in enumerate(parameters.values(), 1)}
-                        # 逐个替换%s为命名参数
-                        query = query.replace('%s', ':param{}').format(*range(1, param_count+1))
-                        sql = text(query)
-                        result = connection.execute(sql, named_params)
-                    else:
-                        sql = text(query)
-                        result = connection.execute(sql)
-                    
-                    # 获取列名
-                    columns = result.keys()
-                    
-                    # 转换结果为字典列表
-                    results = []
-                    for row in result:
-                        results.append(dict(zip(columns, row)))
-                    
-                    # 事务会在with块结束时自动提交
-                    return results
+                    try:
+                        # 检查是否是SELECT语句
+                        is_select = query.strip().upper().startswith("SELECT")
+                        
+                        # 将%(name)s格式的参数转换为:name格式
+                        if parameters:
+                            # 替换参数格式
+                            modified_query = query
+                            for key in parameters.keys():
+                                modified_query = modified_query.replace(f'%({key})s', f':{key}')
+                            sql = text(modified_query)
+                            result = connection.execute(sql, parameters)
+                        else:
+                            # 将查询转换为SQLAlchemy text对象
+                            sql = text(query)
+                            result = connection.execute(sql)
+                        
+                        if is_select:
+                            # 获取列名
+                            columns = result.keys()
+                            
+                            # 转换结果为字典列表
+                            results = []
+                            for row in result:
+                                results.append(dict(zip(columns, row)))
+                            
+                            # 事务会在with块结束时自动提交
+                            return results
+                        else:
+                            # 对于非SELECT语句（如INSERT/UPDATE/DELETE），确保事务提交
+                            # 事务会在with块结束时自动提交
+                            return []
+                    except Exception as inner_e:
+                        # 如果执行过程中出现错误，记录并重新抛出
+                        logger.error(f"Error during query execution: {str(inner_e)}")
+                        logger.error(f"Query: {query}")
+                        logger.error(traceback.format_exc())
+                        # 事务会在异常时自动回滚
+                        raise
         except Exception as e:
             logger.error(f"Error executing query: {str(e)}")
             logger.error(f"Query: {query}")

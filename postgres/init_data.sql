@@ -541,3 +541,16 @@ ALTER TABLE IF EXISTS public.user_info
 INSERT INTO public.user_info(
 	user_id, password, role, phone, isactive, comment, email, username)
 	VALUES ( 'admin', '123', 'admin', '1234567890', 'active', 'admin', 'admin@takeda.com', 'admin');
+
+CREATE TABLE chat_history (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    uuid VARCHAR(36) NOT NULL,
+    sender VARCHAR(20) NOT NULL,
+    message TEXT NOT NULL,
+    createDate TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
+);
+
+-- 用户 Alice 的聊天记录 
+INSERT INTO chat_history (username, uuid, sender, message, createDate) 
+VALUES ('Alice', '550e8400-e29b-41d4-a716-446655440000', 'user', '你好，我想查询我的订单状态', '2023-05-10 09:15:22+08');

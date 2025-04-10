@@ -21,13 +21,19 @@ services:
       - 'OPENSEARCH_INITIAL_ADMIN_USERNAME=admin'
     networks:
       - bibot
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   bibot_redis:
     container_name: bibot_redis
     image: 'redis:latest'
     ports:
       - "6379:6379"
-    command: redis-server --requirepass 12345678
+    command: redis-server --requirepass 12345678 --maxmemory 256mb --maxmemory-policy allkeys-lru
     networks:
       - bibot
     healthcheck:
@@ -35,6 +41,12 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   bibot_nginx:
     container_name: bibot_nginx
@@ -66,11 +78,16 @@ services:
       - bibot
     volumes:
       - ./postgres:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s 
       timeout: 5s 
-      retries: 3 
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G 
 
   bibot_neo4j:  # 新增服务 
     container_name: bibot_neo4j 
@@ -84,8 +101,17 @@ services:
       - NEO4J_apoc_export_file_enabled=true 
       - NEO4J_apoc_import_file_enabled=true 
       - NEO4J_PLUGINS=apoc 
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=1G
+      - NEO4J_dbms_memory_pagecache_size=512m
     networks:
-      - bibot 
+      - bibot
+    volumes:
+      - neo4j_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G 
 
   bot_service:
     container_name: bot_service
@@ -106,7 +132,39 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
 volumes:
   pg_data:
     name: pg_data
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/postgres
+    name: postgres_data
+  opensearch_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/opensearch
+    name: opensearch_data
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/redis
+    name: redis_data
+  neo4j_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/neo4j
+    name: neo4j_data

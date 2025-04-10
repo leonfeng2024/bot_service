@@ -328,13 +328,13 @@ async def upload_multiple_files(files: List[UploadFile] = File(...)):
 # 修改为FastAPI风格的路由，而不是Flask风格
 @app.post('/token')
 async def login(request: Request):
+    logger.info("Login attempt")
     try:
         data = await request.json()
         username = data.get('username')
         password = data.get('password')
-        
         logger.info(f"Login attempt - Username: {username}")
-        
+        print(f"Login attempt - Username: {username}")
         # 创建PostgreSQL工具并验证用户
         pg_tools = PostgreSQLTools()
         result = pg_tools.validate_user_credentials(username, password)

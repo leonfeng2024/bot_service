@@ -16,6 +16,7 @@ CLAUDE_MODEL_NAME = "claude-3-sonnet-20240229"
 POSTGRESQL_DBNAME = "local_rag"
 POSTGRESQL_USER = "postgres"
 POSTGRESQL_PASSWORD = "Automation2025"
+# 修改PostgreSQL主机配置，使其在本地环境中可用
 POSTGRESQL_HOST = "bibot_postgres"
 POSTGRESQL_PORT = "5432"
 

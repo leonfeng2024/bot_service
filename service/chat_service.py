@@ -2,8 +2,10 @@ from utils.singleton import singleton
 from service.llm_service import LLMService
 from service.rag_service import RAGService
 from tools.redis_tools import RedisTools
+from tools.postgresql_tools import PostgreSQLTools
 import json
 import traceback
+import datetime
 
 @singleton
 class ChatService:
@@ -13,6 +15,7 @@ class ChatService:
         self.llm_service.init_llm("azure-gpt4")
         self.rag_service = RAGService()
         self.redis_tools = RedisTools()
+        self.postgresql_tools = PostgreSQLTools()
     
     async def _analyze_user_intent(self, query: str) -> dict:
         """
@@ -146,6 +149,14 @@ Response:
                 final_check = retrieval_response.get("final_check", "unknown")
                 if final_check == "yes":
                     message = f"処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。LINK"
+                    
+                    # 保存用户查询到chat_history表
+                    self._save_chat_history(username, uuid, query, "user")
+                    
+                    # 从Redis获取缓存内容并保存为bot回复
+                    bot_message = self._get_redis_cache_content(uuid)
+                    self._save_chat_history(username, uuid, bot_message, "bot")
+                    
                     return {
                         "status": "success",
                         "username": self.bot_name,
@@ -153,6 +164,13 @@ Response:
                     }
                 else:
                     message = f"処理が完了いたしました。関連のデータが見つかりませんでした"
+                    
+                    # 保存用户查询到chat_history表
+                    self._save_chat_history(username, uuid, query, "user")
+                    
+                    # 保存bot回复
+                    self._save_chat_history(username, uuid, message, "bot")
+                    
                     return {
                         "status": "success",
                         "username": self.bot_name,
@@ -182,6 +200,44 @@ Response:
                 "message": f"Error: {str(e)}",
                 "debug_info": detailed_error_message
             }
+    
+    def _get_redis_cache_content(self, uuid: str) -> str:
+        """从Redis获取缓存的postgresql、neo4j和opensearch内容"""
+        try:
+            content = ""
+            data_sources = ['postgresql', 'neo4j', 'opensearch']
+            
+            for source in data_sources:
+                source_data = self.redis_tools.get(f"{uuid}:{source}")
+                if source_data:
+                    content_json = json.dumps(source_data) if isinstance(source_data, (list, dict)) else str(source_data)
+                    content += f"{source} data: {content_json}\n\n"
+            
+            return content if content else "No cache data found"
+        except Exception as e:
+            return f"Error retrieving cache data: {str(e)}"
+    
+    def _save_chat_history(self, username: str, uuid: str, message: str, sender: str) -> None:
+        """保存聊天历史到chat_history表"""
+        try:
+            query = """
+            INSERT INTO chat_history 
+            (username, uuid, sender, message, createDate) 
+            VALUES (%(username)s, %(uuid)s, %(sender)s, %(message)s, %(create_date)s)
+            """
+            
+            parameters = {
+                "username": username,
+                "uuid": uuid,
+                "sender": sender,
+                "message": message,
+                "create_date": datetime.datetime.now()
+            }
+            
+            self.postgresql_tools.execute_query(query, parameters)
+        except Exception as e:
+            print(f"Error saving chat history: {str(e)}")
+            print(traceback.format_exc())
     
     async def logout(self, username: str, uuid: str) -> dict:
         try:
