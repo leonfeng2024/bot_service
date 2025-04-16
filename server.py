@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from service.chat_service import ChatService
 from service.llm_service import LLMService
 from service.embedding_service import EmbeddingService
@@ -55,6 +56,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount the output directory as a static files directory
+output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
+os.makedirs(output_dir, exist_ok=True)
+app.mount("/output", StaticFiles(directory=output_dir), name="output")
 
 chat_service = ChatService()
 llm_service = LLMService()

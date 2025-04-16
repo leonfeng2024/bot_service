@@ -12,7 +12,8 @@ class ChatService:
     def __init__(self):
         self.bot_name = "bot"
         self.llm_service = LLMService()
-        self.llm_service.init_llm("azure-gpt4")
+        # 不指定特定LLM类型，让系统自动使用全局配置
+        self.llm_service.init_llm()
         self.rag_service = RAGService()
         self.redis_tools = RedisTools()
         self.postgresql_tools = PostgreSQLTools()
@@ -140,6 +141,7 @@ Response:
             try:
                 # 从RAG服务获取检索结果
                 retrieval_response = await self.rag_service.retrieve(query, uuid)
+                print(f"RAG Service response: {retrieval_response}")
                 
                 # 检查返回状态
                 if retrieval_response.get("status") != "success":
@@ -148,22 +150,51 @@ Response:
                 # 构建响应消息
                 final_check = retrieval_response.get("final_check", "unknown")
                 if final_check == "yes":
-                    message = f"処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。LINK"
+                    # 使用RAG服务返回的markdown格式链接
+                    if "answer" in retrieval_response and retrieval_response["answer"]:
+                        message = retrieval_response["answer"]
+                    else:
+                        message = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。"
+                        
+                        # 如果有文档信息，添加文档链接
+                        if "document" in retrieval_response and retrieval_response["document"]:
+                            doc_info = retrieval_response["document"]
+                            if "link" in doc_info:
+                                message += f"\n['結果ファイル']({doc_info['link']})"
                     
                     # 保存用户查询到chat_history表
                     self._save_chat_history(username, uuid, query, "user")
                     
                     # 从Redis获取缓存内容并保存为bot回复
                     bot_message = self._get_redis_cache_content(uuid)
+                    
+                    # 将生成的文档信息添加到bot回复
+                    if "document" in retrieval_response and retrieval_response["document"]:
+                        doc_info = retrieval_response["document"]
+                        bot_message += f"\n\nDocument generated: {doc_info.get('file_name', '')}"
+                        bot_message += f"\nPath: {doc_info.get('file_path', '')}"
+                    
                     self._save_chat_history(username, uuid, bot_message, "bot")
                     
-                    return {
+                    # 构建响应
+                    response = {
                         "status": "success",
                         "username": self.bot_name,
                         "message": message
                     }
+                    
+                    # 如果有文档信息，添加到响应中
+                    if "document" in retrieval_response and retrieval_response["document"]:
+                        response["document"] = retrieval_response["document"]
+                    
+                    return response
                 else:
-                    message = f"処理が完了いたしました。関連のデータが見つかりませんでした"
+                    message = "処理が完了いたしました。関連のデータが見つかりませんでした"
+                    
+                    # 如果有错误信息，添加到消息中
+                    if "error" in retrieval_response:
+                        error_message = retrieval_response["error"]
+                        print(f"Error in document generation: {error_message}")
                     
                     # 保存用户查询到chat_history表
                     self._save_chat_history(username, uuid, query, "user")

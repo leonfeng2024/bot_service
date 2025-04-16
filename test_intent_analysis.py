@@ -11,7 +11,7 @@ async def test_intent_analysis():
     llm_service = LLMService()
     
     # Initialize with Azure OpenAI
-    llm_service.init_llm("azure-gpt4")
+    llm_service.init_llm("openai-gpt41")
     
     # Test cases in different languages
     test_queries = [

@@ -9,7 +9,7 @@ networks:
 services:
   bibot_opensearch:
     container_name: bibot_opensearch
-    image: 'docker.io/opensearchproject/opensearch:2.11.1'
+    image: 'opensearchproject/opensearch:2.11.1'
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -30,7 +30,7 @@ services:
 
   bibot_redis:
     container_name: bibot_redis
-    image: 'docker.io/redis:7.2.4'
+    image: 'redis:7.2.4'
     ports:
       - "6379:6379"
     command: redis-server --requirepass 12345678 --maxmemory 256mb --maxmemory-policy allkeys-lru
@@ -68,7 +68,7 @@ services:
       retries: 3
 
   bibot_postgres:
-    image: docker.io/postgres:16.2
+    image: postgres:16.2
     container_name: bibot_postgres
     restart: always
     environment:
@@ -94,7 +94,7 @@ services:
 
   bibot_neo4j:  # 新增服务 
     container_name: bibot_neo4j 
-    image: docker.io/neo4j:5.18.1
+    image: neo4j:latest
     ports:
       - "7474:7474"  # HTTP接口 
       - "7473:7473"  # HTTPS接口 
@@ -138,7 +138,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 5G
 
 volumes:
   pg_data:

@@ -135,7 +135,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 5G
 
 volumes:
   pg_data:

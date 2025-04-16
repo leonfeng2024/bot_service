@@ -26,7 +26,8 @@ from tools.postgresql_tools import PostgreSQLTools
 class RAGService:
     def __init__(self):
         self.llm_service = LLMService()
-        self.llm_service.init_llm("azure-gpt4")
+        # 不指定特定LLM类型，让系统自动使用全局配置
+        self.llm_service.init_llm()
         self.redis_tools = RedisTools()
         self.excel_service = ExportExcelService()
         self.ppt_service = ExportPPTService()
@@ -312,8 +313,11 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             
             # 获取token使用情况
             token_usage = self.llm_service.get_formatted_token_usage()
+
+            # 初始化文档路径
+            doc_path = None
             
-            # 构建响应
+            # 构建基本响应
             response = {
                 "status": "success",
                 "docs": docs,
@@ -322,7 +326,45 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 "token_usage": token_usage
             }
             
+            # 如果final_check是yes，则生成Excel和PPT文档
+            if llm_result.get("final_check") == "yes" and uuid:
+                print(f"final_check is 'yes', generating Excel and PPT files for uuid: {uuid}")
+                doc_path = await self._generate_document(uuid)
+                print(f"Document generation result: {doc_path}")
+                
+                # 如果生成了文档，添加文档信息到响应中
+                if doc_path and doc_path not in ["No data available to generate documents", "Error: PPT file was not created"] and not doc_path.startswith("Error"):
+                    print(f"Adding document path to response: {doc_path}")
+                    output_dir = os.path.abspath(self.ppt_service.output_dir)
+                    full_file_path = os.path.join(output_dir, doc_path)
+                    
+                    if os.path.exists(full_file_path):
+                        # 生成markdown格式的链接
+                        file_name = os.path.basename(full_file_path)
+                        file_url = f"http://localhost:8088/output/{file_name}"
+                        markdown_response = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。\n"
+                        markdown_response += f"[{doc_path}]({file_url})"
+                        
+                        response["document"] = {
+                            "file_name": doc_path,
+                            "file_path": full_file_path,
+                            "link": file_url,
+                            "markdown": markdown_response
+                        }
+                        
+                        # 将答案替换为markdown格式的回答
+                        response["answer"] = markdown_response
+                        
+                        print(f"Document added to response: {response['document']}")
+                    else:
+                        print(f"Warning: Generated file does not exist at path: {full_file_path}")
+                        response["error"] = f"Failed to generate document: file not found at {full_file_path}"
+                elif doc_path:
+                    response["error"] = doc_path
+                    print(f"Error in document generation: {doc_path}")
+            
             return response
+            
         except Exception as e:
             import traceback
             error_msg = f"Error in RAG service: {str(e)}\n{traceback.format_exc()}"
@@ -332,41 +374,165 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 "error": error_msg,
                 "token_usage": self.llm_service.get_formatted_token_usage()
             }
-        
-        if not results:
-            return {"status": "error", "message": "No results found"}
-        
-        llm_response = await self._process_with_llm(results, query)
-        doc_path = None
-        if llm_response['final_check'] == "yes":
-            print(f"final_check is 'yes', generating Excel and PPT files for uuid: {uuid}")
-            doc_path = await self._generate_excel_and_ppt(query, uuid)
-            print(f"Document generation result: {doc_path}")
 
-        response = {
-            "status": "success",
-            "message": llm_response
-        }
-
-        if doc_path and doc_path not in ["No data available to generate documents", "Error: PPT file was not created"] and not doc_path.startswith("Error"):
-            print(f"Adding document path to response: {doc_path}")
-            output_dir = os.path.abspath(self.ppt_service.output_dir)
-            full_file_path = os.path.join(output_dir, doc_path)
+    async def _generate_document(self, uuid: str) -> str:
+        """生成文档包括Excel和PPT，并返回文件名"""
+        try:
+            # 检查数据是否存在
+            neo4j_data = self.redis_tools.get(f"{uuid}:neo4j")
+            opensearch_data = self.redis_tools.get(f"{uuid}:opensearch")
+            postgresql_data = self.redis_tools.get(f"{uuid}:postgresql")
             
-            if os.path.exists(full_file_path):
-                response["document"] = {
-                    "file_name": doc_path,
-                    "file_path": full_file_path
-                }
-                print(f"Document added to response: {response['document']}")
+            if not any([neo4j_data, opensearch_data, postgresql_data]):
+                return "No data available to generate documents"
+            
+            # 生成基本文件名前缀
+            filename_prefix = f"{uuid}_document"
+            ppt_path = None
+            
+            # 1. 处理Neo4j数据 - 首先生成Excel然后创建基本PPT，并添加图表可视化
+            if neo4j_data:
+                try:
+                    # 确保neo4j_data是列表格式
+                    if isinstance(neo4j_data, str):
+                        try:
+                            neo4j_data = json.loads(neo4j_data)
+                        except:
+                            neo4j_data = [{"content": neo4j_data, "source": "neo4j"}]
+                    
+                    if not isinstance(neo4j_data, list):
+                        neo4j_data = [neo4j_data]
+                    
+                    # 确保数据是一个字典列表
+                    processed_data = []
+                    for item in neo4j_data:
+                        if isinstance(item, dict):
+                            processed_data.append(item)
+                        else:
+                            processed_data.append({"content": str(item), "score": 0.9, "source": "neo4j"})
+                    
+                    # 1.1 生成Excel文件
+                    excel_path = await self.excel_service.export_to_excel(processed_data, filename_prefix)
+                    
+                    # 1.2 使用create_ppt函数创建包含关系图的PPT
+                    ppt_path = os.path.join(self.ppt_service.output_dir, f"{filename_prefix}.pptx")
+                    success = await self.ppt_service.create_ppt(excel_file=excel_path, output_file=ppt_path)
+                    
+                    # 检查PPT创建是否成功
+                    if not success or not os.path.exists(ppt_path):
+                        print(f"Warning: Failed to create diagram PPT, falling back to regular PPT creation")
+                        ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
+                except Exception as e:
+                    print(f"Error creating Neo4j diagram: {str(e)}")
+                    import traceback
+                    print(traceback.format_exc())
+                    # 如果创建Neo4j图表失败，使用常规方法
+                    try:
+                        # 仍尝试创建基本PPT
+                        if 'excel_path' in locals() and os.path.exists(excel_path):
+                            ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
+                        else:
+                            # 如果没有创建Excel，重新尝试
+                            excel_path = await self.excel_service.export_to_excel(processed_data, filename_prefix)
+                            ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
+                    except Exception as e2:
+                        print(f"Error falling back to regular PPT creation: {str(e2)}")
+            
+            # 如果没有成功创建PPT，尝试使用其他数据源
+            if not ppt_path or not os.path.exists(ppt_path):
+                print("No PPT created from Neo4j data, trying other data sources")
+                # 尝试使用OpenSearch或PostgreSQL数据创建基本PPT
+                for data_source, data in [("opensearch", opensearch_data), ("postgresql", postgresql_data)]:
+                    if data:
+                        try:
+                            processed_data = data
+                            if isinstance(data, str):
+                                try:
+                                    processed_data = json.loads(data)
+                                except:
+                                    processed_data = [{"content": data, "source": data_source}]
+                            
+                            if not isinstance(processed_data, list):
+                                processed_data = [processed_data]
+                            
+                            # 将数据格式化为字典列表
+                            formatted_data = []
+                            for item in processed_data:
+                                if isinstance(item, dict):
+                                    formatted_data.append(item)
+                                else:
+                                    formatted_data.append({"content": str(item), "source": data_source})
+                            
+                            # 生成Excel
+                            excel_path = await self.excel_service.export_to_excel(formatted_data, filename_prefix)
+                            
+                            # 使用常规方法创建PPT
+                            ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
+                            
+                            if ppt_path and os.path.exists(ppt_path):
+                                print(f"Successfully created PPT from {data_source} data")
+                                break
+                        except Exception as e:
+                            print(f"Error creating PPT from {data_source} data: {str(e)}")
+                            continue
+            
+            # 2. 如果已创建PPT，尝试追加OpenSearch数据（每项一页）
+            if ppt_path and os.path.exists(ppt_path) and opensearch_data:
+                try:
+                    if isinstance(opensearch_data, str):
+                        try:
+                            opensearch_data = json.loads(opensearch_data)
+                        except:
+                            opensearch_data = [{"content": opensearch_data, "source": "opensearch"}]
+                    
+                    if not isinstance(opensearch_data, list):
+                        opensearch_data = [opensearch_data]
+                    
+                    # 确保每项放在单独页面
+                    for item in opensearch_data:
+                        if isinstance(item, dict):
+                            await self.ppt_service.append_to_ppt([item], ppt_path)
+                        else:
+                            await self.ppt_service.append_to_ppt([{"content": str(item), "source": "opensearch"}], ppt_path)
+                except Exception as e:
+                    print(f"Error appending OpenSearch data to PPT: {str(e)}")
+            
+            # 3. 如果已创建PPT，尝试追加PostgreSQL数据（所有项在一页）
+            if ppt_path and os.path.exists(ppt_path) and postgresql_data:
+                try:
+                    if isinstance(postgresql_data, str):
+                        try:
+                            postgresql_data = json.loads(postgresql_data)
+                        except:
+                            postgresql_data = [{"content": postgresql_data, "source": "postgresql"}]
+                    
+                    if not isinstance(postgresql_data, list):
+                        postgresql_data = [postgresql_data]
+                    
+                    # 收集所有PostgreSQL内容，放在一页
+                    postgresql_content = []
+                    for item in postgresql_data:
+                        if isinstance(item, dict):
+                            postgresql_content.append(item)
+                        else:
+                            postgresql_content.append({"content": str(item), "source": "postgresql"})
+                    
+                    # 将所有PostgreSQL数据添加到一页
+                    await self.ppt_service.append_to_ppt(postgresql_content, ppt_path)
+                except Exception as e:
+                    print(f"Error appending PostgreSQL data to PPT: {str(e)}")
+            
+            # 返回结果
+            if ppt_path and os.path.exists(ppt_path):
+                return os.path.basename(ppt_path)
             else:
-                print(f"Warning: Generated file does not exist at path: {full_file_path}")
-                response["error"] = f"Failed to generate document: file not found at {full_file_path}"
-        elif doc_path:
-            response["error"] = doc_path
-            print(f"Error in document generation: {doc_path}")
-            
-        return response
+                return "Error: PPT file was not created"
+                
+        except Exception as e:
+            import traceback
+            error_msg = f"Error generating document: {str(e)}\n{traceback.format_exc()}"
+            print(error_msg)
+            return f"Error: {str(e)}"
 
     async def _save_chat_history(self, query: str, uuid: str, user_id: str):
         print(f"_save_chat_history : {uuid}, {user_id}, {query}")
