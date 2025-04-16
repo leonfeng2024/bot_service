@@ -686,61 +686,87 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
                     print(f"Error creating additional diagram: {str(diagram_error)}")
                     print(f"Continuing with presentation without additional diagram")
             
-            # Add a new slide for the additional data
-            slide_layout = prs.slide_layouts[5]  # Title and Content layout
-            slide = prs.slides.add_slide(slide_layout)
-            title = slide.shapes.title
-            title.text = "Additional Search Results"
-            
-            # Add content
-            # Create a text box for each search result
-            top = Inches(1.5)
-            left = Inches(0.5)
-            width = Inches(9.0)
-            
-            # 限制添加的数据数量，防止PPT过大
-            max_items = min(len(data), 20)
-            
-            for i, item in enumerate(data[:max_items]):
+            # Add slides for each data item with proper content handling
+            for i, item in enumerate(data):
                 content = item.get('content', '')
-                if content:
-                    height = Inches(1.0)
+                source = item.get('source', 'search_result')
+                title_text = item.get('title', f"{source.capitalize()} Results")
+                
+                if not content:
+                    continue
+                
+                # Handle large content by breaking it into chunks
+                # Calculate roughly how many characters can fit on a slide
+                # This is a rough estimate and may need adjustment
+                chars_per_slide = 1000
+                
+                # Break content into chunks if it's a long string
+                if isinstance(content, str) and len(content) > chars_per_slide:
+                    # Split content into multiple slides
+                    chunks = [content[i:i+chars_per_slide] for i in range(0, len(content), chars_per_slide)]
+                    
+                    # Add a slide for each chunk
+                    for chunk_index, chunk in enumerate(chunks):
+                        slide_layout = prs.slide_layouts[5]  # Title and Content layout
+                        slide = prs.slides.add_slide(slide_layout)
+                        
+                        # Set slide title
+                        title = slide.shapes.title
+                        if len(chunks) > 1:
+                            title.text = f"{title_text} (Part {chunk_index+1}/{len(chunks)})"
+                        else:
+                            title.text = title_text
+                        
+                        # Add content
+                        left = Inches(0.5)
+                        top = Inches(1.5)
+                        width = Inches(9.0)
+                        height = Inches(5.0)
+                        
+                        txBox = slide.shapes.add_textbox(left, top, width, height)
+                        tf = txBox.text_frame
+                        tf.word_wrap = True
+                        
+                        # Add chunk text
+                        p = tf.add_paragraph()
+                        p.text = chunk
+                        p.font.size = Pt(12)
+                else:
+                    # For shorter content, just add one slide
+                    slide_layout = prs.slide_layouts[5]  # Title and Content layout
+                    slide = prs.slides.add_slide(slide_layout)
+                    
+                    # Set slide title
+                    title = slide.shapes.title
+                    title.text = title_text
+                    
+                    # Add content
+                    left = Inches(0.5)
+                    top = Inches(1.5)
+                    width = Inches(9.0)
+                    height = Inches(5.0)
                     
                     txBox = slide.shapes.add_textbox(left, top, width, height)
                     tf = txBox.text_frame
+                    tf.word_wrap = True
                     
-                    # 限制文本长度，防止文本框过大
-                    if len(content) > 500:
-                        content = content[:497] + "..."
-                        
-                    tf.text = content
+                    # Add content text
+                    p = tf.add_paragraph()
                     
-                    # Move down for the next item
-                    top += Inches(1.2)
+                    # Convert non-string content to string
+                    if not isinstance(content, str):
+                        import json
+                        try:
+                            content = json.dumps(content, ensure_ascii=False, indent=2)
+                        except:
+                            content = str(content)
                     
-                    # If we're running out of space, add a new slide
-                    if top > Inches(6.5):
-                        slide = prs.slides.add_slide(slide_layout)
-                        title = slide.shapes.title
-                        title.text = "Additional Search Results (Continued)"
-                        top = Inches(1.5)
-            
-            # 如果数据项超过了限制，添加说明
-            if len(data) > max_items:
-                if top > Inches(6):  # 如果当前页面空间不够，创建新页面
-                    slide = prs.slides.add_slide(slide_layout)
-                    title = slide.shapes.title
-                    title.text = "Data Limitation Note"
-                    top = Inches(1.5)
-                
-                txBox = slide.shapes.add_textbox(left, top, width, Inches(1.0))
-                tf = txBox.text_frame
-                p = tf.add_paragraph()
-                p.text = f"注意：数据共有{len(data)}项，由于篇幅限制，只显示了前{max_items}项。"
-                p.font.size = Pt(14)
+                    p.text = content
+                    p.font.size = Pt(12)
             
             # Save the updated presentation
             prs.save(ppt_file)
+            print(f"Successfully saved updated PPT to {ppt_file}")
             
             return ppt_file
         except Exception as e:

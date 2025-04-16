@@ -47,3 +47,6 @@ SQLAlchemy==2.0.35
 pymongo 
 PyJWT>=2.8.0 
 redis>=5.0.0 
+matplotlib 
+networkx 
+pillow

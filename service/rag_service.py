@@ -378,20 +378,32 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
     async def _generate_document(self, uuid: str) -> str:
         """生成文档包括Excel和PPT，并返回文件名"""
         try:
-            # 检查数据是否存在
+            print(f"Generating document for uuid: {uuid}")
+            # 生成唯一文件名前缀
+            filename_prefix = f"doc_{uuid}"
+            
+            # 从Redis获取存储的检索结果
             neo4j_data = self.redis_tools.get(f"{uuid}:neo4j")
             opensearch_data = self.redis_tools.get(f"{uuid}:opensearch")
             postgresql_data = self.redis_tools.get(f"{uuid}:postgresql")
             
-            if not any([neo4j_data, opensearch_data, postgresql_data]):
-                return "No data available to generate documents"
+            # 记录获取到的数据
+            print(f"Retrieved data from Redis - Neo4j: {type(neo4j_data)}, OpenSearch: {type(opensearch_data)}, PostgreSQL: {type(postgresql_data)}")
+            if postgresql_data:
+                if isinstance(postgresql_data, list) and len(postgresql_data) > 0:
+                    print(f"PostgreSQL data sample: {postgresql_data[0]}")
+                elif isinstance(postgresql_data, str):
+                    print(f"PostgreSQL data (string): {postgresql_data[:100]}...")
             
-            # 生成基本文件名前缀
-            filename_prefix = f"{uuid}_document"
-            ppt_path = None
+            # 创建文档保存目录
+            os.makedirs(self.ppt_service.output_dir, exist_ok=True)
             
-            # 1. 处理Neo4j数据 - 首先生成Excel然后创建基本PPT，并添加图表可视化
+            # 路径变量初始化
+            ppt_path = ""
+            
+            # 1. 首先尝试用Neo4j数据创建关系图PPT
             if neo4j_data:
+                print("Creating diagram PPT using Neo4j data")
                 try:
                     # 确保neo4j_data是列表格式
                     if isinstance(neo4j_data, str):
@@ -423,20 +435,8 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         print(f"Warning: Failed to create diagram PPT, falling back to regular PPT creation")
                         ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
                 except Exception as e:
-                    print(f"Error creating Neo4j diagram: {str(e)}")
-                    import traceback
-                    print(traceback.format_exc())
-                    # 如果创建Neo4j图表失败，使用常规方法
-                    try:
-                        # 仍尝试创建基本PPT
-                        if 'excel_path' in locals() and os.path.exists(excel_path):
-                            ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
-                        else:
-                            # 如果没有创建Excel，重新尝试
-                            excel_path = await self.excel_service.export_to_excel(processed_data, filename_prefix)
-                            ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
-                    except Exception as e2:
-                        print(f"Error falling back to regular PPT creation: {str(e2)}")
+                    print(f"Error creating Neo4j diagram PPT: {str(e)}")
+                    neo4j_data = None  # Reset to None so we can try other data sources
             
             # 如果没有成功创建PPT，尝试使用其他数据源
             if not ppt_path or not os.path.exists(ppt_path):
@@ -496,10 +496,12 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                             await self.ppt_service.append_to_ppt([{"content": str(item), "source": "opensearch"}], ppt_path)
                 except Exception as e:
                     print(f"Error appending OpenSearch data to PPT: {str(e)}")
+                    print(traceback.format_exc())
             
-            # 3. 如果已创建PPT，尝试追加PostgreSQL数据（所有项在一页）
+            # 3. 如果已创建PPT，尝试追加PostgreSQL数据（确保内容不被截断）
             if ppt_path and os.path.exists(ppt_path) and postgresql_data:
                 try:
+                    print("Adding PostgreSQL data to PPT")
                     if isinstance(postgresql_data, str):
                         try:
                             postgresql_data = json.loads(postgresql_data)
@@ -509,7 +511,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     if not isinstance(postgresql_data, list):
                         postgresql_data = [postgresql_data]
                     
-                    # 收集所有PostgreSQL内容，放在一页
+                    # 收集所有PostgreSQL内容
                     postgresql_content = []
                     for item in postgresql_data:
                         if isinstance(item, dict):
@@ -517,10 +519,24 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         else:
                             postgresql_content.append({"content": str(item), "source": "postgresql"})
                     
-                    # 将所有PostgreSQL数据添加到一页
-                    await self.ppt_service.append_to_ppt(postgresql_content, ppt_path)
+                    # 将PostgreSQL数据添加到PPT，处理长内容
+                    # 检查内容长度，可能需要多页
+                    for item in postgresql_content:
+                        content = item.get("content", "")
+                        if isinstance(content, str) and len(content) > 1000:
+                            # 长内容分成多个部分并分别添加
+                            chunks = [content[i:i+1000] for i in range(0, len(content), 1000)]
+                            for i, chunk in enumerate(chunks):
+                                chunk_item = item.copy()
+                                chunk_item["content"] = chunk
+                                chunk_item["title"] = f"PostgreSQL Data (Part {i+1}/{len(chunks)})"
+                                await self.ppt_service.append_to_ppt([chunk_item], ppt_path)
+                        else:
+                            # 短内容直接添加
+                            await self.ppt_service.append_to_ppt([item], ppt_path)
                 except Exception as e:
                     print(f"Error appending PostgreSQL data to PPT: {str(e)}")
+                    print(traceback.format_exc())
             
             # 返回结果
             if ppt_path and os.path.exists(ppt_path):

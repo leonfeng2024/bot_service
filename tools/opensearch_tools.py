@@ -4,7 +4,7 @@ import traceback
 
 class OpenSearchConfig:
     """Configuration for OpenSearch connection."""
-    HOST = "localhost"
+    HOST = "bibot_opensearch"
     PORT = 9200
     URL = f"http://{HOST}:{PORT}"
     SNOW_INDEX_NAME = "snow_incident"

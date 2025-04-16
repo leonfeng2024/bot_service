@@ -13,10 +13,10 @@ class OpenSearchRetriever(BaseRetriever):
     
     def __init__(self):
         # OpenSearch connection settings
-        self.opensearch_host = "localhost"
+        self.opensearch_host = "bibot_opensearch"
         self.opensearch_port = 9200
         self.opensearch_user = "admin"
-        self.opensearch_password = "admin"
+        self.opensearch_password = "Leonfeng@2025"
         self.use_ssl = False
         self.procedure_index = "procedure_index"
         self.vector_dim = 1024  # Update to match the actual embedding dimension
