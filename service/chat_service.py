@@ -160,7 +160,7 @@ Response:
                         if "document" in retrieval_response and retrieval_response["document"]:
                             doc_info = retrieval_response["document"]
                             if "link" in doc_info:
-                                message += f"\n['結果ファイル']({doc_info['link']})"
+                                message += f"\n[{'結果ファイル'}]({doc_info['link']})"
                     
                     # 保存用户查询到chat_history表
                     self._save_chat_history(username, uuid, query, "user")

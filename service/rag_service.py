@@ -343,7 +343,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         file_name = os.path.basename(full_file_path)
                         file_url = f"http://localhost:8088/output/{file_name}"
                         markdown_response = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。\n"
-                        markdown_response += f"[{doc_path}]({file_url})"
+                        markdown_response += f"[{'結果ファイル'}]({file_url})"
                         
                         response["document"] = {
                             "file_name": doc_path,
