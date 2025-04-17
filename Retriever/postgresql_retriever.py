@@ -24,7 +24,7 @@ class PostgreSQLRetriever(BaseRetriever):
         
         # 初始化LLM服务
         self.llm_service = LLMService()
-        self.llm_service.init_agent_llm("azure-gpt4")
+        self.llm_service.init_agent_llm("openai-gpt41")
         self.llm = self.llm_service.llm_agent_instance
         
         # 初始化其他变量

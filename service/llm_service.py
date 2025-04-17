@@ -418,14 +418,7 @@ class LLMService:
                 self.llm_agent_instance = ChatOpenAI(
                     model=config.OPENAI_MODEL_NAME,
                     openai_api_key=config.OPENAI_API_KEY,
-                    openai_organization=project_id,
-                    callbacks=[TokenCallbackHandler(self._token_callback)],
-                    model_kwargs={
-                        "headers": {
-                            "OpenAI-Beta": "assistants=v1",
-                            "OpenAI-Project": project_id
-                        }
-                    }
+                    callbacks=[TokenCallbackHandler(self._token_callback)]
                 )
                 
                 # 注册错误处理回调
