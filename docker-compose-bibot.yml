@@ -145,26 +145,26 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/postgres
+      device: ./data/postgres
     name: postgres_data
   opensearch_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/opensearch
+      device: ./data/opensearch
     name: opensearch_data
   redis_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/redis
+      device: ./data/redis
     name: redis_data
   neo4j_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/neo4j
+      device: ./data/neo4j
     name: neo4j_data

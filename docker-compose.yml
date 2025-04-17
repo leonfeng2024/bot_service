@@ -9,7 +9,7 @@ networks:
 services:
   bibot_opensearch:
     container_name: bibot_opensearch
-    image: 'opensearchproject/opensearch:2.11.1'
+    image: 'opensearchproject/opensearch:latest'
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -30,7 +30,7 @@ services:
 
   bibot_redis:
     container_name: bibot_redis
-    image: 'redis:7.2.4'
+    image: 'redis:latest'
     ports:
       - "6379:6379"
     command: redis-server --requirepass 12345678 --maxmemory 256mb --maxmemory-policy allkeys-lru
@@ -68,7 +68,7 @@ services:
       retries: 3
 
   bibot_postgres:
-    image: postgres:16.2
+    image: postgres:latest
     container_name: bibot_postgres
     restart: always
     environment:
@@ -148,26 +148,26 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/postgres
+      device: ./data/postgres
     name: postgres_data
   opensearch_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/opensearch
+      device: ./data/opensearch
     name: opensearch_data
   redis_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/redis
+      device: ./data/redis
     name: redis_data
   neo4j_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/neo4j
+      device: ./data/neo4j
     name: neo4j_data
