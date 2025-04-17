@@ -57,10 +57,9 @@ class GlobalLLMConfig:
             project_id = config.OPENAI_PROJECT_ID
             test_client = OpenAI(
                 api_key=api_key,
-                project=project_id
             )
-            # 简单测试请求
-            test_client.models.list(limit=1)
+            # 简单测试请求（不传 headers 参数）
+            test_client.models.list()
             # 如果成功，保持使用OpenAI
             print("OpenAI API可用性检查成功，使用OpenAI GPT-4.1")
             cls._current_llm_type = "openai-gpt41"
@@ -146,9 +145,9 @@ class OpenAIGPT41(BaseLLM):
     def __init__(self, api_key: str, project_id: str):
         self.client = OpenAI(
             api_key=api_key,
-            project=project_id
         )
         self.model = "gpt-4.1"
+        self.project_id = project_id  # Store project_id as an instance variable
         self.token_counter = TokenCounter()
         # 添加备用LLM
         self.fallback_llm = None
@@ -161,7 +160,10 @@ class OpenAIGPT41(BaseLLM):
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
                 stream=False,
-                extra_headers={"OpenAI-Beta": "assistants=v1"}
+                extra_headers={
+                    "OpenAI-Beta": "assistants=v1",
+                    "OpenAI-Project": self.project_id
+                }
             )
             # 确保返回内容不为空，如果为空则返回错误信息
             content = completion.choices[0].message.content
@@ -330,24 +332,24 @@ class LLMService:
             llm_type = GlobalLLMConfig.get_current_llm_type()
             print(f"使用全局LLM类型初始化Agent: {llm_type}")
             
+        # 创建BaseCallbackHandler实例
+        from langchain_core.callbacks import BaseCallbackHandler
+        class TokenCallbackHandler(BaseCallbackHandler):
+            def __init__(self, callback_func):
+                super().__init__()
+                self.callback_func = callback_func
+            
+            def on_llm_end(self, response, **kwargs):
+                """正确处理langchain的LLM结束回调"""
+                if hasattr(response, 'llm_output') and 'token_usage' in response.llm_output:
+                    self.callback_func(token_usage=response.llm_output['token_usage'])
+                else:
+                    self.callback_func(**kwargs)
+            
         if llm_type == "azure-gpt4":
             api_key = "" if config.AZURE_OPENAI_API_KEY is None else config.AZURE_OPENAI_API_KEY
             if not api_key:
                 raise ValueError("AZURE_OPENAI_API_KEY not configured")
-                
-            # 创建BaseCallbackHandler实例
-            from langchain_core.callbacks import BaseCallbackHandler
-            class TokenCallbackHandler(BaseCallbackHandler):
-                def __init__(self, callback_func):
-                    super().__init__()
-                    self.callback_func = callback_func
-                
-                def on_llm_end(self, response, **kwargs):
-                    """正确处理langchain的LLM结束回调"""
-                    if hasattr(response, 'llm_output') and 'token_usage' in response.llm_output:
-                        self.callback_func(token_usage=response.llm_output['token_usage'])
-                    else:
-                        self.callback_func(**kwargs)
             
             # 初始化AzureChatOpenAI
             self.llm_agent_instance = AzureChatOpenAI(
@@ -359,7 +361,6 @@ class LLMService:
             )
         elif llm_type == "openai-gpt41":
             from langchain_openai import ChatOpenAI
-            from langchain_core.callbacks import BaseCallbackHandler
             
             api_key = "" if config.OPENAI_API_KEY is None else config.OPENAI_API_KEY
             project_id = "" if config.OPENAI_PROJECT_ID is None else config.OPENAI_PROJECT_ID
@@ -397,10 +398,9 @@ class LLMService:
                     # 使用原生SDK测试连接
                     test_client = OpenAI(
                         api_key=api_key,
-                        project=project_id
                     )
-                    # 简单测试请求 - 这将触发任何连接或认证问题
-                    test_client.models.list(limit=1)
+                    # 简单测试请求 - 这将触发任何连接或认证问题（不传 headers 参数）
+                    test_client.models.list()
                     print("OpenAI连接测试成功，继续使用GPT-4.1")
                 except Exception as test_error:
                     if should_fallback_to_azure(test_error):
@@ -420,7 +420,12 @@ class LLMService:
                     openai_api_key=config.OPENAI_API_KEY,
                     openai_organization=project_id,
                     callbacks=[TokenCallbackHandler(self._token_callback)],
-                    headers={"OpenAI-Beta": "assistants=v1"}
+                    model_kwargs={
+                        "headers": {
+                            "OpenAI-Beta": "assistants=v1",
+                            "OpenAI-Project": project_id
+                        }
+                    }
                 )
                 
                 # 注册错误处理回调
