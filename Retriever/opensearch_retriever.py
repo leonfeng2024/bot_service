@@ -241,6 +241,90 @@ class OpenSearchRetriever(BaseRetriever):
             # print(f"Detailed error: {traceback.format_exc()}")
             return [{"content": f"Error searching for '{term}': {str(e)}", "score": 0.89}]
         
+    async def _filter_results_with_llm(self, query: str, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """使用大语言模型过滤搜索结果，删除与用户查询无关的内容"""
+        print(f"_filter_results_with_llm")
+        try:
+            if not results:
+                return results
+                
+            # 创建包含所有结果的文本
+            results_text = ""
+            for i, result in enumerate(results):
+                results_text += f"Result {i+1}:\n{result.get('content', '')}\n\n"
+                
+            # 创建提示文本
+            prompt = f"""
+            你是一个专业的数据库知识审查专家。请审查以下从OpenSearch检索到的结果，判断哪些与用户查询相关，哪些无关。
+            
+            用户查询: {query}
+            
+            检索结果:
+            {results_text}
+            
+            请执行以下任务:
+            1. 分析每个检索结果与用户查询的相关性
+            2. 删除与用户查询完全无关的内容
+            3. 保留所有相关或可能相关的内容
+            4. 去掉重复内容，如果有相同的检索结果，只保留一个
+            5. 以JSON格式返回过滤后的结果，格式如下:
+            [
+                {{"content": "相关内容1", "score": 原始分数, "relevance": "说明为什么相关"}},
+                {{"content": "相关内容2", "score": 原始分数, "relevance": "说明为什么相关"}}
+            ]
+            
+            只返回JSON格式的结果，不要有其他文字说明。如果所有结果都不相关，返回空数组 []。
+            """
+            
+            # 调用LLM服务进行过滤
+            print(f"Prompt: {prompt}")
+            # 获取LLM实例
+            llm = self.llm_service.get_llm()
+            # 使用LLM生成文本
+            llm_response = await llm.generate(prompt)
+            print(f"LLM response: {llm_response}")
+            
+            # 尝试解析JSON响应
+            try:
+                # 提取JSON部分（如果LLM返回了额外文本）
+                json_str = llm_response.strip()
+                if json_str.startswith("```json"):
+                    json_str = json_str.split("```json")[1]
+                if json_str.endswith("```"):
+                    json_str = json_str.split("```")[0]
+                    
+                filtered_results = json.loads(json_str.strip())
+                
+                # 确保结果格式正确
+                if isinstance(filtered_results, list):
+                    # 移除可能的额外字段，保持与原始结果格式一致
+                    standardized_results = []
+                    for item in filtered_results:
+                        if isinstance(item, dict) and "content" in item:
+                            result = {
+                                "content": item["content"],
+                                "score": item.get("score", 0.5)
+                            }
+                            # 保留token_usage如果存在
+                            if "token_usage" in results[0]:
+                                result["token_usage"] = results[0]["token_usage"]
+                            standardized_results.append(result)
+                    
+                    return standardized_results if standardized_results else results
+                
+            except Exception as json_error:
+                print(f"Error parsing LLM response as JSON: {str(json_error)}")
+                print(f"Raw LLM response: {llm_response}")
+                
+            # 如果解析失败，返回原始结果
+            return results
+            
+        except Exception as e:
+            print(f"Error filtering results with LLM: {str(e)}")
+            print(f"Detailed error: {traceback.format_exc()}")
+            # 出错时返回原始结果
+            return results
+    
     async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
         """从OpenSearch检索相关信息"""
         try:
@@ -253,6 +337,9 @@ class OpenSearchRetriever(BaseRetriever):
             # 使用嵌入向量进行搜索
             results = await self._search_term(query)
             
+            # 使用大语言模型过滤结果
+            filtered_results = await self._filter_results_with_llm(query, results)
+            
             # 记录结束时的token使用情况
             end_usage = self.llm_service.get_token_usage()
             
@@ -264,21 +351,21 @@ class OpenSearchRetriever(BaseRetriever):
             print(f"[OpenSearch Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
             
             # 添加token使用信息到结果中
-            for result in results:
+            for result in filtered_results:
                 result["token_usage"] = {
                     "input_tokens": input_tokens,
                     "output_tokens": output_tokens
                 }
             
-            # 如果提供了uuid，将结果存储到Redis
+            # 如果提供了uuid，将过滤后的结果存储到Redis
             if uuid:
                 try:
                     key = f"{uuid}:opensearch"
-                    self.redis_tools.set(key, results)
+                    self.redis_tools.set(key, filtered_results)
                 except Exception as redis_error:
                     print(f"Error storing OpenSearch results in Redis: {str(redis_error)}")
             
-            return results
+            return filtered_results
             
         except Exception as e:
             import traceback
