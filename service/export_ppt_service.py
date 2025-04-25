@@ -150,7 +150,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 env['PUPPETEER_EXECUTABLE_PATH'] = '/usr/bin/chromium'
                 
                 # 构建mmdc命令并执行 - 添加无沙盒选项
-                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent", "--puppeteerConfigFile", "/dev/null"]
+                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent", "-p", "/app/puppeteer-config.json"]
                 result = subprocess.run(cmd, check=True, capture_output=True, text=True, env=env)
                 print(f"mmdc输出: {result.stdout}")
                 
@@ -170,11 +170,11 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 if hasattr(mmdc_error, 'stderr'):
                     print(f"mmdc stderr: {mmdc_error.stderr}")
             
-            # 备选方法：尝试使用NPX运行mermaid-cli，使用无沙盒模式
+            # 备选方法：尝试使用NPX运行mermaid-cli，使用无沙盒模式和puppeteer配置
             print("尝试使用npx运行mermaid-cli...")
             try:
                 # 使用npx安装并运行mmdc，添加无沙盒选项
-                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent --puppeteerConfigFile /dev/null"
+                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent -p /app/puppeteer-config.json"
                 result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, env=env)
                 print(f"npx mmdc输出: {result.stdout}")
                 

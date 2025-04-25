@@ -22,6 +22,7 @@ FILES=(
     "config.py"
     "server.py"
     "requirements.txt"
+    "puppeteer-config.json"
 )
 
 # 同步目录

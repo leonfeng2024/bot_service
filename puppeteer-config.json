@@ -1,0 +1,9 @@
+{
+  "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-extensions"],
+  "headless": "new",
+  "executablePath": "/usr/bin/chromium",
+  "defaultViewport": {
+    "width": 1200,
+    "height": 800
+  }
+} 
