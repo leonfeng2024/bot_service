@@ -1,9 +1,45 @@
-FROM crpi-5va2c7blqnzmwnnn.cn-beijing.personal.cr.aliyuncs.com/aacoe/local_platform:python312-amd AS builder
+FROM crpi-5va2c7blqnzmwnnn.cn-beijing.personal.cr.aliyuncs.com/aacoe/local_platform:python312-amd
 
 WORKDIR /app
 COPY requirements.txt .
 
-# Create pip.conf with multiple index servers for redundancy
+# 安装Node.js、npm和Puppeteer依赖
+RUN apt-get update && apt-get install -y \
+    nodejs \
+    npm \
+    chromium \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libwayland-client0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# 配置Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PUPPETEER_NO_SANDBOX=true
+ENV NODE_PATH=/usr/local/lib/node_modules
+
+# 全局安装Mermaid CLI
+RUN npm install -g @mermaid-js/mermaid-cli
+
+# 配置pip
 RUN mkdir -p /root/.config/pip && \
     echo "[global]" > /root/.config/pip/pip.conf && \
     echo "timeout = 300" >> /root/.config/pip/pip.conf && \
@@ -11,17 +47,17 @@ RUN mkdir -p /root/.config/pip && \
     echo "index-url = https://pypi.org/simple" >> /root/.config/pip/pip.conf && \
     echo "extra-index-url = https://pypi.tuna.tsinghua.edu.cn/simple https://download.pytorch.org/whl/cpu" >> /root/.config/pip/pip.conf
 
-# Update pip and install dependencies from requirements.txt
+# 安装Python依赖
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    rm -rf /root/.cache/pip
 
-# Clean up pip cache
-RUN rm -rf /root/.cache/pip
+# 复制调试脚本
+COPY debug_mermaid.sh /app/
+RUN chmod +x /app/debug_mermaid.sh
 
-FROM crpi-5va2c7blqnzmwnnn.cn-beijing.personal.cr.aliyuncs.com/aacoe/local_platform:python312-amd
-WORKDIR /app
-COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
+# 复制应用代码
 COPY . .
 
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
+

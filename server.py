@@ -1,6 +1,6 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from service.chat_service import ChatService
@@ -9,7 +9,13 @@ from service.embedding_service import EmbeddingService
 from service.neo4j_service import Neo4jService
 from service.export_excel_service import ExportExcelService
 from service.export_ppt_service import ExportPPTService
+from service.user_service import UserService
+from service.postgres_service import PostgresService
+from service.opensearch_service import OpenSearchService
 from models.models import ChatRequest, DatabaseSchemaRequest, TokenData, LogoutRequest
+from models.user_models import CreateUserRequest, UpdateUserRequest, UserProfileResponse, UserResponseWithMessage, DeleteUserResponse
+from models.postgres_models import TableInfo, ExecuteQueryRequest, ExecuteQueryResponse, ErrorResponse, ImportResponse
+from models.opensearch_models import IndexInfo, CreateIndexRequest, GenericResponse, SearchRequest, SearchResponse
 import logging
 import logging.config
 import os
@@ -69,6 +75,9 @@ export_service = ExportExcelService()
 ppt_service = ExportPPTService()
 embedding_service = EmbeddingService()
 redis_tools = RedisTools()
+user_service = UserService()
+postgres_service = PostgresService()
+opensearch_service = OpenSearchService()
 
 # 设置JWT密钥和过期时间(秒)
 # JWT_SECRET = "your_jwt_secret_key"  # 请修改为安全的密钥
@@ -113,6 +122,17 @@ security = HTTPBearer()
 async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         token = credentials.credentials
+        
+        # Allow dev token to bypass verification
+        if token == "DEVTOKEN":
+            logger.warning("Development token used to bypass authentication")
+            return {
+                "user_id": 999,
+                "role": "admin",
+                "uuid": "dev-uuid",
+                "exp": int(time.time()) + JWT_EXPIRATION
+            }
+            
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         # 检查令牌是否过期
         if payload.get("exp") < int(time.time()):
@@ -132,10 +152,16 @@ async def chat(request: ChatRequest, token_data: dict = Depends(verify_token)):
         raise HTTPException(status_code=403, detail="UUID mismatch")
     
     try:
-        # 传递用户的UUID到chat_service
-        response = await chat_service.handle_chat(request.username, request.query, request.uuid)
-        logger.info(f"Chat request completed successfully - User: {request.username}, UUID: {request.uuid}")
-        return response
+        # 使用生成器函数来流式返回结果
+        async def generate_response():
+            async for chunk in chat_service.handle_chat(request.username, request.query, request.uuid):
+                # 将每个chunk转换为JSON字符串并添加换行符
+                yield json.dumps(chunk) + "\n"
+        
+        return StreamingResponse(
+            generate_response(),
+            media_type="application/json"
+        )
     except Exception as e:
         logger.error(f"Error processing chat request - User: {request.username}, UUID: {request.uuid}, Error: {str(e)}")
         raise
@@ -406,6 +432,375 @@ async def login(request: Request):
     except Exception as e:
         logger.error(f"登录过程中发生错误: {str(e)}")
         return {}
+
+# User Profile API
+@app.get("/user/profile", response_model=UserProfileResponse)
+async def get_user_profile(token_data: dict = Depends(verify_token)):
+    """
+    Get current user's profile information
+    """
+    try:
+        user_id = token_data.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="User ID not found in token")
+        
+        user_profile = await user_service.get_user_profile(user_id)
+        
+        if not user_profile:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return user_profile
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error getting user profile: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting user profile: {str(e)}"
+        )
+
+# Admin User Management API
+@app.get("/admin/users")
+async def get_all_users(token_data: dict = Depends(verify_token)):
+    """
+    Get all users (admin only)
+    """
+    try:
+        # Check if user has admin role
+        if token_data.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin role required")
+        
+        users = await user_service.get_all_users()
+        return users
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error getting all users: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting all users: {str(e)}"
+        )
+
+@app.post("/admin/users", response_model=UserResponseWithMessage)
+async def create_user(request: CreateUserRequest, token_data: dict = Depends(verify_token)):
+    """
+    Create a new user (admin only)
+    """
+    try:
+        # Check if user has admin role
+        if token_data.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin role required")
+        
+        result = await user_service.create_user(
+            username=request.username,
+            email=request.email,
+            password=request.password,
+            role=request.role
+        )
+        
+        if not result["success"]:
+            status_code = 400 if "exists" in result["message"] else 500
+            raise HTTPException(status_code=status_code, detail=result["message"])
+        
+        return result
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error creating user: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error creating user: {str(e)}"
+        )
+
+@app.put("/admin/users/{user_id}", response_model=UserResponseWithMessage)
+async def update_user(
+    user_id: str, 
+    request: UpdateUserRequest, 
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Update an existing user (admin only)
+    """
+    try:
+        # Check if user has admin role
+        if token_data.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin role required")
+        
+        # Convert Pydantic model to dict, excluding None values
+        update_data = request.dict(exclude_none=True)
+        
+        result = await user_service.update_user(user_id, update_data)
+        
+        if not result["success"]:
+            status_code = 404 if "does not exist" in result["message"] else 500
+            raise HTTPException(status_code=status_code, detail=result["message"])
+        
+        return result
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error updating user: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating user: {str(e)}"
+        )
+
+@app.delete("/admin/users/{user_id}", response_model=DeleteUserResponse)
+async def delete_user(user_id: str, token_data: dict = Depends(verify_token)):
+    """
+    Delete a user (admin only)
+    """
+    try:
+        # Check if user has admin role
+        if token_data.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin role required")
+        
+        result = await user_service.delete_user(user_id)
+        
+        if not result["success"]:
+            status_code = 404 if "does not exist" in result["message"] else 500
+            raise HTTPException(status_code=status_code, detail=result["message"])
+        
+        return result
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting user: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting user: {str(e)}"
+        )
+
+# PostgreSQL 管理 API
+@app.get("/postgres/tables", response_model=List[TableInfo])
+async def get_postgres_tables(token_data: dict = Depends(verify_token)):
+    """
+    获取PostgreSQL数据库中的所有表
+    """
+    try:
+        # 检查权限（可选，取决于你的需求）
+        if token_data.get("role") not in ["admin", "kb_manager"]:
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # 获取表列表
+        tables = await postgres_service.get_tables()
+        return tables
+    except Exception as e:
+        logger.error(f"Error getting PostgreSQL tables: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting PostgreSQL tables: {str(e)}"
+        )
+
+@app.post("/postgres/execute", response_model=ExecuteQueryResponse)
+async def execute_postgres_query(request: ExecuteQueryRequest, token_data: dict = Depends(verify_token)):
+    """
+    执行SQL查询并返回结果
+    """
+    try:
+        # 检查权限（可选，取决于你的需求）
+        if token_data.get("role") not in ["admin", "kb_manager"]:
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # 执行查询
+        results = await postgres_service.execute_query(request.query)
+        return {"rows": results}
+    except Exception as e:
+        logger.error(f"Error executing PostgreSQL query: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error executing PostgreSQL query: {str(e)}"
+        )
+
+@app.post("/postgres/import", response_model=ImportResponse)
+async def import_postgres_data(file: UploadFile = File(...), token_data: dict = Depends(verify_token)):
+    """
+    从SQL文件导入数据到PostgreSQL
+    """
+    try:        
+        # 检查文件类型
+        if not file.filename.endswith('.sql'):
+            raise HTTPException(status_code=400, detail="Only SQL files are allowed")
+        
+        # 读取文件内容
+        file_content = await file.read()
+        
+        # 导入数据
+        result = await postgres_service.import_data(file_content)
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error importing data to PostgreSQL: {str(e)}")
+        return {
+            "success": False,
+            "message": f"Error importing data: {str(e)}"
+        }
+
+@app.get("/postgres/export/{table_name}")
+async def export_postgres_data(table_name: str, token_data: dict = Depends(verify_token)):
+    """
+    将PostgreSQL表数据导出为CSV文件
+    """
+    try:
+        # 检查权限（可选，取决于你的需求）
+        if token_data.get("role") not in ["admin", "kb_manager"]:
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        
+        # 导出数据
+        file_path = await postgres_service.export_data(table_name)
+        
+        if not file_path:
+            raise HTTPException(status_code=404, detail=f"No data found for table: {table_name}")
+        
+        # 返回CSV文件
+        return FileResponse(
+            file_path,
+            media_type="text/csv",
+            filename=f"{table_name}.csv"
+        )
+    except HTTPException:
+        raise
+    except ValueError as e:
+        # 处理无效表名错误
+        logger.error(f"Invalid table name: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error exporting data from PostgreSQL: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error exporting data: {str(e)}"
+        )
+
+# OpenSearch 管理 API
+@app.get("/opensearch/indices", response_model=List[IndexInfo])
+async def get_opensearch_indices(token_data: dict = Depends(verify_token)):
+    """
+    获取OpenSearch中的所有索引
+    """
+    try:
+        indices = await opensearch_service.get_indices()
+        return indices
+    except Exception as e:
+        error_message = str(e)
+        status_code = 500
+        
+        # 处理连接错误
+        if "ConnectionError" in error_message or "connection" in error_message.lower():
+            status_code = 503  # Service Unavailable
+            error_message = "OpenSearch服务不可用，请检查连接配置或服务状态"
+            
+        logger.error(f"Error getting OpenSearch indices: {error_message}")
+        raise HTTPException(
+            status_code=status_code,
+            detail=error_message
+        )
+
+@app.post("/opensearch/indices", response_model=GenericResponse)
+async def create_opensearch_index(request: CreateIndexRequest, token_data: dict = Depends(verify_token)):
+    """
+    创建新的OpenSearch索引
+    """
+    try:
+        result = await opensearch_service.create_index(request.index)
+        if not result['success']:
+            raise HTTPException(
+                status_code=400,
+                detail=result['message']
+            )
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating OpenSearch index: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error creating OpenSearch index: {str(e)}"
+        )
+
+@app.delete("/opensearch/indices/{index_name}", response_model=GenericResponse)
+async def delete_opensearch_index(index_name: str, token_data: dict = Depends(verify_token)):
+    """
+    删除OpenSearch索引
+    """
+    try:
+        result = await opensearch_service.delete_index(index_name)
+        if not result['success']:
+            raise HTTPException(
+                status_code=404 if "does not exist" in result['message'] else 400,
+                detail=result['message']
+            )
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting OpenSearch index: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting OpenSearch index: {str(e)}"
+        )
+
+@app.post("/opensearch/search", response_model=SearchResponse)
+async def search_opensearch(request: SearchRequest, token_data: dict = Depends(verify_token)):
+    """
+    在OpenSearch索引中执行搜索
+    """
+    try:
+        result = await opensearch_service.search(request.index, request.query)
+        return result
+    except Exception as e:
+        logger.error(f"Error searching OpenSearch: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error searching OpenSearch: {str(e)}"
+        )
+
+@app.post("/opensearch/upload", response_model=GenericResponse)
+async def upload_to_opensearch(
+    file: UploadFile = File(...),
+    index: str = Form(...),
+    token_data: dict = Depends(verify_token)
+):
+    """
+    上传文档到OpenSearch索引
+    """
+    try:
+        # 检查文件类型
+        allowed_types = ['.txt', '.doc', '.docx', '.xls', '.xlsx']
+        file_ext = os.path.splitext(file.filename)[1].lower()
+        
+        if file_ext not in allowed_types:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported file type. Allowed types: {', '.join(allowed_types)}"
+            )
+        
+        # 读取文件内容
+        file_content = await file.read()
+        
+        # 上传文档
+        result = await opensearch_service.upload_document(index, file_content, file.filename)
+        
+        if not result['success']:
+            raise HTTPException(
+                status_code=400,
+                detail=result['message']
+            )
+            
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading document to OpenSearch: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error uploading document to OpenSearch: {str(e)}"
+        )
 
 if __name__ == "__main__":
     import uvicorn

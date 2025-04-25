@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, AsyncGenerator
 from utils.singleton import singleton
 from service.llm_service import LLMService
 from service.export_excel_service import ExportExcelService
@@ -76,6 +76,10 @@ class RAGService:
                     })
                     
                     doc_counter += 1
+                
+                # 返回每个检索器的完成状态
+                yield {"step": f"{source}_retriever", "message": f"{source.capitalize()}数据库查询完成"}
+                
             except Exception as e:
                 import traceback
                 error_content = f"从 {source} 检索数据时出错: {str(e)}"
@@ -102,7 +106,7 @@ class RAGService:
         if uuid:
             await self._store_in_redis(json_results, uuid)
 
-        return results
+        yield results
 
     async def _rerank(self, results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
         ranked_results = sorted(results, key=lambda x: x['score'], reverse=True)
@@ -184,14 +188,17 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             else:
                 final_check = "unknown"
             
-            return {
+            # 返回LLM处理结果
+            yield {"step": "_process_with_llm", "message": response}
+            
+            yield {
                 "final_check": final_check,
                 "answer": response
             }
             
         except Exception as e:
             pass
-            return {
+            yield {
                 "final_check": "unknown",
                 "answer": f"Error processing your query: {str(e)}"
             }
@@ -296,40 +303,58 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             print(f"Error in _store_in_redis: {str(e)}")
             print(f"Detailed error: {traceback.format_exc()}")
 
-    async def retrieve(self, query: str, uuid: Optional[str] = None) -> Dict[str, Any]:
+    async def retrieve(self, query: str, uuid: Optional[str] = None) -> AsyncGenerator[Dict[str, Any], None]:
         """检索相关文档并生成回答"""
         try:
             print(f"Starting RAG process for query: {query}, uuid: {uuid}")
             
+            # 返回处理开始信息
+            yield {"step": "process_start", "message": "开始处理查询"}
+            
             # 获取文档
-            docs = await self._multi_source_retrieve(query, uuid)
+            docs = []
+            async for doc_batch in self._multi_source_retrieve(query, uuid):
+                # Check if this is a status update
+                if isinstance(doc_batch, dict) and "step" in doc_batch:
+                    yield doc_batch
+                    continue
+                docs = doc_batch
+            
+            # 返回文档检索完成状态
+            yield {"step": "docs_retrieved", "message": f"检索到 {len(docs)} 个文档"}
+            
             print("Retrieved documents:")
             for doc in docs[:3]:
                 print(f"  {doc[:100]}..." if len(doc) > 100 else f"  {doc}")
             print(f"  ... (total {len(docs)} documents)")
             
             # 使用LLM处理文档
-            llm_result = await self._process_with_llm(docs, query)
+            llm_result = None
+            async for result in self._process_with_llm(docs, query):
+                if isinstance(result, dict):
+                    if "step" in result:
+                        yield result
+                    else:
+                        llm_result = result
+            
+            if not llm_result:
+                llm_result = {"final_check": "unknown", "answer": "Failed to process query"}
+            
+            # 返回LLM处理完成状态
+            yield {"step": "llm_process_complete", "message": "LLM处理完成"}
             
             # 获取token使用情况
             token_usage = self.llm_service.get_formatted_token_usage()
-
-            # 初始化文档路径
-            doc_path = None
-            
-            # 构建基本响应
-            response = {
-                "status": "success",
-                "docs": docs,
-                "answer": llm_result.get("answer", ""),
-                "final_check": llm_result.get("final_check", "unknown"),
-                "token_usage": token_usage
-            }
             
             # 如果final_check是yes，则生成Excel和PPT文档
             if llm_result.get("final_check") == "yes" and uuid:
+                # 返回开始生成文档的状态
+                yield {"step": "generating_document", "message": "正在生成文档..."}
+                
                 print(f"final_check is 'yes', generating Excel and PPT files for uuid: {uuid}")
-                doc_path = await self._generate_document(uuid)
+                doc_path = None
+                async for path in self._generate_document(uuid):
+                    doc_path = path
                 print(f"Document generation result: {doc_path}")
                 
                 # 如果生成了文档，添加文档信息到响应中
@@ -345,35 +370,31 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         markdown_response = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。\n"
                         markdown_response += f"[{'結果ファイル'}]({file_url})"
                         
-                        response["document"] = {
-                            "file_name": doc_path,
-                            "file_path": full_file_path,
-                            "link": file_url,
-                            "markdown": markdown_response
-                        }
-                        
-                        # 将答案替换为markdown格式的回答
-                        response["answer"] = markdown_response
-                        
-                        print(f"Document added to response: {response['document']}")
+                        # 返回最终结果，使用正确的格式
+                        yield {"step": "final_answer", "message": markdown_response}
                     else:
                         print(f"Warning: Generated file does not exist at path: {full_file_path}")
-                        response["error"] = f"Failed to generate document: file not found at {full_file_path}"
+                        yield {"step": "error", "message": f"文件生成失败: 无法在 {full_file_path} 找到文件"}
                 elif doc_path:
-                    response["error"] = doc_path
-                    print(f"Error in document generation: {doc_path}")
-            
-            return response
+                    yield {"step": "error", "message": f"文档生成出错: {doc_path}"}
+            else:
+                # 返回final_check不是yes的情况
+                answer = llm_result.get("answer", "")
+                final_check = llm_result.get("final_check", "unknown")
+                
+                # 根据final_check的值返回不同的回答
+                if final_check == "no":
+                    message = "申し訳ありませんが、ご質問に関連する情報が見つかりませんでした。テーブル名や列名を具体的に指定していただくか、別の質問をお試しください。"
+                else:
+                    message = answer if answer else "回答を生成できませんでした。"
+                
+                yield {"step": "final_answer", "message": message}
             
         except Exception as e:
             import traceback
             error_msg = f"Error in RAG service: {str(e)}\n{traceback.format_exc()}"
             print(error_msg)
-            return {
-                "status": "error",
-                "error": error_msg,
-                "token_usage": self.llm_service.get_formatted_token_usage()
-            }
+            yield {"step": "error", "message": f"処理中にエラーが発生しました: {str(e)}"}
 
     async def _generate_document(self, uuid: str) -> str:
         """生成文档包括Excel和PPT，并返回文件名"""
@@ -540,15 +561,15 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             
             # 返回结果
             if ppt_path and os.path.exists(ppt_path):
-                return os.path.basename(ppt_path)
+                yield os.path.basename(ppt_path)
             else:
-                return "Error: PPT file was not created"
+                yield "Error: PPT file was not created"
                 
         except Exception as e:
             import traceback
             error_msg = f"Error generating document: {str(e)}\n{traceback.format_exc()}"
             print(error_msg)
-            return f"Error: {str(e)}"
+            yield f"Error: {str(e)}"
 
     async def _save_chat_history(self, query: str, uuid: str, user_id: str):
         print(f"_save_chat_history : {uuid}, {user_id}, {query}")

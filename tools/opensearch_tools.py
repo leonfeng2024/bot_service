@@ -7,8 +7,6 @@ class OpenSearchConfig:
     HOST = "bibot_opensearch"
     PORT = 9200
     URL = f"http://{HOST}:{PORT}"
-    SNOW_INDEX_NAME = "snow_incident"
-    LOCAL_TICKET_INDEX_NAME = "local_ticket"
     AUTH = None
     HEADERS = {"Content-Type": "application/json"}
 
@@ -26,8 +24,6 @@ class OpenSearchTools:
             http_auth=config.AUTH,
             headers=config.HEADERS
         )
-        self.snow_index_name = config.SNOW_INDEX_NAME
-        self.local_ticket_index_name = config.LOCAL_TICKET_INDEX_NAME
 
     def get_index_list(self) -> List[str]:
         """

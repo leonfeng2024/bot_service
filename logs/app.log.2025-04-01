@@ -1,0 +1,4 @@
+2025-04-01 12:37:44,915 - tools.redis_tools - ERROR - Failed to connect to Redis: Error 8 connecting to bibot_redis:6379. nodename nor servname provided, or not known.
+2025-04-01 12:37:44,916 - tools.redis_tools - WARNING - Running with Redis disabled. Cache operations will be no-ops.
+2025-04-01 12:37:55,688 - tools.redis_tools - ERROR - Failed to connect to Redis: Error 8 connecting to bibot_redis:6379. nodename nor servname provided, or not known.
+2025-04-01 12:37:55,688 - tools.redis_tools - WARNING - Running with Redis disabled. Cache operations will be no-ops.

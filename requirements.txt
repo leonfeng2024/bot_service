@@ -50,3 +50,5 @@ redis>=5.0.0
 matplotlib 
 networkx 
 pillow
+mermaid-py>=0.7.1
+ipython

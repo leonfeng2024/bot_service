@@ -17,7 +17,7 @@ ENV_PATH = os.path.join(ROOT_DIR, '.env')
 
 # 全局LLM模型配置
 class GlobalLLMConfig:
-    DEFAULT_LLM_TYPE = "openai-gpt41"  # 默认使用OpenAI GPT-4.1
+    DEFAULT_LLM_TYPE = "openai-gpt41"  # azure-gpt4  openai-gpt41 默认使用OpenAI GPT-4.1
     _current_llm_type = DEFAULT_LLM_TYPE
     _is_initialized = False
     _fallback_attempted = False
@@ -550,7 +550,9 @@ return {{"item1":"employee_id"}}
             # Try to parse JSON result
             try:
                 parsed_result = json.loads(result)
-                return parsed_result
+                # 返回字段识别结果
+                yield {"step": "identify_column", "message": "字段识别成功"}
+                yield parsed_result
             except json.JSONDecodeError as json_err:
                 # If result is not valid JSON, try to extract JSON part
                 import re
@@ -562,7 +564,9 @@ return {{"item1":"employee_id"}}
                 for potential_json in json_matches:
                     try:
                         parsed_result = json.loads(potential_json)
-                        return parsed_result
+                        # 返回字段识别结果
+                        yield {"step": "identify_column", "message": "字段识别成功"}
+                        yield parsed_result
                     except json.JSONDecodeError:
                         continue
                 
@@ -579,13 +583,15 @@ return {{"item1":"employee_id"}}
                     # Try parsing again
                     try:
                         parsed_result = json.loads(json_content)
-                        return parsed_result
+                        # 返回字段识别结果
+                        yield {"step": "identify_column", "message": "字段识别成功"}
+                        yield parsed_result
                     except json.JSONDecodeError:
                         pass
                 
                 # If all attempts failed, return empty result
-                return {}
+                yield {}
                 
         except Exception as e:
             import traceback
-            return {}
+            yield {}

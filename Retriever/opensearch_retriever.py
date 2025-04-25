@@ -7,17 +7,18 @@ from service.embedding_service import EmbeddingService
 from service.llm_service import LLMService
 from tools.redis_tools import RedisTools
 from tools.token_counter import TokenCounter
+import config
 
 class OpenSearchRetriever(BaseRetriever):
     """OpenSearch检索器，用于从OpenSearch中检索数据"""
     
     def __init__(self):
-        # OpenSearch connection settings
-        self.opensearch_host = "bibot_opensearch"
-        self.opensearch_port = 9200
-        self.opensearch_user = "admin"
-        self.opensearch_password = "Leonfeng@2025"
-        self.use_ssl = False
+        # OpenSearch connection settings - 从配置中读取
+        self.opensearch_host = config.OPENSEARCH_HOST
+        self.opensearch_port = config.OPENSEARCH_PORT
+        self.opensearch_user = config.OPENSEARCH_USER
+        self.opensearch_password = config.OPENSEARCH_PASSWORD
+        self.use_ssl = config.OPENSEARCH_USE_SSL
         self.procedure_index = "procedure_index"
         self.vector_dim = 1024  # Update to match the actual embedding dimension
         
@@ -39,6 +40,7 @@ class OpenSearchRetriever(BaseRetriever):
     def _connect_to_opensearch(self) -> OpenSearch:
         """Create and return an OpenSearch client"""
         try:
+            print(f"Connecting to OpenSearch at {self.opensearch_host}:{self.opensearch_port}")
             client = OpenSearch(
                 hosts=[{"host": self.opensearch_host, "port": self.opensearch_port}],
                 http_auth=(self.opensearch_user, self.opensearch_password),
@@ -48,13 +50,49 @@ class OpenSearchRetriever(BaseRetriever):
                 timeout=30
             )
             # Test connection
-            client.info()
-            # print("OpenSearchRetriever successfully connected to OpenSearch")
+            info = client.info()
+            print(f"OpenSearchRetriever successfully connected to OpenSearch {info.get('version', {}).get('number', 'unknown')}")
             return client
         except Exception as e:
-            # print(f"OpenSearchRetriever error connecting to OpenSearch: {str(e)}")
-            # print("Make sure OpenSearch is running and configuration is correct.")
-            return None
+            print(f"Error connecting to OpenSearch at {self.opensearch_host}:{self.opensearch_port}: {str(e)}")
+            print("Trying localhost as fallback...")
+            
+            try:
+                # 尝试使用localhost
+                client = OpenSearch(
+                    hosts=[{"host": "localhost", "port": self.opensearch_port}],
+                    http_auth=(self.opensearch_user, self.opensearch_password),
+                    use_ssl=self.use_ssl,
+                    verify_certs=False,
+                    ssl_show_warn=False,
+                    timeout=30
+                )
+                # Test connection
+                info = client.info()
+                print(f"OpenSearchRetriever successfully connected to OpenSearch at localhost:{self.opensearch_port}")
+                return client
+            except Exception as local_e:
+                print(f"Error connecting to OpenSearch at localhost:{self.opensearch_port}: {str(local_e)}")
+                print("Trying 127.0.0.1 as fallback...")
+                
+                try:
+                    # 尝试使用IP地址
+                    client = OpenSearch(
+                        hosts=[{"host": "127.0.0.1", "port": self.opensearch_port}],
+                        http_auth=(self.opensearch_user, self.opensearch_password),
+                        use_ssl=self.use_ssl,
+                        verify_certs=False,
+                        ssl_show_warn=False,
+                        timeout=30
+                    )
+                    # Test connection
+                    info = client.info()
+                    print(f"OpenSearchRetriever successfully connected to OpenSearch at 127.0.0.1:{self.opensearch_port}")
+                    return client
+                except Exception as ip_e:
+                    print(f"Error connecting to OpenSearch at 127.0.0.1:{self.opensearch_port}: {str(ip_e)}")
+                    print("All connection attempts failed.")
+                    return None
     
     async def _check_and_update_index(self, embedding_dimension: int) -> bool:
         """Check if the index exists and has the correct dimension, recreate if needed"""
@@ -326,87 +364,142 @@ class OpenSearchRetriever(BaseRetriever):
             return results
     
     async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
-        """从OpenSearch检索相关信息"""
+        """
+        从OpenSearch中检索与查询相关的数据
+        
+        Args:
+            query: 用户查询
+            uuid: 会话ID(可选)
+            
+        Returns:
+            检索结果列表
+        """
         try:
+            # 检查客户端连接
+            if not self.client:
+                print("OpenSearch client is not connected, attempting to reconnect...")
+                self.client = self._connect_to_opensearch()
+                if not self.client:
+                    error_msg = "无法连接到OpenSearch服务器，请检查配置"
+                    error_result = [{"content": error_msg, "score": 0.0, "source": "opensearch"}]
+                    
+                    # 如果提供了UUID，将结果缓存
+                    if uuid:
+                        try:
+                            key = f"{uuid}:opensearch"
+                            self.redis_tools.set(key, error_result)
+                            # 同时更新主缓存
+                            cached_data = self.redis_tools.get(uuid) or {}
+                            cached_data["opensearch"] = error_result
+                            self.redis_tools.set(uuid, cached_data)
+                            print(f"Cached OpenSearch error result for {uuid}")
+                        except Exception as cache_error:
+                            print(f"Error caching OpenSearch error result: {str(cache_error)}")
+                    
+                    return error_result
+            
             # 记录开始时的token使用情况
             start_usage = self.llm_service.get_token_usage()
             
-            # 获取查询的嵌入向量
-            query_embedding = await self.embedding_service.get_embedding(query)
+            # 构建并打印prompt
+            prompt = f"OpenSearch检索查询:\n{query}"
+            print(prompt)
             
-            # 使用嵌入向量进行搜索
-            results = await self._search_term(query)
+            # 调用LLM服务获取查询意图
+            intent_analysis = {}
+            async for result in self.llm_service.identify_column(query):
+                if isinstance(result, dict):
+                    if "step" not in result:
+                        intent_analysis = result
+            print(f"Identified terms: {intent_analysis}")
             
-            # 使用大语言模型过滤结果
-            filtered_results = await self._filter_results_with_llm(query, results)
+            results = []
+            
+            # 如果识别出了意图，对每个关键术语进行搜索
+            if intent_analysis:
+                for key, term in intent_analysis.items():
+                    print(f"Searching for term: {term}")
+                    term_results = await self._search_term(term)
+                    results.extend(term_results)
+            
+            # 如果没有识别出意图或没有结果，直接使用原始查询
+            if not intent_analysis or not results:
+                print(f"No intent identified or no results, using original query: {query}")
+                direct_results = await self._search_term(query)
+                results.extend(direct_results)
+            
+            # 如果有3个以上结果，使用LLM过滤
+            if len(results) > 3:
+                results = await self._filter_results_with_llm(query, results)
             
             # 记录结束时的token使用情况
             end_usage = self.llm_service.get_token_usage()
             
-            # 计算本次调用消耗的token
+            # 计算token使用量
             input_tokens = end_usage["input_tokens"] - start_usage["input_tokens"]
             output_tokens = end_usage["output_tokens"] - start_usage["output_tokens"]
             
             # 打印token使用情况
             print(f"[OpenSearch Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
             
-            # 添加token使用信息到结果中
-            for result in filtered_results:
+            # 更新token计数器
+            self.token_counter.total_input_tokens += input_tokens
+            self.token_counter.total_output_tokens += output_tokens
+            
+            # 记录调用历史
+            call_record = {
+                "source": "opensearch-retriever",
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens
+            }
+            self.token_counter.calls_history.append(call_record)
+            
+            # 确保结果不为空
+            if not results:
+                results = [{"content": "未找到相关的存储过程或SQL代码", "score": 0.0, "source": "opensearch"}]
+            
+            # 为结果添加元数据
+            for result in results:
+                result["source"] = "opensearch"
                 result["token_usage"] = {
                     "input_tokens": input_tokens,
                     "output_tokens": output_tokens
                 }
             
-            # 如果提供了uuid，将过滤后的结果存储到Redis
+            # 如果提供了UUID，将结果缓存
             if uuid:
                 try:
+                    # 使用专用key
                     key = f"{uuid}:opensearch"
-                    self.redis_tools.set(key, filtered_results)
-                except Exception as redis_error:
-                    print(f"Error storing OpenSearch results in Redis: {str(redis_error)}")
-            
-            return filtered_results
-            
-        except Exception as e:
-            import traceback
-            print(f"OpenSearch retriever error: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
-            
-            # 构建错误响应
-            error_result = [{
-                "content": f"Error querying OpenSearch: {str(e)}", 
-                "score": 0.0, 
-                "source": "opensearch",
-                "token_usage": {
-                    "input_tokens": 0,
-                    "output_tokens": 0
-                }
-            }]
-            
-            # 如果提供了uuid，尝试将错误结果存储到Redis
-            if uuid:
-                try:
-                    key = f"{uuid}:opensearch"
-                    self.redis_tools.set(key, [])
-                except Exception:
-                    pass
+                    self.redis_tools.set(key, results)
                     
-            return error_result
+                    # 同时更新主缓存
+                    cached_data = self.redis_tools.get(uuid) or {}
+                    cached_data["opensearch"] = results
+                    self.redis_tools.set(uuid, cached_data)
+                    print(f"Cached OpenSearch results for {uuid}")
+                except Exception as cache_error:
+                    print(f"Error caching OpenSearch results: {str(cache_error)}")
+            
+            return results
             
         except Exception as e:
-            # print(f"OpenSearch retrieval error: {str(e)}")
-            # print(f"Detailed error: {traceback.format_exc()}")
+            error_msg = f"OpenSearch检索错误: {str(e)}"
+            print(error_msg)
+            print(traceback.format_exc())
             
-            # 如果提供了UUID，将空结果存储到Redis
+            error_result = [{"content": error_msg, "score": 0.0, "source": "opensearch"}]
+            
+            # 如果提供了UUID，将错误结果缓存
             if uuid:
                 try:
-                    # 获取现有的缓存数据
+                    key = f"{uuid}:opensearch"
+                    self.redis_tools.set(key, error_result)
+                    # 同时更新主缓存
                     cached_data = self.redis_tools.get(uuid) or {}
-                    # 设置空字符串
-                    cached_data["opensearch"] = ""
-                    # 更新Redis缓存
+                    cached_data["opensearch"] = error_result
                     self.redis_tools.set(uuid, cached_data)
                 except Exception:
-                    pass
-                
-            return [{"content": f"Error querying OpenSearch: {str(e)}", "score": 0}]
+                    pass  # 忽略缓存错误
+            
+            return error_result

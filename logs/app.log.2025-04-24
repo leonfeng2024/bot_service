@@ -1,0 +1,2128 @@
+2025-04-24 08:20:26,615 - openai._base_client - INFO - Retrying request to /models in 0.379296 seconds
+2025-04-24 08:20:37,001 - openai._base_client - INFO - Retrying request to /models in 0.829613 seconds
+2025-04-24 08:20:47,862 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:20:48,100 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:20:48,103 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:20:48,130 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:20:53,042 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:20:53,077 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:21:23,048 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-24 08:21:23,049 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-24 08:21:23,051 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-24 08:21:23,052 - server - INFO - Login attempt
+2025-04-24 08:21:23,054 - server - INFO - Login attempt - Username: admin
+2025-04-24 08:21:23,172 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:21:23,188 - tools.redis_tools - INFO - Successfully set key in Redis: 7bb01cc4-1d18-4bc5-8861-53da3aba29ff
+2025-04-24 08:21:23,188 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-24 08:21:23,189 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 08:21:23,195 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-24 08:21:23,196 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-24 08:21:23,198 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 08:21:23,262 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 08:21:23,440 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-24 08:21:23,440 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-24 08:21:23,442 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-24 08:21:23,450 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-24 08:21:23,453 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-24 08:21:23,461 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-24 08:21:25,867 - server - INFO - API调用: OPTIONS /admin/users/use3, 参数: {}
+2025-04-24 08:21:25,867 - server - INFO - API完成: OPTIONS /admin/users/use3, 状态码: 200
+2025-04-24 08:21:25,869 - server - INFO - API调用: DELETE /admin/users/use3, 参数: {}
+2025-04-24 08:21:25,896 - service.user_service - INFO - Delete user result for use3: []
+2025-04-24 08:21:25,896 - server - INFO - API完成: DELETE /admin/users/use3, 状态码: 200
+2025-04-24 08:21:46,317 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-24 08:21:46,317 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-24 08:21:46,319 - server - INFO - API调用: POST /logout, 参数: {'uuid': '7bb01cc4-1d18-4bc5-8861-53da3aba29ff'}
+2025-04-24 08:21:46,321 - server - INFO - 接收到登出请求，UUID: 7bb01cc4-1d18-4bc5-8861-53da3aba29ff
+2025-04-24 08:21:46,321 - server - INFO - 成功删除用户缓存数据，UUID: 7bb01cc4-1d18-4bc5-8861-53da3aba29ff
+2025-04-24 08:21:46,322 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 08:21:56,017 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-24 08:21:56,017 - server - INFO - Login attempt
+2025-04-24 08:21:56,018 - server - INFO - Login attempt - Username: kb_manager
+2025-04-24 08:21:56,065 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:21:56,070 - tools.redis_tools - INFO - Successfully set key in Redis: 27f3561d-457b-46c4-b149-857b158d3ba3
+2025-04-24 08:21:56,070 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-24 08:21:56,071 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 08:21:56,073 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 08:21:56,076 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 08:26:19,245 - openai._base_client - INFO - Retrying request to /models in 0.432145 seconds
+2025-04-24 08:26:29,688 - openai._base_client - INFO - Retrying request to /models in 0.845141 seconds
+2025-04-24 08:26:40,561 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:26:40,722 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:26:40,725 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:26:40,750 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:26:44,894 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:26:44,932 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:26:44,957 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:40:39,411 - server - INFO - API调用: OPTIONS /postgres/execute, 参数: {}
+2025-04-24 08:40:39,413 - server - INFO - API完成: OPTIONS /postgres/execute, 状态码: 200
+2025-04-24 08:40:39,415 - server - INFO - API调用: POST /postgres/execute, 参数: {'query': 'select * from user_info'}
+2025-04-24 08:40:39,428 - server - INFO - API完成: POST /postgres/execute, 状态码: 200
+2025-04-24 08:41:15,217 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 08:41:15,218 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 08:41:15,219 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 08:41:15,221 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 08:41:15,226 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:41:15,274 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:41:15,276 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:41:15,307 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:43:06,038 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:43:06,044 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:43:06,046 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:43:06,051 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:43:11,186 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 08:43:11,187 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 08:43:11,189 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:43:11,200 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:43:11,201 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:43:11,218 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:43:13,874 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-24 08:43:13,876 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-24 08:43:13,878 - server - INFO - API调用: POST /logout, 参数: {'uuid': '27f3561d-457b-46c4-b149-857b158d3ba3'}
+2025-04-24 08:43:13,881 - server - INFO - 接收到登出请求，UUID: 27f3561d-457b-46c4-b149-857b158d3ba3
+2025-04-24 08:43:13,882 - server - INFO - 成功删除用户缓存数据，UUID: 27f3561d-457b-46c4-b149-857b158d3ba3
+2025-04-24 08:43:13,882 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 08:43:23,162 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-24 08:43:23,163 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-24 08:43:23,165 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-24 08:43:23,165 - server - INFO - Login attempt
+2025-04-24 08:43:23,166 - server - INFO - Login attempt - Username: admin
+2025-04-24 08:43:23,231 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:43:23,238 - tools.redis_tools - INFO - Successfully set key in Redis: c26966f6-6173-4094-837a-b4fc312c5429
+2025-04-24 08:43:23,238 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-24 08:43:23,238 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 08:43:23,242 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-24 08:43:23,243 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-24 08:43:23,244 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 08:43:23,250 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 08:43:23,380 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-24 08:43:23,380 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-24 08:43:23,381 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-24 08:43:23,385 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-24 08:43:23,389 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-24 08:43:23,415 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-24 08:44:02,041 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-24 08:44:02,043 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-24 08:44:02,045 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'c26966f6-6173-4094-837a-b4fc312c5429'}
+2025-04-24 08:44:02,046 - server - INFO - 接收到登出请求，UUID: c26966f6-6173-4094-837a-b4fc312c5429
+2025-04-24 08:44:02,047 - server - INFO - 成功删除用户缓存数据，UUID: c26966f6-6173-4094-837a-b4fc312c5429
+2025-04-24 08:44:02,048 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 08:44:03,943 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-24 08:44:03,944 - server - INFO - Login attempt
+2025-04-24 08:44:03,944 - server - INFO - Login attempt - Username: kb_manager
+2025-04-24 08:44:04,006 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:44:04,011 - tools.redis_tools - INFO - Successfully set key in Redis: 7c5f89b2-a87c-4b05-ad67-0fa246e1ec53
+2025-04-24 08:44:04,011 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-24 08:44:04,011 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 08:44:04,014 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 08:44:04,018 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 08:44:04,085 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 08:44:04,086 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 08:44:04,087 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:44:04,092 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:44:04,094 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:44:04,102 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:44:22,549 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:44:22,555 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:44:22,558 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 08:44:22,566 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 08:57:36,812 - server - INFO - API调用: OPTIONS /postgres/import, 参数: {}
+2025-04-24 08:57:36,813 - server - INFO - API完成: OPTIONS /postgres/import, 状态码: 200
+2025-04-24 08:57:36,816 - server - INFO - API调用: POST /postgres/import, 参数: {'raw_body': 'b\'------WebKitFormBoundary57mk1pqyQgHY9BIP\\r\\nContent-Disposition: form-data; name="file"; filename="import_test.sql"\\r\\nContent-Type: application/octet-stream\\r\\n\\r\\n--- Master Table\\n--- test \\nCREATE TABLE test (\\n    employee_id SERIAL PRIMARY KEY, -- \\xe7\\xa4\\xbe\\xe5\\x93\\xa1ID\\n    first_name VARCHAR(50) NOT NULL,\\n    last_name VARCHAR(50) NOT NULL,\\n    email VARCHAR(100) UNIQUE NOT NULL,\\n    phone_number VARCHAR(15),\\n    hire_date DATE NOT NULL,\\n    job_title VARCHAR(50) NOT NULL,\\n    department_id INT,\\n    salary DECIMAL(10, 2) NOT NULL,\\n    manager_id INT\\n);\\r\\n------WebKitFormBoundary57mk1pqyQgHY9BIP--\\r\\n\''}
+2025-04-24 08:57:36,838 - server - INFO - API完成: POST /postgres/import, 状态码: 403
+2025-04-24 08:59:00,672 - openai._base_client - INFO - Retrying request to /models in 0.437903 seconds
+2025-04-24 08:59:11,117 - openai._base_client - INFO - Retrying request to /models in 0.953339 seconds
+2025-04-24 08:59:22,098 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:59:22,274 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:59:22,277 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:59:22,300 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:59:26,035 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 08:59:26,058 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 08:59:26,081 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 09:01:23,793 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 09:01:23,795 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 09:01:23,795 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 09:01:23,798 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 09:01:23,805 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:01:23,866 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:01:23,869 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:01:23,883 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:01:27,368 - server - INFO - API调用: POST /postgres/import, 参数: {'raw_body': 'b\'------WebKitFormBoundary0RdgVu9evP5vSw9f\\r\\nContent-Disposition: form-data; name="file"; filename="import_test.sql"\\r\\nContent-Type: application/octet-stream\\r\\n\\r\\n--- Master Table\\n--- test \\nCREATE TABLE test (\\n    employee_id SERIAL PRIMARY KEY, -- \\xe7\\xa4\\xbe\\xe5\\x93\\xa1ID\\n    first_name VARCHAR(50) NOT NULL,\\n    last_name VARCHAR(50) NOT NULL,\\n    email VARCHAR(100) UNIQUE NOT NULL,\\n    phone_number VARCHAR(15),\\n    hire_date DATE NOT NULL,\\n    job_title VARCHAR(50) NOT NULL,\\n    department_id INT,\\n    salary DECIMAL(10, 2) NOT NULL,\\n    manager_id INT\\n);\\r\\n------WebKitFormBoundary0RdgVu9evP5vSw9f--\\r\\n\''}
+2025-04-24 09:01:27,377 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.SyntaxError) syntax error at end of input
+LINE 1: ...nt_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+                                                                       ^
+
+[SQL: CREATE TABLE test ( employee_id SERIAL PRIMARY KEY, -- 社員ID first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone_number VARCHAR(15), hire_date DATE NOT NULL, job_title VARCHAR(50) NOT NULL, department_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-24 09:01:27,378 - tools.postgresql_tools - ERROR - Query: CREATE TABLE test ( employee_id SERIAL PRIMARY KEY, -- 社員ID first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone_number VARCHAR(15), hire_date DATE NOT NULL, job_title VARCHAR(50) NOT NULL, department_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+2025-04-24 09:01:27,390 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.SyntaxError: syntax error at end of input
+LINE 1: ...nt_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+                                                                       ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at end of input
+LINE 1: ...nt_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+                                                                       ^
+
+[SQL: CREATE TABLE test ( employee_id SERIAL PRIMARY KEY, -- 社員ID first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone_number VARCHAR(15), hire_date DATE NOT NULL, job_title VARCHAR(50) NOT NULL, department_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-24 09:01:27,391 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.SyntaxError) syntax error at end of input
+LINE 1: ...nt_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+                                                                       ^
+
+[SQL: CREATE TABLE test ( employee_id SERIAL PRIMARY KEY, -- 社員ID first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone_number VARCHAR(15), hire_date DATE NOT NULL, job_title VARCHAR(50) NOT NULL, department_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-24 09:01:27,392 - tools.postgresql_tools - ERROR - Query: CREATE TABLE test ( employee_id SERIAL PRIMARY KEY, -- 社員ID first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone_number VARCHAR(15), hire_date DATE NOT NULL, job_title VARCHAR(50) NOT NULL, department_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+2025-04-24 09:01:27,393 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.SyntaxError: syntax error at end of input
+LINE 1: ...nt_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+                                                                       ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at end of input
+LINE 1: ...nt_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );
+                                                                       ^
+
+[SQL: CREATE TABLE test ( employee_id SERIAL PRIMARY KEY, -- 社員ID first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone_number VARCHAR(15), hire_date DATE NOT NULL, job_title VARCHAR(50) NOT NULL, department_id INT, salary DECIMAL(10, 2) NOT NULL, manager_id INT );]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-24 09:01:27,394 - server - INFO - API完成: POST /postgres/import, 状态码: 200
+2025-04-24 09:01:27,404 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:01:27,411 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:02:30,934 - server - INFO - API调用: OPTIONS /postgres/execute, 参数: {}
+2025-04-24 09:02:30,934 - server - INFO - API完成: OPTIONS /postgres/execute, 状态码: 200
+2025-04-24 09:02:30,936 - server - INFO - API调用: POST /postgres/execute, 参数: {'query': 'CREATE TABLE test (\n    employee_id SERIAL PRIMARY KEY, -- 社員ID\n    first_name VARCHAR(50) NOT NULL,\n    last_name VARCHAR(50) NOT NULL,\n    email VARCHAR(100) UNIQUE NOT NULL,\n    phone_number VARCHAR(15),\n    hire_date DATE NOT NULL,\n    job_title VARCHAR(50) NOT NULL,\n    department_id INT,\n    salary DECIMAL(10, 2) NOT NULL,\n    manager_id INT\n);'}
+2025-04-24 09:02:30,937 - service.postgres_service - WARNING - Non-read query attempted: CREATE TABLE test (
+    employee_id SERIAL PRIMARY KEY, -- 社員ID
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone_number VARCHAR(15),
+    hire_date DATE NOT NULL,
+    job_title VARCHAR(50) NOT NULL,
+    department_id INT,
+    salary DECIMAL(10, 2) NOT NULL,
+    manager_id INT
+);
+2025-04-24 09:02:31,024 - server - INFO - API完成: POST /postgres/execute, 状态码: 200
+2025-04-24 09:02:43,523 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:02:43,531 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:02:43,534 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:02:43,542 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:03:00,833 - server - INFO - API调用: POST /postgres/execute, 参数: {'query': 'delete table test'}
+2025-04-24 09:03:00,834 - service.postgres_service - WARNING - Non-read query attempted: delete table test
+2025-04-24 09:03:00,836 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-24 09:03:00,836 - tools.postgresql_tools - ERROR - Query: delete table test
+2025-04-24 09:03:00,837 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.SyntaxError: syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-24 09:03:00,838 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-24 09:03:00,838 - tools.postgresql_tools - ERROR - Query: delete table test
+2025-04-24 09:03:00,840 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.SyntaxError: syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-24 09:03:00,840 - server - INFO - API完成: POST /postgres/execute, 状态码: 200
+2025-04-24 09:03:05,372 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:03:05,384 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:03:05,386 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:03:05,394 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:03:18,384 - server - INFO - API调用: POST /postgres/execute, 参数: {'query': 'delete table test'}
+2025-04-24 09:03:18,385 - service.postgres_service - WARNING - Non-read query attempted: delete table test
+2025-04-24 09:03:18,387 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-24 09:03:18,387 - tools.postgresql_tools - ERROR - Query: delete table test
+2025-04-24 09:03:18,388 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.SyntaxError: syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-24 09:03:18,389 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-24 09:03:18,389 - tools.postgresql_tools - ERROR - Query: delete table test
+2025-04-24 09:03:18,391 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.SyntaxError: syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at or near "table"
+LINE 1: delete table test
+               ^
+
+[SQL: delete table test]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-24 09:03:18,391 - server - INFO - API完成: POST /postgres/execute, 状态码: 200
+2025-04-24 09:04:08,497 - server - INFO - API调用: OPTIONS /postgres/export/user_info, 参数: {}
+2025-04-24 09:04:08,498 - server - INFO - API完成: OPTIONS /postgres/export/user_info, 状态码: 200
+2025-04-24 09:04:08,500 - server - INFO - API调用: GET /postgres/export/user_info, 参数: {}
+2025-04-24 09:04:08,511 - server - INFO - API完成: GET /postgres/export/user_info, 状态码: 200
+2025-04-24 09:06:38,045 - server - INFO - API调用: POST /postgres/import, 参数: {'raw_body': 'b\'------WebKitFormBoundary8jmaprApadpyzYKE\\r\\nContent-Disposition: form-data; name="file"; filename="import_test.sql"\\r\\nContent-Type: application/octet-stream\\r\\n\\r\\n--- Master Table\\n--- test \\nINSERT INTO public.user_info(\\n    user_id, password, role, phone, isactive, comment, email, username)\\n    VALUES ( \\\'user9\\\', \\\'123\\\', \\\'user\\\', \\\'1234567890\\\', \\\'active\\\', \\\'user9\\\', \\\'user9@example.com\\\', \\\'user9\\\');\\r\\n------WebKitFormBoundary8jmaprApadpyzYKE--\\r\\n\''}
+2025-04-24 09:06:38,057 - server - INFO - API完成: POST /postgres/import, 状态码: 200
+2025-04-24 09:06:38,068 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:06:38,079 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:06:45,965 - server - INFO - API调用: POST /postgres/execute, 参数: {'query': 'select * from user_info'}
+2025-04-24 09:06:45,969 - server - INFO - API完成: POST /postgres/execute, 状态码: 200
+2025-04-24 09:12:19,564 - server - INFO - API调用: OPTIONS /postgres/import, 参数: {}
+2025-04-24 09:12:19,566 - server - INFO - API完成: OPTIONS /postgres/import, 状态码: 200
+2025-04-24 09:12:19,653 - server - INFO - API调用: POST /postgres/import, 参数: {'raw_body': 'b\'------WebKitFormBoundaryTUd8uSJJhAwxg9Pc\\r\\nContent-Disposition: form-data; name="file"; filename="import_test.sql"\\r\\nContent-Type: application/octet-stream\\r\\n\\r\\nCREATE TABLE test (\\n    employee_id SERIAL PRIMARY KEY,\\n    first_name VARCHAR(50) NOT NULL,\\n    last_name VARCHAR(50) NOT NULL,\\n    email VARCHAR(100) UNIQUE NOT NULL,\\n    phone_number VARCHAR(15),\\n    hire_date DATE NOT NULL,\\n    job_title VARCHAR(50) NOT NULL,\\n    department_id INT,\\n    salary DECIMAL(10, 2) NOT NULL,\\n    manager_id INT\\n);\\r\\n------WebKitFormBoundaryTUd8uSJJhAwxg9Pc--\\r\\n\''}
+2025-04-24 09:12:19,693 - server - INFO - API完成: POST /postgres/import, 状态码: 200
+2025-04-24 09:12:19,702 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 09:12:19,702 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 09:12:19,706 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:12:19,715 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:12:22,307 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:12:22,313 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:12:22,316 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:12:22,324 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:28:22,820 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 09:28:22,822 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 09:28:22,824 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:28:22,834 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:32:29,843 - server - INFO - API调用: OPTIONS /postgres/export/view_tables, 参数: {}
+2025-04-24 09:32:29,844 - server - INFO - API完成: OPTIONS /postgres/export/view_tables, 状态码: 200
+2025-04-24 09:32:29,847 - server - INFO - API调用: GET /postgres/export/view_tables, 参数: {}
+2025-04-24 09:32:29,950 - server - INFO - API完成: GET /postgres/export/view_tables, 状态码: 200
+2025-04-24 09:36:24,575 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:36:24,591 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:36:24,593 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:36:24,601 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:54:31,150 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-24 09:54:31,151 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-24 09:54:31,154 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-24 09:54:31,154 - server - INFO - Login attempt
+2025-04-24 09:54:31,154 - server - INFO - Login attempt - Username: admin
+2025-04-24 09:54:31,218 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 09:54:31,226 - tools.redis_tools - INFO - Successfully set key in Redis: 9701cdae-b5f6-445b-9bb7-9ca40933893d
+2025-04-24 09:54:31,226 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-24 09:54:31,227 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 09:54:31,230 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-24 09:54:31,230 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-24 09:54:31,231 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 09:54:31,258 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 09:54:31,401 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-24 09:54:31,401 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-24 09:54:31,403 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-24 09:54:31,415 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-24 09:54:31,416 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-24 09:54:31,420 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-24 09:54:33,299 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-24 09:54:33,299 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-24 09:54:33,302 - server - INFO - API调用: POST /logout, 参数: {'uuid': '9701cdae-b5f6-445b-9bb7-9ca40933893d'}
+2025-04-24 09:54:33,303 - server - INFO - 接收到登出请求，UUID: 9701cdae-b5f6-445b-9bb7-9ca40933893d
+2025-04-24 09:54:33,306 - server - INFO - 成功删除用户缓存数据，UUID: 9701cdae-b5f6-445b-9bb7-9ca40933893d
+2025-04-24 09:54:33,309 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 09:54:42,367 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-24 09:54:42,368 - server - INFO - Login attempt
+2025-04-24 09:54:42,368 - server - INFO - Login attempt - Username: kb_manager
+2025-04-24 09:54:42,414 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 09:54:42,421 - tools.redis_tools - INFO - Successfully set key in Redis: 384e20e0-d187-4829-a79a-c4769a2f0d8c
+2025-04-24 09:54:42,421 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-24 09:54:42,422 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 09:54:42,425 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 09:54:42,430 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 09:54:42,510 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 09:54:42,510 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 09:54:42,513 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:54:42,519 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 09:54:42,521 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 09:54:42,556 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:00:58,950 - server - INFO - API调用: OPTIONS /opensearch/indices, 参数: {}
+2025-04-24 10:00:58,951 - server - INFO - API完成: OPTIONS /opensearch/indices, 状态码: 200
+2025-04-24 10:00:58,953 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-24 10:00:58,954 - server - INFO - API完成: GET /opensearch/indices, 状态码: 404
+2025-04-24 10:03:25,446 - server - INFO - API调用: POST /logout, 参数: {'uuid': '384e20e0-d187-4829-a79a-c4769a2f0d8c'}
+2025-04-24 10:03:25,448 - server - INFO - 接收到登出请求，UUID: 384e20e0-d187-4829-a79a-c4769a2f0d8c
+2025-04-24 10:03:25,449 - server - INFO - 成功删除用户缓存数据，UUID: 384e20e0-d187-4829-a79a-c4769a2f0d8c
+2025-04-24 10:03:25,449 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 10:03:31,632 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-24 10:03:31,633 - server - INFO - Login attempt
+2025-04-24 10:03:31,633 - server - INFO - Login attempt - Username: kb_manager
+2025-04-24 10:03:31,694 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:03:31,700 - tools.redis_tools - INFO - Successfully set key in Redis: 6bf03210-8a21-444c-af57-b573d17ad7b3
+2025-04-24 10:03:31,700 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-24 10:03:31,701 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 10:03:31,704 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 10:03:31,709 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 10:03:31,779 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:03:31,895 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:03:31,897 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:03:31,903 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:03:48,624 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 10:03:48,624 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 10:03:48,627 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:03:48,634 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:03:48,689 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:03:48,714 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:04:46,340 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:04:46,346 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:04:46,348 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:04:46,354 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:05:44,091 - openai._base_client - INFO - Retrying request to /models in 0.477642 seconds
+2025-04-24 10:05:54,574 - openai._base_client - INFO - Retrying request to /models in 0.921594 seconds
+2025-04-24 10:06:05,542 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:06:05,768 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:06:05,772 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:06:05,796 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:06:09,017 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:06:09,042 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:06:09,065 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:06:09,066 - service.opensearch_service - INFO - Successfully connected to OpenSearch at localhost:9200
+2025-04-24 10:07:11,907 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:07:11,923 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:07:11,926 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:07:11,933 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:08:04,130 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:08:08,163 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-04-24 10:08:08,163 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            
+2025-04-24 10:08:08,191 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+2025-04-24 10:08:08,192 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-04-24 10:08:08,192 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            
+2025-04-24 10:08:08,195 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            ]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+2025-04-24 10:08:08,197 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:08:08,225 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:08:15,984 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-04-24 10:08:15,984 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                table_name,
+                table_schema,
+                CASE 
+                    WHEN table_type = 'BASE TABLE' THEN 'table'
+                    ELSE lower(table_type)
+                END as table_type
+            FROM 
+                information_schema.tables
+            WHERE 
+                table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY 
+                table_schema, table_name;
+            
+2025-04-24 10:08:16,001 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3302, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 717, in checkout
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 715, in checkout
+    dbapi_connection = rec.get_connection()
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 837, in get_connection
+    self.__connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 621, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 198, in execute_query
+    with engine.connect() as connection:
+         ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3278, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2442, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 3302, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 717, in checkout
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 715, in checkout
+    dbapi_connection = rec.get_connection()
+                       ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 837, in get_connection
+    self.__connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 621, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+2025-04-24 10:08:16,002 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:11:14,516 - server - INFO - API调用: GET /api/opensearch/indices, 参数: {}
+2025-04-24 10:11:14,516 - server - INFO - API完成: GET /api/opensearch/indices, 状态码: 404
+2025-04-24 10:11:22,599 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-24 10:11:22,600 - server - INFO - API完成: GET /opensearch/indices, 状态码: 403
+2025-04-24 10:11:43,834 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-24 10:11:43,835 - server - INFO - API完成: GET /opensearch/indices, 状态码: 401
+2025-04-24 10:11:56,631 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-24 10:11:56,632 - server - WARNING - Development token used to bypass authentication
+2025-04-24 10:11:56,660 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.028s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+2025-04-24 10:11:56,697 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.024s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+2025-04-24 10:11:56,723 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.024s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+2025-04-24 10:11:56,749 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.024s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)
+2025-04-24 10:11:56,751 - service.opensearch_service - ERROR - Error getting indices: ConnectionError([SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)) caused by: SSLError([SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010))
+2025-04-24 10:11:56,751 - server - ERROR - Error getting OpenSearch indices: ConnectionError([SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)) caused by: SSLError([SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010))
+2025-04-24 10:11:56,751 - server - INFO - API完成: GET /opensearch/indices, 状态码: 500
+2025-04-24 10:12:37,187 - openai._base_client - INFO - Retrying request to /models in 0.423984 seconds
+2025-04-24 10:12:42,650 - openai._base_client - INFO - Retrying request to /models in 0.970328 seconds
+2025-04-24 10:12:48,686 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:12:50,973 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:12:50,978 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:12:51,008 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:12:53,709 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:12:53,740 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:12:53,767 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:12:53,768 - service.opensearch_service - INFO - Successfully connected to OpenSearch at localhost:9200
+2025-04-24 10:15:33,010 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-24 10:15:33,010 - server - WARNING - Development token used to bypass authentication
+2025-04-24 10:15:34,631 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:1.621s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL] record layer failure (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL] record layer failure (_ssl.c:1010)
+2025-04-24 10:15:34,696 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.061s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL] record layer failure (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL] record layer failure (_ssl.c:1010)
+2025-04-24 10:15:34,732 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.035s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL] record layer failure (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL] record layer failure (_ssl.c:1010)
+2025-04-24 10:15:34,776 - opensearch - WARNING - GET https://localhost:9200/_cat/indices?format=json [status:N/A request:0.043s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 741, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 920, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+               ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 460, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/ssl_.py", line 504, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1041, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1319, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL] record layer failure (_ssl.c:1010)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL] record layer failure (_ssl.c:1010)
+2025-04-24 10:15:34,778 - service.opensearch_service - ERROR - Error getting indices: ConnectionError([SSL] record layer failure (_ssl.c:1010)) caused by: SSLError([SSL] record layer failure (_ssl.c:1010))
+2025-04-24 10:15:34,778 - server - ERROR - Error getting OpenSearch indices: ConnectionError([SSL] record layer failure (_ssl.c:1010)) caused by: SSLError([SSL] record layer failure (_ssl.c:1010))
+2025-04-24 10:15:34,779 - server - INFO - API完成: GET /opensearch/indices, 状态码: 500
+2025-04-24 10:18:50,359 - openai._base_client - INFO - Retrying request to /models in 0.415760 seconds
+2025-04-24 10:19:00,789 - openai._base_client - INFO - Retrying request to /models in 0.813347 seconds
+2025-04-24 10:19:11,634 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:19:11,783 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:19:11,786 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:19:11,809 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:19:14,320 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 10:19:14,343 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:19:14,364 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:19:14,365 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-24 10:19:14,496 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.131s]
+2025-04-24 10:19:14,496 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-24 10:19:22,463 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-24 10:19:22,463 - server - WARNING - Development token used to bypass authentication
+2025-04-24 10:19:22,996 - opensearch - INFO - GET http://localhost:9200/_cat/indices?format=json [status:200 request:0.532s]
+2025-04-24 10:19:23,033 - opensearch - INFO - GET http://localhost:9200/_cluster/health [status:200 request:0.037s]
+2025-04-24 10:19:23,034 - server - INFO - API完成: GET /opensearch/indices, 状态码: 200
+2025-04-24 10:21:35,099 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 10:21:35,100 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-24 10:21:35,101 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 10:21:35,101 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-24 10:21:35,103 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:21:35,185 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:21:35,186 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:21:35,194 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:21:58,716 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-24 10:21:58,716 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-24 10:21:58,718 - server - INFO - API调用: POST /logout, 参数: {'uuid': '6bf03210-8a21-444c-af57-b573d17ad7b3'}
+2025-04-24 10:21:58,720 - server - INFO - 接收到登出请求，UUID: 6bf03210-8a21-444c-af57-b573d17ad7b3
+2025-04-24 10:21:58,721 - server - INFO - 成功删除用户缓存数据，UUID: 6bf03210-8a21-444c-af57-b573d17ad7b3
+2025-04-24 10:21:58,722 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 10:22:03,666 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-24 10:22:03,667 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-24 10:22:03,669 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-24 10:22:03,670 - server - INFO - Login attempt
+2025-04-24 10:22:03,670 - server - INFO - Login attempt - Username: kb_manager
+2025-04-24 10:22:03,736 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:22:03,747 - tools.redis_tools - INFO - Successfully set key in Redis: d9dd97a8-4a7d-4e5c-8e00-8429437f650e
+2025-04-24 10:22:03,747 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-24 10:22:03,747 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 10:22:03,751 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-24 10:22:03,752 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-24 10:22:03,754 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 10:22:03,758 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 10:22:03,816 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:22:03,822 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:22:03,824 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:22:03,828 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:24:00,342 - server - INFO - API调用: OPTIONS /api/postgres/tables, 参数: {}
+2025-04-24 10:24:00,342 - server - INFO - API完成: OPTIONS /api/postgres/tables, 状态码: 200
+2025-04-24 10:24:00,346 - server - INFO - API调用: GET /api/postgres/tables, 参数: {}
+2025-04-24 10:24:00,348 - server - INFO - API完成: GET /api/postgres/tables, 状态码: 404
+2025-04-24 10:24:00,380 - server - INFO - API调用: GET /api/postgres/tables, 参数: {}
+2025-04-24 10:24:00,391 - server - INFO - API完成: GET /api/postgres/tables, 状态码: 404
+2025-04-24 10:24:16,310 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:24:16,319 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:24:16,323 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:24:16,332 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:24:29,550 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:24:29,577 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:24:29,581 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:24:29,605 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:24:49,463 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'd9dd97a8-4a7d-4e5c-8e00-8429437f650e'}
+2025-04-24 10:24:49,464 - server - INFO - 接收到登出请求，UUID: d9dd97a8-4a7d-4e5c-8e00-8429437f650e
+2025-04-24 10:24:49,465 - server - INFO - 成功删除用户缓存数据，UUID: d9dd97a8-4a7d-4e5c-8e00-8429437f650e
+2025-04-24 10:24:49,466 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-24 10:25:05,958 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-24 10:25:05,958 - server - INFO - Login attempt
+2025-04-24 10:25:05,959 - server - INFO - Login attempt - Username: kb_manager
+2025-04-24 10:25:06,027 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 10:25:06,032 - tools.redis_tools - INFO - Successfully set key in Redis: 862c8624-f86b-41c4-ad22-9b824e1a1399
+2025-04-24 10:25:06,032 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-24 10:25:06,033 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 10:25:06,036 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-24 10:25:06,039 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-24 10:25:06,169 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:25:06,174 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 10:25:06,176 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-24 10:25:06,186 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-24 17:30:04,733 - openai._base_client - INFO - Retrying request to /models in 0.427663 seconds
+2025-04-24 17:30:15,171 - openai._base_client - INFO - Retrying request to /models in 0.898697 seconds
+2025-04-24 17:30:26,175 - tools.redis_tools - ERROR - Failed to connect to Redis: Error 8 connecting to bibot_redis:6379. nodename nor servname provided, or not known.
+2025-04-24 17:30:26,176 - tools.redis_tools - WARNING - Running with Redis disabled. Cache operations will be no-ops.
+2025-04-24 17:31:05,137 - openai._base_client - INFO - Retrying request to /models in 0.394791 seconds
+2025-04-24 17:31:15,535 - openai._base_client - INFO - Retrying request to /models in 0.909900 seconds
+2025-04-24 17:31:26,472 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:31:26,993 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:31:26,996 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:31:27,018 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:31:30,778 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:31:30,808 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:31:30,834 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:31:30,836 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-24 17:31:31,058 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.222s]
+2025-04-24 17:31:31,059 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-24 17:33:27,369 - server - INFO - API调用: POST /chat, 参数: {'username': 'user', 'query': '我修改了employee_details ，帮我查找与employee_details字段关联的表和view,Procedure等信息', 'uuid': '1f4229a0-c791-4368-a5b6-abf0c497f121'}
+2025-04-24 17:33:27,375 - server - INFO - API完成: POST /chat, 状态码: 401
+2025-04-24 17:33:41,351 - server - INFO - API调用: POST /chat, 参数: {'username': 'user', 'query': '我修改了employee_details ，帮我查找与employee_details字段关联的表和view,Procedure等信息', 'uuid': '1f4229a0-c791-4368-a5b6-abf0c497f121'}
+2025-04-24 17:33:41,352 - server - WARNING - Development token used to bypass authentication
+2025-04-24 17:33:41,354 - server - INFO - Received chat request - User: user, UUID: 1f4229a0-c791-4368-a5b6-abf0c497f121
+2025-04-24 17:33:41,354 - server - WARNING - UUID mismatch - Request UUID: 1f4229a0-c791-4368-a5b6-abf0c497f121, Token UUID: dev-uuid
+2025-04-24 17:33:41,355 - server - INFO - API完成: POST /chat, 状态码: 403
+2025-04-24 17:34:02,453 - server - INFO - API调用: POST /chat, 参数: {'username': 'user', 'query': '我修改了employee_details ，帮我查找与employee_details字段关联的表和view,Procedure等信息', 'uuid': '74bf9c30-c09d-4df4-82ed-fcc72e3fc41b'}
+2025-04-24 17:34:02,454 - server - WARNING - Development token used to bypass authentication
+2025-04-24 17:34:02,455 - server - INFO - Received chat request - User: user, UUID: 74bf9c30-c09d-4df4-82ed-fcc72e3fc41b
+2025-04-24 17:34:02,455 - server - WARNING - UUID mismatch - Request UUID: 74bf9c30-c09d-4df4-82ed-fcc72e3fc41b, Token UUID: dev-uuid
+2025-04-24 17:34:02,455 - server - INFO - API完成: POST /chat, 状态码: 403
+2025-04-24 17:34:10,811 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我修改了employee_details ，帮我查找与employee_details字段关联的表和view,Procedure等信息', 'uuid': '74bf9c30-c09d-4df4-82ed-fcc72e3fc41b'}
+2025-04-24 17:34:10,812 - server - WARNING - Development token used to bypass authentication
+2025-04-24 17:34:10,812 - server - INFO - Received chat request - User: user1, UUID: 74bf9c30-c09d-4df4-82ed-fcc72e3fc41b
+2025-04-24 17:34:10,812 - server - WARNING - UUID mismatch - Request UUID: 74bf9c30-c09d-4df4-82ed-fcc72e3fc41b, Token UUID: dev-uuid
+2025-04-24 17:34:10,812 - server - INFO - API完成: POST /chat, 状态码: 403
+2025-04-24 17:34:26,428 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '74bf9c30-c09d-4df4-82ed-fcc72e3fc41b'}
+2025-04-24 17:34:26,429 - server - WARNING - Development token used to bypass authentication
+2025-04-24 17:34:26,429 - server - INFO - Received chat request - User: user1, UUID: 74bf9c30-c09d-4df4-82ed-fcc72e3fc41b
+2025-04-24 17:34:26,429 - server - WARNING - UUID mismatch - Request UUID: 74bf9c30-c09d-4df4-82ed-fcc72e3fc41b, Token UUID: dev-uuid
+2025-04-24 17:34:26,429 - server - INFO - API完成: POST /chat, 状态码: 403
+2025-04-24 17:34:54,103 - server - INFO - API调用: POST /token, 参数: {}
+2025-04-24 17:34:54,103 - server - INFO - Login attempt
+2025-04-24 17:34:54,103 - server - ERROR - 登录过程中发生错误: Expecting value: line 1 column 1 (char 0)
+2025-04-24 17:34:54,104 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 17:35:17,685 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-24 17:35:17,685 - server - INFO - Login attempt
+2025-04-24 17:35:17,686 - server - INFO - Login attempt - Username: user1
+2025-04-24 17:35:17,749 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:35:17,758 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:35:17,758 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-24 17:35:17,759 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-24 17:35:35,753 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:35:35,754 - server - WARNING - Development token used to bypass authentication
+2025-04-24 17:35:35,754 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:35:35,757 - server - WARNING - UUID mismatch - Request UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d, Token UUID: dev-uuid
+2025-04-24 17:35:35,757 - server - INFO - API完成: POST /chat, 状态码: 403
+2025-04-24 17:35:46,195 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:35:46,196 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:35:56,264 - openai._base_client - INFO - Retrying request to /chat/completions in 0.417552 seconds
+2025-04-24 17:36:06,689 - openai._base_client - INFO - Retrying request to /chat/completions in 0.928160 seconds
+2025-04-24 17:36:17,644 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:36:54,161 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:36:54,163 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:37:04,171 - openai._base_client - INFO - Retrying request to /chat/completions in 0.448740 seconds
+2025-04-24 17:37:14,629 - openai._base_client - INFO - Retrying request to /chat/completions in 0.960342 seconds
+2025-04-24 17:37:24,604 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:37:44,525 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-24 17:37:44,558 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:37:44,735 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:37:44,739 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:37:44,763 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:37:48,046 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:37:48,071 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:37:48,093 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:37:48,094 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-24 17:37:48,139 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.045s]
+2025-04-24 17:37:48,140 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-24 17:39:12,636 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:39:12,638 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:39:15,599 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:39:22,799 - tools.token_counter - INFO - Created encoder for model: gpt-4.1
+2025-04-24 17:39:22,805 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:40:22,059 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees表字段', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:40:22,061 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:40:23,961 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:40:23,966 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:43:00,886 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-24 17:43:00,917 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:43:01,075 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:43:01,078 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:43:01,102 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:43:05,009 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:43:05,034 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:43:05,056 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:43:05,057 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-24 17:43:05,114 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.057s]
+2025-04-24 17:43:05,115 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-24 17:43:10,037 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees表字段', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:43:10,039 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:43:15,056 - openai._base_client - INFO - Retrying request to /chat/completions in 0.395289 seconds
+2025-04-24 17:43:16,919 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:43:17,131 - tools.token_counter - INFO - Created encoder for model: gpt-4.1
+2025-04-24 17:43:17,133 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:43:18,248 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:43:18,257 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:43:19,381 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:1.123s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x148d498e0>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:43:19,395 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.003s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x147446660>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:43:19,400 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x148d499d0>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:43:19,403 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x148d49a30>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:43:19,431 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:43:19,434 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:43:20,773 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-24 17:43:20,821 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:43:22,346 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:43:22,353 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:opensearch
+2025-04-24 17:43:24,411 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:43:24,642 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-24 17:43:26,123 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:43:35,157 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-24 17:43:35,160 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:postgresql
+2025-04-24 17:43:35,163 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:43:35,165 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:opensearch
+2025-04-24 17:43:35,166 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:postgresql
+2025-04-24 17:43:35,167 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:neo4j
+2025-04-24 17:43:37,505 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:49:51,487 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-24 17:49:51,530 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:49:51,774 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:49:51,777 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:49:51,803 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:49:55,106 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:49:55,141 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:49:55,166 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:49:55,167 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-24 17:49:55,203 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.036s]
+2025-04-24 17:49:55,203 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-24 17:50:01,236 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees表字段', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:50:01,238 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:50:02,769 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:50:03,001 - tools.token_counter - INFO - Created encoder for model: gpt-4.1
+2025-04-24 17:50:03,004 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:50:03,794 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:50:03,816 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:50:03,819 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x145706600>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:50:03,830 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.003s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1457066c0>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:50:03,834 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x145706810>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:50:03,838 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x145706f60>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:50:03,866 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:50:03,870 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:50:05,230 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-24 17:50:05,284 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:50:06,656 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:50:06,661 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:opensearch
+2025-04-24 17:50:09,533 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:50:09,804 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-24 17:50:11,834 - openai._base_client - INFO - Retrying request to /chat/completions in 0.486542 seconds
+2025-04-24 17:50:13,827 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:50:15,659 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-24 17:50:15,662 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:postgresql
+2025-04-24 17:50:15,664 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:50:15,666 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:opensearch
+2025-04-24 17:50:15,668 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:postgresql
+2025-04-24 17:50:15,669 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:neo4j
+2025-04-24 17:50:18,439 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:50:51,491 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees表字段', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:50:51,491 - server - WARNING - Development token used to bypass authentication
+2025-04-24 17:50:51,492 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:50:51,492 - server - WARNING - UUID mismatch - Request UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d, Token UUID: dev-uuid
+2025-04-24 17:50:51,492 - server - INFO - API完成: POST /chat, 状态码: 403
+2025-04-24 17:51:04,415 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees表字段', 'uuid': '23ca4e61-55e4-4ae7-90d5-32cb20db915d'}
+2025-04-24 17:51:04,415 - server - INFO - Received chat request - User: user1, UUID: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:51:07,468 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:51:07,473 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-24 17:51:08,612 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:51:08,625 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:51:08,628 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1458d42f0>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:51:08,632 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1458d4380>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:51:08,635 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1458d4440>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:51:08,639 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1458d4530>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-24 17:51:08,686 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-24 17:51:08,690 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:51:10,897 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-24 17:51:10,940 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-24 17:51:13,116 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:51:13,123 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:opensearch
+2025-04-24 17:51:17,836 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:51:18,044 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-24 17:51:19,876 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-24 17:51:22,786 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-24 17:51:22,790 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:postgresql
+2025-04-24 17:51:22,792 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d
+2025-04-24 17:51:22,793 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:opensearch
+2025-04-24 17:51:22,795 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:postgresql
+2025-04-24 17:51:22,796 - tools.redis_tools - INFO - Successfully set key in Redis: 23ca4e61-55e4-4ae7-90d5-32cb20db915d:neo4j
+2025-04-24 17:51:27,808 - openai._base_client - INFO - Retrying request to /chat/completions in 0.478690 seconds
+2025-04-24 17:51:33,495 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

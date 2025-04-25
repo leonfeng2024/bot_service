@@ -51,3 +51,11 @@ if os.getenv("REDIS_ENV") == "production":
 # JWT 配置
 JWT_SECRET = "your_jwt_secret_key"
 JWT_EXPIRATION = 3600
+
+# OpenSearch 配置
+OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "bibot_opensearch")
+OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", 9200))
+OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin")
+OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD", "admin")
+OPENSEARCH_USE_SSL = os.getenv("OPENSEARCH_USE_SSL", "False").lower() in ("true", "1", "yes")
+OPENSEARCH_VERIFY_CERTS = os.getenv("OPENSEARCH_VERIFY_CERTS", "False").lower() in ("true", "1", "yes")

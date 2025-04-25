@@ -32,6 +32,10 @@ class PostgreSQLTools:
         self.all_views = []
         self.search_object = []
         
+        # 默认不排除任何表，可以根据需要设置
+        self.include_tables = None
+        self.exclude_tables = None
+        
         # 测试连接
         self._connect()
         
@@ -63,6 +67,15 @@ class PostgreSQLTools:
             logger.error(f"Failed to connect to PostgreSQL: {str(e)}")
             logger.error(traceback.format_exc())
             # 不抛出异常，允许系统继续运行
+    
+    def get_sqlalchemy_uri(self) -> str:
+        """
+        返回用于SQLAlchemy连接的数据库URI字符串
+        
+        Returns:
+            str: SQLAlchemy连接URI字符串
+        """
+        return self.db_uri
     
     def get_db_engine(self):
         """

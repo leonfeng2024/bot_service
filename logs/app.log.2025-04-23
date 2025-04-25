@@ -1,0 +1,1461 @@
+2025-04-23 15:41:00,389 - openai._base_client - INFO - Retrying request to /models in 0.471898 seconds
+2025-04-23 15:41:10,874 - openai._base_client - INFO - Retrying request to /models in 0.895052 seconds
+2025-04-23 15:41:21,869 - tools.redis_tools - ERROR - Failed to connect to Redis: Error 8 connecting to bibot_redis:6379. nodename nor servname provided, or not known.
+2025-04-23 15:41:21,869 - tools.redis_tools - WARNING - Running with Redis disabled. Cache operations will be no-ops.
+2025-04-23 15:42:05,486 - openai._base_client - INFO - Retrying request to /models in 0.463714 seconds
+2025-04-23 15:42:15,958 - openai._base_client - INFO - Retrying request to /models in 0.866426 seconds
+2025-04-23 15:43:11,014 - openai._base_client - INFO - Retrying request to /models in 0.420676 seconds
+2025-04-23 15:43:16,486 - openai._base_client - INFO - Retrying request to /models in 0.893297 seconds
+2025-04-23 15:43:22,455 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:43:23,415 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:43:23,419 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:43:23,445 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:43:30,209 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:43:30,248 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:43:39,860 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 15:43:39,870 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 15:43:39,875 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 15:43:39,878 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 15:43:39,880 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:43:39,882 - server - INFO - API完成: GET /admin/users, 状态码: 404
+2025-04-23 15:43:39,884 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:43:39,886 - server - INFO - API完成: GET /admin/users, 状态码: 404
+2025-04-23 15:44:22,967 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:44:22,972 - server - INFO - API完成: GET /admin/users, 状态码: 404
+2025-04-23 15:44:51,533 - server - INFO - API调用: GET /api/admin/users, 参数: {}
+2025-04-23 15:44:51,537 - server - INFO - API完成: GET /api/admin/users, 状态码: 403
+2025-04-23 15:45:16,799 - server - INFO - API调用: OPTIONS /api/token, 参数: {}
+2025-04-23 15:45:16,801 - server - INFO - API完成: OPTIONS /api/token, 状态码: 200
+2025-04-23 15:45:16,803 - server - INFO - API调用: POST /api/token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 15:45:16,804 - server - INFO - API完成: POST /api/token, 状态码: 404
+2025-04-23 15:46:12,071 - openai._base_client - INFO - Retrying request to /models in 0.393986 seconds
+2025-04-23 15:46:17,513 - openai._base_client - INFO - Retrying request to /models in 0.887539 seconds
+2025-04-23 15:46:23,479 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:46:23,725 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:46:23,728 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:46:23,754 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:46:28,898 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:46:28,928 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:46:46,537 - openai._base_client - INFO - Retrying request to /models in 0.497544 seconds
+2025-04-23 15:46:57,045 - openai._base_client - INFO - Retrying request to /models in 0.889074 seconds
+2025-04-23 15:47:33,500 - openai._base_client - INFO - Retrying request to /models in 0.452337 seconds
+2025-04-23 15:47:43,962 - openai._base_client - INFO - Retrying request to /models in 0.966291 seconds
+2025-04-23 15:47:54,958 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:47:55,187 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:47:55,189 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:47:55,209 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:47:59,948 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:47:59,974 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:48:08,026 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-23 15:48:08,027 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-23 15:48:08,030 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 15:48:08,031 - server - INFO - Login attempt
+2025-04-23 15:48:08,031 - server - INFO - Login attempt - Username: admin
+2025-04-23 15:48:08,157 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:48:08,175 - tools.redis_tools - INFO - Successfully set key in Redis: 84fd6c6a-d3db-4f4c-b201-1f9965c713a3
+2025-04-23 15:48:08,175 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 15:48:08,176 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 15:48:08,182 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-23 15:48:08,183 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-23 15:48:08,201 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 15:48:08,235 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at, 
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at, 
+                last_login
+            FROM user_info 
+            WHERE user_id = %(user_id)s
+            ]
+[parameters: {'user_id': 'admin'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:48:08,236 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at, 
+                last_login
+            FROM user_info 
+            WHERE user_id = :user_id
+            
+2025-04-23 15:48:08,248 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" does not exist
+LINE 7:                 created_at, 
+                        ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at, 
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at, 
+                last_login
+            FROM user_info 
+            WHERE user_id = %(user_id)s
+            ]
+[parameters: {'user_id': 'admin'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:48:08,249 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at, 
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at, 
+                last_login
+            FROM user_info 
+            WHERE user_id = %(user_id)s
+            ]
+[parameters: {'user_id': 'admin'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:48:08,249 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at, 
+                last_login
+            FROM user_info 
+            WHERE user_id = :user_id
+            
+2025-04-23 15:48:08,250 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" does not exist
+LINE 7:                 created_at, 
+                        ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at, 
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at, 
+                last_login
+            FROM user_info 
+            WHERE user_id = %(user_id)s
+            ]
+[parameters: {'user_id': 'admin'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:48:08,251 - server - INFO - API完成: GET /user/profile, 状态码: 404
+2025-04-23 15:48:08,411 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:48:08,414 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:48:08,414 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            
+2025-04-23 15:48:08,415 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:48:08,416 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:48:08,416 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            
+2025-04-23 15:48:08,417 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:48:08,418 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 15:48:08,419 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:48:08,423 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:48:08,423 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            
+2025-04-23 15:48:08,430 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:48:08,484 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:48:08,496 - tools.postgresql_tools - ERROR - Query: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            
+2025-04-23 15:48:08,501 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 216, in execute_query
+    result = connection.execute(sql)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 7:                 created_at
+                        ^
+
+[SQL: 
+            SELECT 
+                user_id as id, 
+                username, 
+                email, 
+                role, 
+                created_at
+            FROM user_info
+            ORDER BY user_id
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:48:08,503 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 15:50:39,512 - openai._base_client - INFO - Retrying request to /models in 0.468785 seconds
+2025-04-23 15:50:50,042 - openai._base_client - INFO - Retrying request to /models in 0.920200 seconds
+2025-04-23 15:51:00,991 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:51:01,167 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:51:01,171 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:51:01,199 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:51:05,171 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:51:05,200 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:51:26,916 - openai._base_client - INFO - Retrying request to /models in 0.436409 seconds
+2025-04-23 15:51:37,357 - openai._base_client - INFO - Retrying request to /models in 0.855729 seconds
+2025-04-23 15:51:48,242 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:51:48,401 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:51:48,406 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:51:48,432 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:51:52,682 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:51:52,711 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:52:14,404 - openai._base_client - INFO - Retrying request to /models in 0.380547 seconds
+2025-04-23 15:52:24,792 - openai._base_client - INFO - Retrying request to /models in 0.889663 seconds
+2025-04-23 15:52:35,710 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:52:35,868 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:52:35,872 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:52:35,916 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:52:39,577 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:52:39,606 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:53:15,984 - openai._base_client - INFO - Retrying request to /models in 0.441723 seconds
+2025-04-23 15:53:44,396 - openai._base_client - INFO - Retrying request to /models in 0.468075 seconds
+2025-04-23 15:53:54,873 - openai._base_client - INFO - Retrying request to /models in 0.804794 seconds
+2025-04-23 15:54:05,708 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:54:05,860 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:54:05,864 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:54:05,890 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:54:09,002 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:54:09,031 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:54:17,414 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:54:17,414 - server - WARNING - Development token used to bypass authentication
+2025-04-23 15:54:17,421 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 15:54:28,216 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 15:54:28,217 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 15:54:28,220 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:54:28,256 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 15:54:28,258 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 15:54:28,265 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 15:55:00,236 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 15:55:00,246 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.UndefinedColumn) column "created_at" of relation "user_info" does not exist
+LINE 2: ... INTO user_info (username, email, password, role, created_at...
+                                                             ^
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, created_at, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, %(created_at)s, true)
+            RETURNING user_id, username, email, role, created_at
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user', 'created_at': datetime.datetime(2025, 4, 23, 15, 55, 0, 243640)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:55:00,246 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, created_at, isactive)
+            VALUES (:username, :email, :password, :role, :created_at, true)
+            RETURNING user_id, username, email, role, created_at
+            
+2025-04-23 15:55:00,254 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" of relation "user_info" does not exist
+LINE 2: ... INTO user_info (username, email, password, role, created_at...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" of relation "user_info" does not exist
+LINE 2: ... INTO user_info (username, email, password, role, created_at...
+                                                             ^
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, created_at, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, %(created_at)s, true)
+            RETURNING user_id, username, email, role, created_at
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user', 'created_at': datetime.datetime(2025, 4, 23, 15, 55, 0, 243640)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:55:00,255 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.UndefinedColumn) column "created_at" of relation "user_info" does not exist
+LINE 2: ... INTO user_info (username, email, password, role, created_at...
+                                                             ^
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, created_at, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, %(created_at)s, true)
+            RETURNING user_id, username, email, role, created_at
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user', 'created_at': datetime.datetime(2025, 4, 23, 15, 55, 0, 243640)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-23 15:55:00,255 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, created_at, isactive)
+            VALUES (:username, :email, :password, :role, :created_at, true)
+            RETURNING user_id, username, email, role, created_at
+            
+2025-04-23 15:55:00,256 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "created_at" of relation "user_info" does not exist
+LINE 2: ... INTO user_info (username, email, password, role, created_at...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" of relation "user_info" does not exist
+LINE 2: ... INTO user_info (username, email, password, role, created_at...
+                                                             ^
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, created_at, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, %(created_at)s, true)
+            RETURNING user_id, username, email, role, created_at
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user', 'created_at': datetime.datetime(2025, 4, 23, 15, 55, 0, 243640)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2025-04-23 15:55:00,257 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 15:56:30,506 - openai._base_client - INFO - Retrying request to /models in 0.472567 seconds
+2025-04-23 15:56:36,037 - openai._base_client - INFO - Retrying request to /models in 0.862829 seconds
+2025-04-23 15:56:41,985 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:56:42,141 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:56:42,144 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:56:42,170 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:56:45,714 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:56:45,742 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:57:02,539 - openai._base_client - INFO - Retrying request to /models in 0.467066 seconds
+2025-04-23 15:57:08,071 - openai._base_client - INFO - Retrying request to /models in 0.974737 seconds
+2025-04-23 15:57:14,128 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:57:14,308 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:57:14,311 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:57:14,338 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:57:17,171 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 15:57:17,199 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 15:58:03,093 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 15:58:03,105 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (2, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-04-23 15:58:03,105 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (:username, :email, :password, :role, true)
+            RETURNING user_id, username, email, role
+            
+2025-04-23 15:58:03,116 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (2, null, 123, user, null, true, null, user2@example.cn, user2).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (2, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2025-04-23 15:58:03,118 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (2, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-04-23 15:58:03,118 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (:username, :email, :password, :role, true)
+            RETURNING user_id, username, email, role
+            
+2025-04-23 15:58:03,119 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (2, null, 123, user, null, true, null, user2@example.cn, user2).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (2, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2025-04-23 15:58:03,121 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 15:58:14,353 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 15:58:14,358 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (3, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-04-23 15:58:14,358 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (:username, :email, :password, :role, true)
+            RETURNING user_id, username, email, role
+            
+2025-04-23 15:58:14,359 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (3, null, 123, user, null, true, null, user2@example.cn, user2).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (3, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2025-04-23 15:58:14,360 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (3, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-04-23 15:58:14,360 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (:username, :email, :password, :role, true)
+            RETURNING user_id, username, email, role
+            
+2025-04-23 15:58:14,361 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (3, null, 123, user, null, true, null, user2@example.cn, user2).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (3, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2025-04-23 15:58:14,362 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 15:58:19,098 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 15:58:19,104 - tools.postgresql_tools - ERROR - Error during query execution: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-04-23 15:58:19,104 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (:username, :email, :password, :role, true)
+            RETURNING user_id, username, email, role
+            
+2025-04-23 15:58:19,106 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 123, user, null, true, null, user2@example.cn, user2).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2025-04-23 15:58:19,107 - tools.postgresql_tools - ERROR - Error executing query: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2025-04-23 15:58:19,107 - tools.postgresql_tools - ERROR - Query: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (:username, :email, :password, :role, true)
+            RETURNING user_id, username, email, role
+            
+2025-04-23 15:58:19,109 - tools.postgresql_tools - ERROR - Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 123, user, null, true, null, user2@example.cn, user2).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/tools/postgresql_tools.py", line 212, in execute_query
+    result = connection.execute(sql, parameters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+           ^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "user_id" of relation "user_info" violates not-null constraint
+DETAIL:  Failing row contains (4, null, 123, user, null, true, null, user2@example.cn, user2).
+
+[SQL: 
+            INSERT INTO user_info (username, email, password, role, isactive)
+            VALUES (%(username)s, %(email)s, %(password)s, %(role)s, true)
+            RETURNING user_id, username, email, role
+            ]
+[parameters: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+2025-04-23 15:58:19,109 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:02:58,782 - openai._base_client - INFO - Retrying request to /models in 0.375352 seconds
+2025-04-23 16:03:09,168 - openai._base_client - INFO - Retrying request to /models in 0.794975 seconds
+2025-04-23 16:03:19,993 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:03:20,142 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:03:20,145 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:03:20,169 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:03:23,260 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:03:23,285 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:03:47,456 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:03:47,470 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:03:53,185 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-23 16:03:53,185 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-23 16:03:53,188 - server - INFO - API调用: POST /logout, 参数: {'uuid': '84fd6c6a-d3db-4f4c-b201-1f9965c713a3'}
+2025-04-23 16:03:53,189 - server - INFO - 接收到登出请求，UUID: 84fd6c6a-d3db-4f4c-b201-1f9965c713a3
+2025-04-23 16:03:53,191 - server - INFO - 成功删除用户缓存数据，UUID: 84fd6c6a-d3db-4f4c-b201-1f9965c713a3
+2025-04-23 16:03:53,193 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:03:56,303 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-23 16:03:56,303 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-23 16:03:56,306 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:03:56,306 - server - INFO - Login attempt
+2025-04-23 16:03:56,307 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:03:56,368 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:03:56,375 - tools.redis_tools - INFO - Successfully set key in Redis: d2e3940f-10c0-4088-a345-06ed4b807694
+2025-04-23 16:03:56,375 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:03:56,376 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:03:56,380 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-23 16:03:56,380 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-23 16:03:56,382 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:03:56,539 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:03:56,543 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:03:56,545 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:03:56,548 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:04:02,068 - server - INFO - API调用: OPTIONS /admin/users/user2, 参数: {}
+2025-04-23 16:04:02,068 - server - INFO - API完成: OPTIONS /admin/users/user2, 状态码: 200
+2025-04-23 16:04:02,070 - server - INFO - API调用: DELETE /admin/users/user2, 参数: {}
+2025-04-23 16:04:02,071 - server - INFO - API完成: DELETE /admin/users/user2, 状态码: 422
+2025-04-23 16:04:22,179 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user3', 'email': 'user3@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:04:22,186 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:04:25,894 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'd2e3940f-10c0-4088-a345-06ed4b807694'}
+2025-04-23 16:04:25,895 - server - INFO - 接收到登出请求，UUID: d2e3940f-10c0-4088-a345-06ed4b807694
+2025-04-23 16:04:25,896 - server - INFO - 成功删除用户缓存数据，UUID: d2e3940f-10c0-4088-a345-06ed4b807694
+2025-04-23 16:04:25,897 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:04:29,095 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:04:29,096 - server - INFO - Login attempt
+2025-04-23 16:04:29,097 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:04:29,196 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:04:29,204 - tools.redis_tools - INFO - Successfully set key in Redis: f82ef619-5be9-490a-b097-88e7a1f1e85c
+2025-04-23 16:04:29,206 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:04:29,207 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:04:29,210 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:04:29,276 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 16:04:29,277 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 16:04:29,280 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:04:29,296 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:04:29,300 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:04:29,314 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:05:45,221 - openai._base_client - INFO - Retrying request to /models in 0.407764 seconds
+2025-04-23 16:05:55,638 - openai._base_client - INFO - Retrying request to /models in 0.800545 seconds
+2025-04-23 16:06:06,475 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:06:06,635 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:06:06,638 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:06:06,665 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:06:10,062 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:06:10,090 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:06:32,361 - openai._base_client - INFO - Retrying request to /models in 0.376844 seconds
+2025-04-23 16:06:42,744 - openai._base_client - INFO - Retrying request to /models in 0.932165 seconds
+2025-04-23 16:06:53,705 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:06:53,863 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:06:53,867 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:06:53,893 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:06:56,665 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:06:56,692 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:07:19,120 - server - INFO - API调用: OPTIONS /admin/users/user3, 参数: {}
+2025-04-23 16:07:19,122 - server - INFO - API完成: OPTIONS /admin/users/user3, 状态码: 200
+2025-04-23 16:07:19,125 - server - INFO - API调用: DELETE /admin/users/user3, 参数: {}
+2025-04-23 16:07:19,127 - server - INFO - API完成: DELETE /admin/users/user3, 状态码: 422
+2025-04-23 16:07:21,724 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'f82ef619-5be9-490a-b097-88e7a1f1e85c'}
+2025-04-23 16:07:21,726 - server - INFO - 接收到登出请求，UUID: f82ef619-5be9-490a-b097-88e7a1f1e85c
+2025-04-23 16:07:21,727 - server - INFO - 成功删除用户缓存数据，UUID: f82ef619-5be9-490a-b097-88e7a1f1e85c
+2025-04-23 16:07:21,728 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:07:24,209 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:07:24,210 - server - INFO - Login attempt
+2025-04-23 16:07:24,210 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:07:24,268 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:07:24,275 - tools.redis_tools - INFO - Successfully set key in Redis: bc586dea-38b9-42db-96b7-857c651d2070
+2025-04-23 16:07:24,275 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:07:24,275 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:07:24,278 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:07:24,284 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:07:24,346 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:07:24,381 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:07:24,384 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:07:24,389 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:07:36,902 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user4', 'email': 'user1@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:07:36,910 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:07:47,358 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'bc586dea-38b9-42db-96b7-857c651d2070'}
+2025-04-23 16:07:47,360 - server - INFO - 接收到登出请求，UUID: bc586dea-38b9-42db-96b7-857c651d2070
+2025-04-23 16:07:47,362 - server - INFO - 成功删除用户缓存数据，UUID: bc586dea-38b9-42db-96b7-857c651d2070
+2025-04-23 16:07:47,362 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:07:49,675 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:07:49,676 - server - INFO - Login attempt
+2025-04-23 16:07:49,676 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:07:49,739 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:07:49,756 - tools.redis_tools - INFO - Successfully set key in Redis: c21d26f8-fae3-4e5d-815e-c35995258681
+2025-04-23 16:07:49,772 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:07:49,773 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:07:49,777 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:07:49,780 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:07:49,850 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:07:49,855 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:07:49,857 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:07:49,865 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:11:23,197 - openai._base_client - INFO - Retrying request to /models in 0.389100 seconds
+2025-04-23 16:11:33,595 - openai._base_client - INFO - Retrying request to /models in 0.956960 seconds
+2025-04-23 16:11:44,580 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:11:44,735 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:11:44,739 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:11:44,765 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:11:48,251 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:11:48,293 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:12:10,252 - openai._base_client - INFO - Retrying request to /models in 0.443357 seconds
+2025-04-23 16:12:20,702 - openai._base_client - INFO - Retrying request to /models in 0.763701 seconds
+2025-04-23 16:12:31,495 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:12:31,654 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:12:31,658 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:12:31,685 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:12:34,426 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:12:34,453 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:12:54,845 - openai._base_client - INFO - Retrying request to /models in 0.381387 seconds
+2025-04-23 16:13:05,231 - openai._base_client - INFO - Retrying request to /models in 0.831464 seconds
+2025-04-23 16:13:16,088 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:13:16,240 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:13:16,244 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:13:16,272 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:13:19,110 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:13:19,137 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:13:40,795 - openai._base_client - INFO - Retrying request to /models in 0.443485 seconds
+2025-04-23 16:13:51,299 - openai._base_client - INFO - Retrying request to /models in 0.909839 seconds
+2025-04-23 16:14:02,239 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:14:02,388 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:14:02,391 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:14:02,414 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:14:04,816 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:14:04,840 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:14:26,034 - openai._base_client - INFO - Retrying request to /models in 0.470789 seconds
+2025-04-23 16:15:00,324 - openai._base_client - INFO - Retrying request to /models in 0.455202 seconds
+2025-04-23 16:15:10,787 - openai._base_client - INFO - Retrying request to /models in 0.801432 seconds
+2025-04-23 16:15:21,616 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:15:21,771 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:15:21,774 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:15:21,798 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:15:24,753 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:15:24,779 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:16:03,616 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-23 16:16:03,617 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-23 16:16:03,619 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:16:03,620 - server - INFO - Login attempt
+2025-04-23 16:16:03,620 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:16:03,680 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:16:03,692 - tools.redis_tools - INFO - Successfully set key in Redis: fb64e49a-c729-41aa-a84f-b9af6e252e63
+2025-04-23 16:16:03,692 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:16:03,692 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:16:03,696 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-23 16:16:03,696 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-23 16:16:03,698 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:16:03,703 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:16:03,771 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 16:16:03,772 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 16:16:03,774 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:16:03,778 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:16:03,786 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:16:03,794 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:16:05,591 - server - INFO - API调用: OPTIONS /admin/users/user4, 参数: {}
+2025-04-23 16:16:05,591 - server - INFO - API完成: OPTIONS /admin/users/user4, 状态码: 200
+2025-04-23 16:16:05,593 - server - INFO - API调用: DELETE /admin/users/user4, 参数: {}
+2025-04-23 16:16:05,612 - server - INFO - API完成: DELETE /admin/users/user4, 状态码: 500
+2025-04-23 16:16:16,220 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user5', 'email': 'user1@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:16:16,228 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:18:04,321 - openai._base_client - INFO - Retrying request to /models in 0.426691 seconds
+2025-04-23 16:18:14,756 - openai._base_client - INFO - Retrying request to /models in 0.801295 seconds
+2025-04-23 16:18:25,585 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:18:25,743 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:18:25,746 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:18:25,772 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:18:28,746 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:18:28,774 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:18:50,147 - openai._base_client - INFO - Retrying request to /models in 0.384077 seconds
+2025-04-23 16:19:22,090 - openai._base_client - INFO - Retrying request to /models in 0.413962 seconds
+2025-04-23 16:19:32,520 - openai._base_client - INFO - Retrying request to /models in 0.898336 seconds
+2025-04-23 16:19:43,451 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:19:43,607 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:19:43,610 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:19:43,633 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:19:46,542 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:19:46,566 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:20:03,591 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-23 16:20:03,592 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-23 16:20:03,595 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'fb64e49a-c729-41aa-a84f-b9af6e252e63'}
+2025-04-23 16:20:03,597 - server - INFO - 接收到登出请求，UUID: fb64e49a-c729-41aa-a84f-b9af6e252e63
+2025-04-23 16:20:03,597 - server - INFO - 成功删除用户缓存数据，UUID: fb64e49a-c729-41aa-a84f-b9af6e252e63
+2025-04-23 16:20:03,598 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:20:05,886 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:20:05,886 - server - INFO - Login attempt
+2025-04-23 16:20:05,887 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:20:05,944 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:20:05,950 - tools.redis_tools - INFO - Successfully set key in Redis: 1abf4e82-aba3-4401-90b7-64e9e67c7fcb
+2025-04-23 16:20:05,950 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:20:05,951 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:20:05,954 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:20:05,959 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:20:06,020 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:20:06,024 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:20:06,026 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:20:06,029 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:20:16,864 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user6', 'email': 'user1@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:20:16,870 - server - INFO - API完成: POST /admin/users, 状态码: 400
+2025-04-23 16:20:26,753 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user6', 'email': 'user6@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:20:26,761 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:21:05,702 - server - INFO - API调用: POST /logout, 参数: {'uuid': '1abf4e82-aba3-4401-90b7-64e9e67c7fcb'}
+2025-04-23 16:21:05,703 - server - INFO - 接收到登出请求，UUID: 1abf4e82-aba3-4401-90b7-64e9e67c7fcb
+2025-04-23 16:21:05,704 - server - INFO - 成功删除用户缓存数据，UUID: 1abf4e82-aba3-4401-90b7-64e9e67c7fcb
+2025-04-23 16:21:05,705 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:21:08,370 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:21:08,372 - server - INFO - Login attempt
+2025-04-23 16:21:08,372 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:21:08,432 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:21:08,438 - tools.redis_tools - INFO - Successfully set key in Redis: ee4d63c1-2035-474d-883d-c7288eff1c53
+2025-04-23 16:21:08,438 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:21:08,439 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:21:08,442 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:21:08,445 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:21:08,499 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:21:08,504 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:21:08,506 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:21:08,514 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:21:11,102 - server - INFO - API调用: OPTIONS /admin/users/user6, 参数: {}
+2025-04-23 16:21:11,102 - server - INFO - API完成: OPTIONS /admin/users/user6, 状态码: 200
+2025-04-23 16:21:11,106 - server - INFO - API调用: DELETE /admin/users/user6, 参数: {}
+2025-04-23 16:21:11,135 - server - INFO - API完成: DELETE /admin/users/user6, 状态码: 500
+2025-04-23 16:23:21,777 - openai._base_client - INFO - Retrying request to /models in 0.409971 seconds
+2025-04-23 16:23:32,192 - openai._base_client - INFO - Retrying request to /models in 0.860183 seconds
+2025-04-23 16:23:43,079 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:23:43,226 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:23:43,229 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:23:43,252 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:23:45,782 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:23:45,807 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:23:56,977 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'ee4d63c1-2035-474d-883d-c7288eff1c53'}
+2025-04-23 16:23:56,980 - server - INFO - 接收到登出请求，UUID: ee4d63c1-2035-474d-883d-c7288eff1c53
+2025-04-23 16:23:56,983 - server - INFO - 成功删除用户缓存数据，UUID: ee4d63c1-2035-474d-883d-c7288eff1c53
+2025-04-23 16:23:56,983 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:23:59,287 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:23:59,287 - server - INFO - Login attempt
+2025-04-23 16:23:59,288 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:23:59,329 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:23:59,340 - tools.redis_tools - INFO - Successfully set key in Redis: 27c1877a-1a78-4933-b29a-5c7937a5f5c1
+2025-04-23 16:23:59,340 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:23:59,341 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:23:59,344 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:23:59,351 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:23:59,430 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:23:59,436 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:23:59,438 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:23:59,444 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:24:01,536 - server - INFO - API调用: OPTIONS /admin/users/user5, 参数: {}
+2025-04-23 16:24:01,536 - server - INFO - API完成: OPTIONS /admin/users/user5, 状态码: 200
+2025-04-23 16:24:01,538 - server - INFO - API调用: DELETE /admin/users/user5, 参数: {}
+2025-04-23 16:24:01,566 - service.user_service - INFO - Delete user result for user5: []
+2025-04-23 16:24:01,566 - service.user_service - WARNING - Delete user failed for user5, but user existed before delete.
+2025-04-23 16:24:01,567 - server - INFO - API完成: DELETE /admin/users/user5, 状态码: 500
+2025-04-23 16:24:05,086 - server - INFO - API调用: POST /logout, 参数: {'uuid': '27c1877a-1a78-4933-b29a-5c7937a5f5c1'}
+2025-04-23 16:24:05,087 - server - INFO - 接收到登出请求，UUID: 27c1877a-1a78-4933-b29a-5c7937a5f5c1
+2025-04-23 16:24:05,088 - server - INFO - 成功删除用户缓存数据，UUID: 27c1877a-1a78-4933-b29a-5c7937a5f5c1
+2025-04-23 16:24:05,088 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:24:07,421 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:24:07,422 - server - INFO - Login attempt
+2025-04-23 16:24:07,422 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:24:07,461 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:24:07,471 - tools.redis_tools - INFO - Successfully set key in Redis: c4e931b5-8ed1-47c4-8b44-5fe8c3cc361d
+2025-04-23 16:24:07,471 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:24:07,471 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:24:07,474 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:24:07,477 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:24:07,532 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:24:07,537 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:24:07,538 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:24:07,546 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:24:09,502 - server - INFO - API调用: OPTIONS /admin/users/user3, 参数: {}
+2025-04-23 16:24:09,503 - server - INFO - API完成: OPTIONS /admin/users/user3, 状态码: 200
+2025-04-23 16:24:09,504 - server - INFO - API调用: DELETE /admin/users/user3, 参数: {}
+2025-04-23 16:24:09,520 - service.user_service - INFO - Delete user result for user3: []
+2025-04-23 16:24:09,521 - service.user_service - WARNING - Delete user failed for user3, but user existed before delete.
+2025-04-23 16:24:09,521 - server - INFO - API完成: DELETE /admin/users/user3, 状态码: 500
+2025-04-23 16:24:11,970 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'c4e931b5-8ed1-47c4-8b44-5fe8c3cc361d'}
+2025-04-23 16:24:11,971 - server - INFO - 接收到登出请求，UUID: c4e931b5-8ed1-47c4-8b44-5fe8c3cc361d
+2025-04-23 16:24:11,972 - server - INFO - 成功删除用户缓存数据，UUID: c4e931b5-8ed1-47c4-8b44-5fe8c3cc361d
+2025-04-23 16:24:11,972 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:24:16,539 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:24:16,539 - server - INFO - Login attempt
+2025-04-23 16:24:16,540 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:24:16,578 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:24:16,587 - tools.redis_tools - INFO - Successfully set key in Redis: b6d0a48e-79ab-4b9e-888e-cec7b582df91
+2025-04-23 16:24:16,587 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:24:16,587 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:24:16,591 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:24:16,595 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:24:16,646 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:24:16,649 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:24:16,651 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:24:16,658 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:24:23,238 - server - INFO - API调用: OPTIONS /admin/users/user2, 参数: {}
+2025-04-23 16:24:23,239 - server - INFO - API完成: OPTIONS /admin/users/user2, 状态码: 200
+2025-04-23 16:24:23,241 - server - INFO - API调用: DELETE /admin/users/user2, 参数: {}
+2025-04-23 16:24:23,250 - service.user_service - INFO - Delete user result for user2: []
+2025-04-23 16:24:23,251 - service.user_service - WARNING - Delete user failed for user2, but user existed before delete.
+2025-04-23 16:24:23,251 - server - INFO - API完成: DELETE /admin/users/user2, 状态码: 500
+2025-04-23 16:24:39,602 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user3', 'email': 'user3@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:24:39,657 - server - INFO - API完成: POST /admin/users, 状态码: 500
+2025-04-23 16:28:18,079 - openai._base_client - INFO - Retrying request to /models in 0.396290 seconds
+2025-04-23 16:28:28,482 - openai._base_client - INFO - Retrying request to /models in 0.876161 seconds
+2025-04-23 16:28:39,390 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:28:39,555 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:28:39,559 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:28:39,586 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:28:42,483 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-23 16:28:42,507 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:30:34,314 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-23 16:30:34,315 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-23 16:30:34,317 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'b6d0a48e-79ab-4b9e-888e-cec7b582df91'}
+2025-04-23 16:30:34,319 - server - INFO - 接收到登出请求，UUID: b6d0a48e-79ab-4b9e-888e-cec7b582df91
+2025-04-23 16:30:34,320 - server - INFO - 成功删除用户缓存数据，UUID: b6d0a48e-79ab-4b9e-888e-cec7b582df91
+2025-04-23 16:30:34,320 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-23 16:30:36,708 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-23 16:30:36,709 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-23 16:30:36,711 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-23 16:30:36,711 - server - INFO - Login attempt
+2025-04-23 16:30:36,712 - server - INFO - Login attempt - Username: admin
+2025-04-23 16:30:36,766 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-23 16:30:36,771 - tools.redis_tools - INFO - Successfully set key in Redis: a67bdeda-456e-45bf-bb0f-2141cf683740
+2025-04-23 16:30:36,771 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-23 16:30:36,772 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-23 16:30:36,775 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-23 16:30:36,775 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-23 16:30:36,777 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-23 16:30:36,782 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-23 16:30:36,853 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 16:30:36,853 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-23 16:30:36,854 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 16:30:36,855 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-23 16:30:36,859 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:30:36,881 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:30:36,885 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:30:36,895 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:30:38,389 - server - INFO - API调用: DELETE /admin/users/user3, 参数: {}
+2025-04-23 16:30:38,396 - service.user_service - INFO - Delete user result for user3: []
+2025-04-23 16:30:38,397 - server - INFO - API完成: DELETE /admin/users/user3, 状态码: 200
+2025-04-23 16:30:50,167 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'user2', 'email': 'user2@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:30:50,177 - server - INFO - API完成: POST /admin/users, 状态码: 200
+2025-04-23 16:30:53,591 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:30:53,594 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:30:53,596 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-23 16:30:53,616 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-23 16:31:17,903 - server - INFO - API调用: POST /admin/users, 参数: {'username': 'use3', 'email': 'use3@example.cn', 'password': '123', 'role': 'user'}
+2025-04-23 16:31:17,909 - server - INFO - API完成: POST /admin/users, 状态码: 200

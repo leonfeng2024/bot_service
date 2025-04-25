@@ -124,112 +124,107 @@ Response:
         try:
             # 分析用户意图
             try:
-                # intent_result = await self._analyze_user_intent(query)
-                intent_result = {"category":"schema_change", "message":"OK"}
+                intent_result = await self._analyze_user_intent(query)
+                # 返回意图识别结果
+                yield {"step": "_analyze_user_intent", "message": "语义识别完成"}
             except Exception as e:
                 intent_result = {"category": "unknown", "message": "NG"}
                 
             # 根据意图返回相应消息
             if intent_result["category"] == "unknown":
-                return {
+                # 先返回提示消息
+                yield {
                     "status": "success",
                     "username": self.bot_name,
                     "message": "データベーステーブル変更の依存関係調査サービスを提供しております。変更対象のテーブルField名をお知らせください"
                 }
+                
+                # 添加final_answer步骤
+                yield {
+                    "step": "final_answer",
+                    "message": "データベーステーブル変更の依存関係調査サービスを提供しております。変更対象のテーブルField名をお知らせください",
+                    "type": "text"
+                }
+                
+                # 保存系统回复到聊天历史
+                self._save_chat_history(username, uuid, "データベーステーブル変更の依存関係調査サービスを提供しております。変更対象のテーブルField名をお知らせください", "bot")
+                return
+            
+            # 识别字段
+            try:
+                column_results = {}
+                async for result in self.llm_service.identify_column(query):
+                    if isinstance(result, dict):
+                        if "step" in result:
+                            yield result
+                        else:
+                            column_results = result
+                
+                # Return the results if we have them
+                if column_results:
+                    yield {"step": "identify_column", "message": "字段识别成功", "data": column_results}
+            except Exception as e:
+                print(f"Error identifying columns: {str(e)}")
             
             # 获取相关文档
             try:
+                # 保存用户查询到chat_history表
+                self._save_chat_history(username, uuid, query, "user")
+                
+                # 标记是否已经处理过最终答案
+                final_answer_processed = False
+                
                 # 从RAG服务获取检索结果
-                retrieval_response = await self.rag_service.retrieve(query, uuid)
-                print(f"RAG Service response: {retrieval_response}")
-                
-                # 检查返回状态
-                if retrieval_response.get("status") != "success":
-                    raise Exception(f"Error retrieving documents: {retrieval_response.get('error', 'Unknown error')}")
-                
-                # 构建响应消息
-                final_check = retrieval_response.get("final_check", "unknown")
-                if final_check == "yes":
-                    # 使用RAG服务返回的markdown格式链接
-                    if "answer" in retrieval_response and retrieval_response["answer"]:
-                        message = retrieval_response["answer"]
-                    else:
-                        message = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。"
-                        
-                        # 如果有文档信息，添加文档链接
-                        if "document" in retrieval_response and retrieval_response["document"]:
-                            doc_info = retrieval_response["document"]
-                            if "link" in doc_info:
-                                message += f"\n[{'結果ファイル'}]({doc_info['link']})"
+                async for chunk in self.rag_service.retrieve(query, uuid):
+                    # 直接传递中间状态更新
+                    if chunk.get("step") != "final_answer":
+                        yield chunk
+                        continue
                     
-                    # 保存用户查询到chat_history表
-                    self._save_chat_history(username, uuid, query, "user")
+                    # 防止重复的final_answer
+                    if final_answer_processed:
+                        continue
+                        
+                    final_answer_processed = True
+                    
+                    # 处理最终答案
+                    answer_message = chunk.get("message", "")
                     
                     # 从Redis获取缓存内容并保存为bot回复
-                    bot_message = self._get_redis_cache_content(uuid)
-                    
-                    # 将生成的文档信息添加到bot回复
-                    if "document" in retrieval_response and retrieval_response["document"]:
-                        doc_info = retrieval_response["document"]
-                        bot_message += f"\n\nDocument generated: {doc_info.get('file_name', '')}"
-                        bot_message += f"\nPath: {doc_info.get('file_path', '')}"
-                    
+                    bot_message = answer_message
                     self._save_chat_history(username, uuid, bot_message, "bot")
                     
-                    # 构建响应
-                    response = {
-                        "status": "success",
-                        "username": self.bot_name,
-                        "message": message
-                    }
-                    
-                    # 如果有文档信息，添加到响应中
-                    if "document" in retrieval_response and retrieval_response["document"]:
-                        response["document"] = retrieval_response["document"]
-                    
-                    return response
-                else:
-                    message = "処理が完了いたしました。関連のデータが見つかりませんでした"
-                    
-                    # 如果有错误信息，添加到消息中
-                    if "error" in retrieval_response:
-                        error_message = retrieval_response["error"]
-                        print(f"Error in document generation: {error_message}")
-                    
-                    # 保存用户查询到chat_history表
-                    self._save_chat_history(username, uuid, query, "user")
-                    
-                    # 保存bot回复
-                    self._save_chat_history(username, uuid, message, "bot")
-                    
-                    return {
-                        "status": "success",
-                        "username": self.bot_name,
-                        "message": message
-                    }
+                    # 返回最终答案
+                    yield chunk
                 
             except Exception as e:
                 error_traceback = traceback.format_exc()
                 # 为开发环境返回详细错误信息
                 detailed_error_message = f"Error type: {type(e).__name__}\nError message: {str(e)}\n\nTraceback:\n{error_traceback}"
                 
-                return {
-                    "status": "failed",
-                    "username": self.bot_name,
-                    "message": f"Error: {str(e)}",
-                    "debug_info": detailed_error_message
+                error_response = {
+                    "step": "error",
+                    "message": f"Error: {str(e)}"
                 }
+                
+                # 记录错误信息
+                print(detailed_error_message)
+                
+                # 返回简化的错误信息给客户端
+                yield error_response
                 
         except Exception as e:
             error_traceback = traceback.format_exc()
             # 为开发环境返回详细错误信息
             detailed_error_message = f"Error type: {type(e).__name__}\nError message: {str(e)}\n\nTraceback:\n{error_traceback}"
             
-            return {
-                "status": "failed",
-                "username": self.bot_name,
-                "message": f"Error: {str(e)}",
-                "debug_info": detailed_error_message
+            # 记录错误信息
+            print(detailed_error_message)
+            
+            # 返回统一格式的错误信息
+            yield {
+                "step": "error",
+                "message": f"Error: {str(e)}"
             }
     
     def _get_redis_cache_content(self, uuid: str) -> str:

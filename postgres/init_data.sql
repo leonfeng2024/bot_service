@@ -533,6 +533,13 @@ ALTER TABLE IF EXISTS public.user_info
 INSERT INTO public.user_info(
 	user_id, password, role, phone, isactive, comment, email, username)
 	VALUES ( 'admin', '123', 'admin', '1234567890', 'active', 'admin', 'admin@takeda.com', 'admin');
+INSERT INTO public.user_info(
+	user_id, password, role, phone, isactive, comment, email, username)
+	VALUES ( 'kb_manager', '123', 'kb_manager', '1234567890', 'active', 'kb_manager', 'kb_manager@takeda.com', 'kb_manager');
+INSERT INTO public.user_info(
+	user_id, password, role, phone, isactive, comment, email, username)
+	VALUES ( 'user1', '123', 'user', '1234567890', 'active', 'user1', 'user1@takeda.com', 'user1');
+
 
 CREATE TABLE chat_history (
     id SERIAL PRIMARY KEY,

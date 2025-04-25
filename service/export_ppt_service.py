@@ -9,6 +9,13 @@ import base64
 from io import BytesIO
 from pptx.dml.color import RGBColor
 from typing import Dict, List, Any
+import mermaid as md
+from mermaid.graph import Graph
+import matplotlib.pyplot as plt
+import networkx as nx
+from PIL import Image, ImageDraw, ImageFont
+import traceback
+import subprocess
 
 class ExportPPTService:
     def __init__(self):
@@ -19,18 +26,24 @@ class ExportPPTService:
         # Create output directory if it doesn't exist
         os.makedirs(self.output_dir, exist_ok=True)
 
-    async def create_mermaid_diagram(self, relationships_df: pd.DataFrame) -> str:
+    async def create_mermaid_diagram(self, relationships_df: pd.DataFrame, sandbox: bool = True) -> str:
         """
         Create a diagram using Mermaid from relationship data
         
         Args:
             relationships_df: DataFrame containing relationship data
+            sandbox: Whether to use the sandbox mode
             
         Returns:
-            str: Path to the generated image file
+            Path to the generated diagram
         """
-        # Generate Mermaid diagram definition with compact layout settings
-        mermaid_definition = """graph LR
+        try:
+            # 导入os模块以确保在任何地方都可以访问
+            import os
+            import subprocess
+            
+            # Generate Mermaid diagram definition with compact layout settings
+            mermaid_definition = """graph LR
 %%{
   init: {
     'flowchart': {
@@ -56,217 +69,235 @@ class ExportPPTService:
     }
   }
 }%%
-"""
-        
-        # Track unique nodes to avoid duplicates
-        added_nodes = set()
-        added_relationships = set()
-        
-        # Check the column names in the dataframe
-        print(f"Available columns: {relationships_df.columns.tolist()}")
-        
-        # 检测数据框的结构
-        has_content_column = 'content' in relationships_df.columns
-        has_description_column = 'description' in relationships_df.columns
-        
-        # 定义节点和关系的样式
-        mermaid_definition += """
+
 classDef tableNode fill:#d7e9f7,stroke:#3c78d8,stroke-width:2px,font-size:14px,text-align:center;
 classDef fieldNode fill:#fff2cc,stroke:#f1c232,stroke-width:1px,font-size:12px,text-align:left;
-classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
-"""
+classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
 
-        # 处理类似于图片中展示的数据
-        if has_content_column:
-            # 假设content列包含关系信息，如"表 p_UpdateEmployeeSalary 通过字段 changed_by 关联到表 employees 的字段 employee_id"
-            unique_tables = set()
-            all_relationships = []
-            
-            # 首先提取所有表名
-            for _, row in relationships_df.iterrows():
-                content = str(row['content'])
-                # 检查是否包含"表"和"关联到表"
-                if "表" in content and "关联到表" in content:
-                    try:
-                        # 提取第一个表名
-                        table1_parts = content.split("表")[1].split("通过")[0].strip()
-                        # 提取第二个表名
-                        table2_parts = content.split("关联到表")[1].split("的字段")[0].strip()
-                        
-                        # 提取字段名
-                        field1 = content.split("通过字段")[1].split("关联到表")[0].strip()
-                        field2 = content.split("的字段")[1].strip()
-                        
-                        # 添加表到唯一表集合
-                        unique_tables.add(table1_parts)
-                        unique_tables.add(table2_parts)
-                        
-                        # 保存关系
-                        all_relationships.append({
-                            'table1': table1_parts,
-                            'field1': field1,
-                            'table2': table2_parts,
-                            'field2': field2
-                        })
-                    except Exception as e:
-                        print(f"Error parsing relationship: {e} - Content: {content}")
-            
-            # 添加所有表作为节点
-            for table in unique_tables:
-                table_id = "".join(c if c.isalnum() else "_" for c in table)
-                mermaid_definition += f"    {table_id}[<div style='padding:5px;'>{table}</div>]\n"
-                added_nodes.add(table)
-            
+            # 提取所有唯一的表名
+            all_tables = set()
+            for content in relationships_df['content']:
+                if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
+                    parts = content.split(" 通过字段 ")
+                    if len(parts) >= 2:
+                        source_part = parts[0].replace("表 ", "").strip()
+                        target_part = parts[1].split(" 关联到表 ")[1].split(" 的字段 ")[0].strip()
+                        all_tables.add(source_part)
+                        all_tables.add(target_part)
+                    else:
+                        print(f"Warning: Unexpected content format: {content}")
+
+            # 为每个表生成节点
+            for table in all_tables:
+                table_id = table.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\n    {table_id}[<div style='padding:5px;'>{table}</div>]"
+
             # 添加关系
-            for rel in all_relationships:
-                table1_id = "".join(c if c.isalnum() else "_" for c in rel['table1'])
-                table2_id = "".join(c if c.isalnum() else "_" for c in rel['table2'])
+            for content in relationships_df['content']:
+                if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
+                    try:
+                        # 解析内容
+                        parts = content.split(" 通过字段 ")
+                        source_table = parts[0].replace("表 ", "").strip()
+                        remaining = parts[1].split(" 关联到表 ")
+                        source_field = remaining[0].strip()
+                        target_remaining = remaining[1].split(" 的字段 ")
+                        target_table = target_remaining[0].strip()
+                        target_field = target_remaining[1].strip() if len(target_remaining) > 1 else "unknown"
+                        
+                        # 创建关系ID
+                        table1_id = source_table.replace('.', '_').replace('-', '_')
+                        table2_id = target_table.replace('.', '_').replace('-', '_')
+                        
+                        # 添加关系
+                        label = f"{source_field} -> {target_field}"
+                        mermaid_definition += f"\n    {table1_id} -->|{label}| {table2_id}"
+                    except Exception as e:
+                        print(f"Error processing relationship: {content}, Error: {str(e)}")
+
+            # 设置样式类
+            for table in all_tables:
+                table_id = table.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\n    class {table_id} tableNode;"
+
+            # 处理无法识别的数据
+            if not all_tables:
+                mermaid_definition += "\n    error[无法识别的数据格式]\n"
                 
-                # 创建唯一的关系ID
-                rel_id = f"{rel['table1']}_{rel['field1']}_to_{rel['table2']}_{rel['field2']}"
-                
-                if rel_id not in added_relationships:
-                    # 添加有标签的关系
-                    label = f"{rel['field1']} -> {rel['field2']}"
-                    mermaid_definition += f"    {table1_id} -->|{label}| {table2_id}\n"
-                    added_relationships.add(rel_id)
+            mermaid_definition += """
+"""
+            print(f"Generated Mermaid definition:\n{mermaid_definition}")
             
-            # 对所有表应用样式
-            for table in unique_tables:
-                table_id = "".join(c if c.isalnum() else "_" for c in table)
-                mermaid_definition += f"    class {table_id} tableNode;\n"
-                
-        else:
-            # 回退到原始实现或提供错误信息
-            mermaid_definition += "    error[无法识别的数据格式]\n"
-        
-        print(f"Generated Mermaid definition:\n{mermaid_definition}")
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        image_path = os.path.join(self.output_dir, f"relationships_{timestamp}.png")
-        
-        try:
-            # 首先尝试使用在线的Mermaid.ink服务
-            try:
-                # Use the Mermaid.ink service to render the diagram
-                mermaid_encoded = base64.urlsafe_b64encode(mermaid_definition.encode()).decode()
-                
-                # Add parameters for a more compact rendering and higher quality
-                mermaid_url = f"https://mermaid.ink/img/{mermaid_encoded}?width=1200&height=900&dpi=200"
-                
-                print(f"Requesting diagram from: {mermaid_url}")
-                
-                # Download the image with timeout
-                response = requests.get(mermaid_url, timeout=10)  # 添加10秒超时
-                
-                if response.status_code == 200 and len(response.content) > 1000:  # 确保返回的内容是有效的图像
-                    # Save the image
-                    with open(image_path, "wb") as f:
-                        f.write(response.content)
-                    print(f"Successfully generated diagram using Mermaid.ink")
-                    return image_path
-                else:
-                    print(f"Error from Mermaid.ink API: Status {response.status_code}, Content length: {len(response.content)}")
-                    raise Exception(f"Invalid response from Mermaid.ink: Status {response.status_code}")
-            except Exception as e:
-                print(f"Error using Mermaid.ink service: {str(e)}")
-                print("Trying alternative method...")
-                
-            # 如果在线服务失败，尝试使用本地渲染方法
-            try:
-                import matplotlib.pyplot as plt
-                import networkx as nx
-                
-                # 创建一个简单的替代图表
-                G = nx.DiGraph()
-                
-                # 添加节点
-                for node in added_nodes:
-                    G.add_node(node)
-                
-                # 添加边
-                for rel in all_relationships:
-                    G.add_edge(rel['table1'], rel['table2'], label=f"{rel['field1']} -> {rel['field2']}")
-                
-                # 设置图形大小
-                plt.figure(figsize=(16, 10))
-                
-                # 使用spring布局
-                pos = nx.spring_layout(G, k=0.5, iterations=50)
-                
-                # 绘制节点
-                nx.draw_networkx_nodes(G, pos, node_size=3000, node_color="#d7e9f7", 
-                                    edgecolors="#3c78d8", linewidths=2)
-                
-                # 绘制边
-                nx.draw_networkx_edges(G, pos, width=2, edge_color="#4d77a5", 
-                                    arrowsize=20, arrowstyle='->', connectionstyle='arc3,rad=0.1')
-                
-                # 添加节点标签
-                nx.draw_networkx_labels(G, pos, font_size=12, font_weight='bold')
-                
-                # 添加边标签
-                edge_labels = {(u, v): d['label'] for u, v, d in G.edges(data=True)}
-                nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10)
-                
-                # 保存图像
-                plt.axis('off')
-                plt.tight_layout()
-                plt.savefig(image_path, dpi=200, bbox_inches='tight')
-                plt.close()
-                
-                print(f"Successfully generated diagram using matplotlib")
-                return image_path
-            except Exception as matplotlib_error:
-                print(f"Error using matplotlib for rendering: {str(matplotlib_error)}")
+            # 确保输出目录存在
+            output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
+            os.makedirs(output_dir, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             
-            # 如果所有方法都失败，创建一个基本的文本图像
-            try:
-                from PIL import Image, ImageDraw, ImageFont
-                
-                # 创建空白图像
-                img_width, img_height = 1200, 800
-                image = Image.new('RGB', (img_width, img_height), color='white')
-                draw = ImageDraw.Draw(image)
-                
-                # 尝试加载一个字体
-                try:
-                    font = ImageFont.truetype("Arial", 14)
-                except:
-                    font = ImageFont.load_default()
-                
-                # 画一个标题
-                draw.text((50, 30), "Database Relationship Diagram", fill='black', font=font)
-                
-                # 为每个关系添加一行文本
-                y_position = 80
-                for rel in all_relationships:
-                    text = f"{rel['table1']} ({rel['field1']}) -> {rel['table2']} ({rel['field2']})"
-                    draw.text((50, y_position), text, fill='black', font=font)
-                    y_position += 25
-                
-                # 保存图像
-                image.save(image_path)
-                print(f"Created basic text image as fallback")
-                return image_path
-            except Exception as pil_error:
-                print(f"Error creating basic image: {str(pil_error)}")
-                
-                # 如果所有图像生成方法都失败，返回路径，但会在创建演示文稿时处理
-                with open(image_path, "w") as f:
-                    f.write("Error generating diagram")
-                return image_path
-                
-        except Exception as final_error:
-            print(f"All diagram generation methods failed: {str(final_error)}")
+            # 先将mermaid定义保存到临时文件
+            mermaid_file = os.path.join(output_dir, f"mermaid_{timestamp}.mmd")
+            image_path = os.path.join(output_dir, f"relationships_{timestamp}.png")
             
-            # 将Mermaid定义保存到文本文件，以便至少可以查看
-            text_path = os.path.join(self.output_dir, f"relationships_{timestamp}.txt")
-            with open(text_path, "w") as f:
+            # 保存mermaid定义文件
+            with open(mermaid_file, 'w', encoding='utf-8') as f:
                 f.write(mermaid_definition)
             
-            # 返回文本文件路径
-            return text_path
+            # 使用直接安装的mmdc命令行工具渲染图像 - 使用无沙盒模式
+            print("尝试使用mmdc命令行工具生成图表...")
+            try:
+                # 使用环境变量确保Puppeteer正确运行
+                env = os.environ.copy()
+                env['PUPPETEER_NO_SANDBOX'] = 'true'
+                env['PUPPETEER_EXECUTABLE_PATH'] = '/usr/bin/chromium'
+                
+                # 构建mmdc命令并执行 - 添加无沙盒选项
+                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent", "--puppeteerConfigFile", "/dev/null"]
+                result = subprocess.run(cmd, check=True, capture_output=True, text=True, env=env)
+                print(f"mmdc输出: {result.stdout}")
+                
+                if os.path.exists(image_path) and os.path.getsize(image_path) > 1000:
+                    print(f"Successfully generated diagram using mermaid-cli")
+                    return image_path
+                else:
+                    print("mmdc生成的图像文件过小或不存在，尝试其他方法")
+                    # 尝试检查依赖问题
+                    try:
+                        subprocess.run(["ldd", "/usr/bin/chromium"], check=True, capture_output=True, text=True)
+                        print("Chromium依赖检查完成")
+                    except Exception as dep_error:
+                        print(f"Chromium依赖检查出错: {str(dep_error)}")
+            except Exception as mmdc_error:
+                print(f"mmdc命令行错误: {str(mmdc_error)}")
+                if hasattr(mmdc_error, 'stderr'):
+                    print(f"mmdc stderr: {mmdc_error.stderr}")
+            
+            # 备选方法：尝试使用NPX运行mermaid-cli，使用无沙盒模式
+            print("尝试使用npx运行mermaid-cli...")
+            try:
+                # 使用npx安装并运行mmdc，添加无沙盒选项
+                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent --puppeteerConfigFile /dev/null"
+                result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, env=env)
+                print(f"npx mmdc输出: {result.stdout}")
+                
+                if os.path.exists(image_path) and os.path.getsize(image_path) > 1000:
+                    print(f"Successfully generated diagram using npx mermaid-cli")
+                    return image_path
+                else:
+                    print("npx mmdc生成的图像文件过小或不存在，尝试下一种方法")
+            except Exception as npx_error:
+                print(f"npx命令错误: {str(npx_error)}")
+                if hasattr(npx_error, 'stderr'):
+                    print(f"npx stderr: {npx_error.stderr}")
+            
+            # 使用matplotlib作为最后的备用方法
+            print("使用matplotlib作为备选方案绘制关系图...")
+            import matplotlib.pyplot as plt
+            import networkx as nx
+            
+            # 创建图对象
+            G = nx.DiGraph()
+            
+            # 添加节点
+            for table in all_tables:
+                G.add_node(table)
+            
+            # 添加边
+            for content in relationships_df['content']:
+                if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
+                    try:
+                        parts = content.split(" 通过字段 ")
+                        source_table = parts[0].replace("表 ", "").strip()
+                        remaining = parts[1].split(" 关联到表 ")
+                        source_field = remaining[0].strip()
+                        target_remaining = remaining[1].split(" 的字段 ")
+                        target_table = target_remaining[0].strip()
+                        target_field = target_remaining[1].strip() if len(target_remaining) > 1 else "unknown"
+                        
+                        # 添加边
+                        G.add_edge(source_table, target_table, label=f"{source_field} -> {target_field}")
+                    except Exception as edge_err:
+                        print(f"Error adding edge from content: {content}, Error: {str(edge_err)}")
+            
+            # 如果没有边，尝试从纯过程/表名关系中提取
+            if not list(G.edges()):
+                print("没有找到完整关系描述，尝试从内容中提取基本关系...")
+                for content in relationships_df['content']:
+                    try:
+                        # 尝试匹配 "procedure x uses table y" 模式
+                        if isinstance(content, str):
+                            words = content.split()
+                            # 查找表/过程/视图等名称
+                            for i, word in enumerate(words):
+                                if i > 0 and len(word) > 3 and not word.startswith(('the', 'and', 'with', 'from', 'into')):
+                                    # 简单启发式：添加看起来像表/过程名的词作为节点
+                                    if word.lower() not in ('table', 'view', 'procedure', 'function'):
+                                        G.add_node(word)
+                            
+                            # 尝试连接明显相关的节点
+                            nodes = list(G.nodes())
+                            for i in range(len(nodes)):
+                                for j in range(i+1, len(nodes)):
+                                    if nodes[i] in content and nodes[j] in content:
+                                        # 检查两个节点名称是否在同一个句子中出现
+                                        if abs(content.find(nodes[i]) - content.find(nodes[j])) < 100:
+                                            G.add_edge(nodes[i], nodes[j], label="related")
+                    except Exception as text_err:
+                        print(f"Error processing text relations: {str(text_err)}")
+            
+            # 图为空的情况处理
+            if not G.nodes():
+                print("无法提取有效的关系，创建简单图表")
+                G.add_node("No relationships found")
+            
+            # 设置图形大小
+            plt.figure(figsize=(12, 9), dpi=100)
+            
+            # 使用spring布局，增加节点间距和迭代次数提高布局质量
+            pos = nx.spring_layout(G, k=0.9, iterations=100, seed=42)
+            
+            # 绘制节点 - 使用更大的节点和更鲜明的颜色
+            nx.draw_networkx_nodes(G, pos, 
+                                   node_size=3000, 
+                                   node_color='#d7e9f7', 
+                                   edgecolors='#3c78d8', 
+                                   linewidths=2)
+            
+            # 绘制边 - 增加箭头大小和弯曲度
+            nx.draw_networkx_edges(G, pos, 
+                                   edge_color='#4d77a5', 
+                                   width=2.0, 
+                                   arrowsize=20, 
+                                   arrowstyle='->', 
+                                   connectionstyle='arc3,rad=0.1')
+            
+            # 添加节点标签 - 增加字体大小和权重
+            nx.draw_networkx_labels(G, pos, 
+                                    font_size=14, 
+                                    font_weight='bold',
+                                    font_family='sans-serif')
+            
+            # 添加边标签 - 确保边标签清晰可见
+            edge_labels = nx.get_edge_attributes(G, 'label')
+            nx.draw_networkx_edge_labels(G, pos, 
+                                         edge_labels=edge_labels, 
+                                         font_size=10,
+                                         font_color='#000066',
+                                         bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=2))
+            
+            # 保存高质量图像
+            plt.axis('off')
+            plt.tight_layout()
+            plt.savefig(image_path, format='png', dpi=150, bbox_inches='tight', pad_inches=0.5, transparent=True)
+            plt.close()
+            
+            print(f"Successfully generated diagram using matplotlib")
+            print(f"Diagram saved at: {image_path}")
+            
+            return image_path
+                
+        except Exception as e:
+            print(f"Error creating diagram: {str(e)}")
+            traceback.print_exc()
+            return None
 
     async def create_ppt(self, excel_file: str = "relationship.xlsx", output_file: str = "database_relationships.pptx"):
         """
@@ -298,43 +329,57 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
             slide = prs.slides.add_slide(blank_slide_layout)
             
             # Create and add relationship diagram
+            diagram_path = None
             try:
                 diagram_path = await self.create_mermaid_diagram(df)
                 
                 # 检查是否是有效的图像文件
-                is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
-                
-                # Add the diagram to the slide with adjusted size and position
-                # Use most of the slide area
-                left = Inches(0.25)  # Reduced margin
-                top = Inches(0.75)   # Reduced top margin
-                width = Inches(9.5)  # Almost full width
-                
-                if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
-                    slide.shapes.add_picture(diagram_path, left, top, width=width)
+                if diagram_path is not None:
+                    is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+                    
+                    # Add the diagram to the slide with adjusted size and position
+                    # Use most of the slide area
+                    left = Inches(0.25)  # Reduced margin
+                    top = Inches(0.75)   # Reduced top margin
+                    width = Inches(9.5)  # Almost full width
+                    
+                    if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
+                        slide.shapes.add_picture(diagram_path, left, top, width=width)
+                    else:
+                        # 如果图像生成失败，添加一个文本框作为替代
+                        txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                        tf = txt_box.text_frame
+                        p = tf.add_paragraph()
+                        p.text = "无法生成关系图。请查看详细信息表格。"
+                        p.font.size = Pt(14)
+                        p.font.bold = True
+                        
+                        # 如果是文本文件，读取内容并显示
+                        if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
+                            with open(diagram_path, 'r') as f:
+                                mermaid_content = f.read()
+                                p = tf.add_paragraph()
+                                p.text = "Mermaid定义（供参考）："
+                                p.font.size = Pt(12)
+                                p.font.bold = True
+                                
+                                p = tf.add_paragraph()
+                                p.text = mermaid_content
+                                p.font.size = Pt(8)
                 else:
-                    # 如果图像生成失败，添加一个文本框作为替代
+                    # 如果图表生成完全失败，添加错误信息
+                    left = Inches(0.25)
+                    top = Inches(0.75)
+                    width = Inches(9.5)
                     txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                     tf = txt_box.text_frame
                     p = tf.add_paragraph()
-                    p.text = "无法生成关系图。请查看详细信息表格。"
+                    p.text = "关系图生成失败。请查看详细信息表格。"
                     p.font.size = Pt(14)
                     p.font.bold = True
-                    
-                    # 如果是文本文件，读取内容并显示
-                    if diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
-                        with open(diagram_path, 'r') as f:
-                            mermaid_content = f.read()
-                            p = tf.add_paragraph()
-                            p.text = "Mermaid定义（供参考）："
-                            p.font.size = Pt(12)
-                            p.font.bold = True
-                            
-                            p = tf.add_paragraph()
-                            p.text = mermaid_content
-                            p.font.size = Pt(8)
             except Exception as diagram_error:
                 print(f"Error adding diagram to PPT: {str(diagram_error)}")
+                traceback.print_exc()
                 txt_box = slide.shapes.add_textbox(Inches(0.25), Inches(0.75), Inches(9.5), Inches(5))
                 tf = txt_box.text_frame
                 p = tf.add_paragraph()
@@ -438,7 +483,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
             prs.save(output_file)
             
             # 我们不再删除diagram_path，而是将其保留，以便可以在其他地方使用
-            if locals().get('diagram_path') and os.path.exists(diagram_path):
+            if diagram_path is not None and os.path.exists(diagram_path):
                 print(f"Diagram saved at: {diagram_path}")
             print(f"PPT created at: {output_file}")
             
@@ -446,8 +491,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
             
         except Exception as e:
             print(f"Error creating PPT: {str(e)}")
-            import traceback
-            print(traceback.format_exc())
+            traceback.print_exc()
             return False
 
     async def export_to_ppt(self, excel_file: str, filename_prefix: str) -> str:
@@ -473,6 +517,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
             subtitle.text = f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             
             # 尝试创建和添加关系图表
+            diagram_path = None
             try:
                 # 添加diagram slide
                 blank_slide_layout = prs.slide_layouts[6]
@@ -482,36 +527,48 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
                 diagram_path = await self.create_mermaid_diagram(df)
                 
                 # 检查是否是有效的图像文件
-                is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
-                
-                # Add the diagram to the slide with adjusted size and position
-                left = Inches(0.25)
-                top = Inches(0.75)
-                width = Inches(9.5)
-                
-                if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
-                    slide.shapes.add_picture(diagram_path, left, top, width=width)
+                if diagram_path is not None:
+                    is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+                    
+                    # Add the diagram to the slide with adjusted size and position
+                    left = Inches(0.25)
+                    top = Inches(0.75)
+                    width = Inches(9.5)
+                    
+                    if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
+                        slide.shapes.add_picture(diagram_path, left, top, width=width)
+                    else:
+                        # 如果图像生成失败，添加一个文本框作为替代
+                        txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                        tf = txt_box.text_frame
+                        p = tf.add_paragraph()
+                        p.text = "无法生成关系图。请查看详细信息表格。"
+                        p.font.size = Pt(14)
+                        p.font.bold = True
+                        
+                        # 如果是文本文件，读取内容并显示
+                        if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
+                            with open(diagram_path, 'r') as f:
+                                mermaid_content = f.read()
+                                p = tf.add_paragraph()
+                                p.text = "Mermaid定义（供参考）："
+                                p.font.size = Pt(12)
+                                p.font.bold = True
+                                
+                                p = tf.add_paragraph()
+                                p.text = mermaid_content
+                                p.font.size = Pt(8)
                 else:
-                    # 如果图像生成失败，添加一个文本框作为替代
+                    # 如果图表生成完全失败，添加错误信息
+                    left = Inches(0.25)
+                    top = Inches(0.75)
+                    width = Inches(9.5)
                     txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                     tf = txt_box.text_frame
                     p = tf.add_paragraph()
-                    p.text = "无法生成关系图。请查看详细信息表格。"
+                    p.text = "关系图生成失败。请查看详细信息表格。"
                     p.font.size = Pt(14)
                     p.font.bold = True
-                    
-                    # 如果是文本文件，读取内容并显示
-                    if diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
-                        with open(diagram_path, 'r') as f:
-                            mermaid_content = f.read()
-                            p = tf.add_paragraph()
-                            p.text = "Mermaid定义（供参考）："
-                            p.font.size = Pt(12)
-                            p.font.bold = True
-                            
-                            p = tf.add_paragraph()
-                            p.text = mermaid_content
-                            p.font.size = Pt(8)
                 
                 # Add title to the diagram slide
                 title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
@@ -525,6 +582,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
                 print(f"Added relationship diagram to PPT")
             except Exception as diagram_error:
                 print(f"Error creating diagram: {str(diagram_error)}")
+                traceback.print_exc()
                 print(f"Continuing with PPT creation without diagram")
             
             # Add content slides
@@ -587,9 +645,8 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
             
             return ppt_file
         except Exception as e:
-            import traceback
             print(f"Error exporting to PowerPoint: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
+            traceback.print_exc()
             
             # 尝试创建一个最基本的PPT，确保至少有一个输出
             try:
@@ -641,36 +698,48 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
                     diagram_path = await self.create_mermaid_diagram(temp_df)
                     
                     # 检查是否是有效的图像文件
-                    is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
-                    
-                    # Add the diagram to the slide with adjusted size and position
-                    left = Inches(0.25)
-                    top = Inches(0.75)
-                    width = Inches(9.5)
-                    
-                    if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
-                        slide.shapes.add_picture(diagram_path, left, top, width=width)
+                    if diagram_path is not None:
+                        is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+                        
+                        # Add the diagram to the slide with adjusted size and position
+                        left = Inches(0.25)
+                        top = Inches(0.75)
+                        width = Inches(9.5)
+                        
+                        if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
+                            slide.shapes.add_picture(diagram_path, left, top, width=width)
+                        else:
+                            # 如果图像生成失败，添加一个文本框作为替代
+                            txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                            tf = txt_box.text_frame
+                            p = tf.add_paragraph()
+                            p.text = "无法生成关系图。请查看详细信息部分。"
+                            p.font.size = Pt(14)
+                            p.font.bold = True
+                            
+                            # 如果是文本文件，读取内容并显示
+                            if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
+                                with open(diagram_path, 'r') as f:
+                                    mermaid_content = f.read()
+                                    p = tf.add_paragraph()
+                                    p.text = "Mermaid定义（供参考）："
+                                    p.font.size = Pt(12)
+                                    p.font.bold = True
+                                    
+                                    p = tf.add_paragraph()
+                                    p.text = mermaid_content
+                                    p.font.size = Pt(8)
                     else:
-                        # 如果图像生成失败，添加一个文本框作为替代
+                        # 如果图表生成完全失败，添加错误信息
+                        left = Inches(0.25)
+                        top = Inches(0.75)
+                        width = Inches(9.5)
                         txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                         tf = txt_box.text_frame
                         p = tf.add_paragraph()
-                        p.text = "无法生成关系图。请查看详细信息部分。"
+                        p.text = "关系图生成失败。请查看详细信息部分。"
                         p.font.size = Pt(14)
                         p.font.bold = True
-                        
-                        # 如果是文本文件，读取内容并显示
-                        if diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
-                            with open(diagram_path, 'r') as f:
-                                mermaid_content = f.read()
-                                p = tf.add_paragraph()
-                                p.text = "Mermaid定义（供参考）："
-                                p.font.size = Pt(12)
-                                p.font.bold = True
-                                
-                                p = tf.add_paragraph()
-                                p.text = mermaid_content
-                                p.font.size = Pt(8)
                     
                     # Add title to the diagram slide
                     title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
@@ -684,85 +753,50 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
                     print(f"Added new relationship diagram to PPT")
                 except Exception as diagram_error:
                     print(f"Error creating additional diagram: {str(diagram_error)}")
+                    traceback.print_exc()
                     print(f"Continuing with presentation without additional diagram")
             
             # Add slides for each data item with proper content handling
             for i, item in enumerate(data):
+                # 直接获取原始内容，不进行任何处理或格式化
                 content = item.get('content', '')
                 source = item.get('source', 'search_result')
-                title_text = item.get('title', f"{source.capitalize()} Results")
+                # 使用来源作为标题
+                title_text = f"{source.capitalize()} Results"
                 
                 if not content:
                     continue
                 
-                # Handle large content by breaking it into chunks
-                # Calculate roughly how many characters can fit on a slide
-                # This is a rough estimate and may need adjustment
-                chars_per_slide = 1000
+                # 添加一个新的幻灯片
+                slide_layout = prs.slide_layouts[5]  # Title and Content layout
+                slide = prs.slides.add_slide(slide_layout)
                 
-                # Break content into chunks if it's a long string
-                if isinstance(content, str) and len(content) > chars_per_slide:
-                    # Split content into multiple slides
-                    chunks = [content[i:i+chars_per_slide] for i in range(0, len(content), chars_per_slide)]
-                    
-                    # Add a slide for each chunk
-                    for chunk_index, chunk in enumerate(chunks):
-                        slide_layout = prs.slide_layouts[5]  # Title and Content layout
-                        slide = prs.slides.add_slide(slide_layout)
-                        
-                        # Set slide title
-                        title = slide.shapes.title
-                        if len(chunks) > 1:
-                            title.text = f"{title_text} (Part {chunk_index+1}/{len(chunks)})"
-                        else:
-                            title.text = title_text
-                        
-                        # Add content
-                        left = Inches(0.5)
-                        top = Inches(1.5)
-                        width = Inches(9.0)
-                        height = Inches(5.0)
-                        
-                        txBox = slide.shapes.add_textbox(left, top, width, height)
-                        tf = txBox.text_frame
-                        tf.word_wrap = True
-                        
-                        # Add chunk text
-                        p = tf.add_paragraph()
-                        p.text = chunk
-                        p.font.size = Pt(12)
-                else:
-                    # For shorter content, just add one slide
-                    slide_layout = prs.slide_layouts[5]  # Title and Content layout
-                    slide = prs.slides.add_slide(slide_layout)
-                    
-                    # Set slide title
-                    title = slide.shapes.title
-                    title.text = title_text
-                    
-                    # Add content
-                    left = Inches(0.5)
-                    top = Inches(1.5)
-                    width = Inches(9.0)
-                    height = Inches(5.0)
-                    
-                    txBox = slide.shapes.add_textbox(left, top, width, height)
-                    tf = txBox.text_frame
-                    tf.word_wrap = True
-                    
-                    # Add content text
-                    p = tf.add_paragraph()
-                    
-                    # Convert non-string content to string
-                    if not isinstance(content, str):
+                # 设置幻灯片标题
+                title = slide.shapes.title
+                title.text = title_text
+                
+                # 添加内容文本框
+                left = Inches(0.5)
+                top = Inches(1.5)
+                width = Inches(9.0)
+                height = Inches(5.0)
+                
+                txBox = slide.shapes.add_textbox(left, top, width, height)
+                tf = txBox.text_frame
+                tf.word_wrap = True
+                
+                # 添加原始内容，确保保留格式
+                p = tf.add_paragraph()
+                # 确保内容是字符串
+                if not isinstance(content, str):
+                    try:
                         import json
-                        try:
-                            content = json.dumps(content, ensure_ascii=False, indent=2)
-                        except:
-                            content = str(content)
-                    
-                    p.text = content
-                    p.font.size = Pt(12)
+                        content = json.dumps(content, ensure_ascii=False, indent=2)
+                    except:
+                        content = str(content)
+                
+                p.text = content
+                p.font.size = Pt(12)
             
             # Save the updated presentation
             prs.save(ppt_file)
@@ -770,8 +804,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
             
             return ppt_file
         except Exception as e:
-            import traceback
             print(f"Error appending to PowerPoint: {str(e)}")
-            print(f"Detailed error: {traceback.format_exc()}")
+            traceback.print_exc()
             # 返回原始文件路径，确保处理继续
             return ppt_file 
