@@ -13,10 +13,10 @@ class PostgresService:
     
     async def get_tables(self) -> List[Dict[str, str]]:
         """
-        获取所有表的信息
+        Get information about all tables
         
         Returns:
-            表信息列表
+            List of table information
         """
         try:
             query = """
@@ -49,19 +49,19 @@ class PostgresService:
     
     async def execute_query(self, query: str) -> List[Dict[str, Any]]:
         """
-        执行SQL查询
+        Execute SQL query
         
         Args:
-            query: SQL查询语句
+            query: SQL query statement
             
         Returns:
-            查询结果行列表
+            List of query result rows
         """
         try:
             if not query.strip():
                 return []
                 
-            # 检查查询是否是只读的
+            # Check if query is read-only
             normalized_query = query.strip().upper()
             if not normalized_query.startswith(('SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN')):
                 logger.warning(f"Non-read query attempted: {query}")
@@ -80,22 +80,22 @@ class PostgresService:
     
     async def import_data(self, file_content: bytes) -> Dict[str, Any]:
         """
-        从SQL文件导入数据
+        Import data from SQL file
         
         Args:
-            file_content: SQL文件内容
+            file_content: SQL file content
             
         Returns:
-            导入结果
+            Import result
         """
         try:
-            # 将字节内容转换为字符串
+            # Convert bytes content to string
             sql_content = file_content.decode('utf-8')
             
-            # 将SQL文件内容拆分成单独的语句
+            # Split SQL file content into individual statements
             sql_statements = self._split_sql_statements(sql_content)
             
-            # 执行每个SQL语句
+            # Execute each SQL statement
             tables_affected = 0
             loop = asyncio.get_running_loop()
             
@@ -104,7 +104,7 @@ class PostgresService:
                 if not statement:
                     continue
                 
-                # 检查是否是创建表或插入语句
+                # Check if it's a CREATE TABLE or INSERT statement
                 normalized_stmt = statement.upper()
                 if 'CREATE TABLE' in normalized_stmt or 'INSERT INTO' in normalized_stmt:
                     tables_affected += 1
@@ -126,20 +126,20 @@ class PostgresService:
     
     async def export_data(self, table_name: str) -> str:
         """
-        将表数据导出为CSV格式
+        Export table data to CSV format
         
         Args:
-            table_name: 表名
+            table_name: Table name
             
         Returns:
-            CSV文件路径
+            CSV file path
         """
         try:
-            # 确保表名安全
+            # Ensure table name is safe
             if not self._is_valid_table_name(table_name):
                 raise ValueError(f"Invalid table name: {table_name}")
             
-            # 查询表数据
+            # Query table data
             query = f"SELECT * FROM {table_name}"
             
             loop = asyncio.get_running_loop()
@@ -151,7 +151,7 @@ class PostgresService:
             if not result:
                 return None
             
-            # 创建CSV文件
+            # Create CSV file
             output_dir = "output"
             os.makedirs(output_dir, exist_ok=True)
             
@@ -159,14 +159,14 @@ class PostgresService:
             
             with open(file_path, 'w', newline='') as csvfile:
                 if result:
-                    # 获取列名
+                    # Get column names
                     fieldnames = result[0].keys()
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     
-                    # 写入表头
+                    # Write header
                     writer.writeheader()
                     
-                    # 写入数据行
+                    # Write data rows
                     writer.writerows(result)
             
             return file_path
@@ -177,23 +177,23 @@ class PostgresService:
     
     def _split_sql_statements(self, sql_content: str) -> List[str]:
         """
-        将SQL文本拆分为单独的语句
+        Split SQL text into individual statements
         
         Args:
-            sql_content: SQL文本内容
+            sql_content: SQL text content
             
         Returns:
-            SQL语句列表
+            List of SQL statements
         """
-        # 简单地按分号拆分
-        # 注意：这种方法可能不适用于包含存储过程或复杂语句的SQL
+        # Simply split by semicolon
+        # Note: This method may not be suitable for SQL containing stored procedures or complex statements
         statements = []
         current_statement = []
         
         for line in sql_content.splitlines():
             line = line.strip()
             
-            # 跳过注释行
+            # Skip comment lines
             if line.startswith('--') or not line:
                 continue
                 
@@ -203,7 +203,7 @@ class PostgresService:
                 statements.append(' '.join(current_statement))
                 current_statement = []
         
-        # 添加最后一个语句（如果没有分号结尾）
+        # Add the last statement (if it doesn't end with semicolon)
         if current_statement:
             statements.append(' '.join(current_statement))
         
@@ -211,14 +211,14 @@ class PostgresService:
     
     def _is_valid_table_name(self, table_name: str) -> bool:
         """
-        检查表名是否有效（防止SQL注入）
+        Check if table name is valid (prevent SQL injection)
         
         Args:
-            table_name: 表名
+            table_name: Table name
             
         Returns:
-            表名是否有效
+            Whether table name is valid
         """
-        # 基本检查：只允许字母、数字、下划线和点（用于schema.table）
+        # Basic check: only allow letters, numbers, underscores and dots (for schema.table)
         import re
         return bool(re.match(r'^[a-zA-Z0-9_\.]+$', table_name)) 

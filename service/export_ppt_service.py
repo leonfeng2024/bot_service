@@ -38,7 +38,7 @@ class ExportPPTService:
             Path to the generated diagram
         """
         try:
-            # 导入os模块以确保在任何地方都可以访问
+            # Import os module to ensure accessibility everywhere
             import os
             import subprocess
             
@@ -128,45 +128,45 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
 """
             print(f"Generated Mermaid definition:\n{mermaid_definition}")
             
-            # 确保输出目录存在
+            # Ensure output directory exists
             output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
             os.makedirs(output_dir, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             
-            # 先将mermaid定义保存到临时文件
+            # First save mermaid definition to temporary file
             mermaid_file = os.path.join(output_dir, f"mermaid_{timestamp}.mmd")
             image_path = os.path.join(output_dir, f"relationships_{timestamp}.png")
             
-            # 保存mermaid定义文件
+            # Save mermaid definition file
             with open(mermaid_file, 'w', encoding='utf-8') as f:
                 f.write(mermaid_definition)
             
-            # 使用直接安装的mmdc命令行工具渲染图像 - 使用无沙盒模式
-            print("尝试使用mmdc命令行工具生成图表...")
+            # Use directly installed mmdc command line tool to render image - using no sandbox mode
+            print("Attempting to generate diagram using mmdc command line tool...")
             try:
-                # 使用环境变量确保Puppeteer正确运行
+                # Use environment variables to ensure Puppeteer runs correctly
                 env = os.environ.copy()
                 env['PUPPETEER_NO_SANDBOX'] = 'true'
                 env['PUPPETEER_EXECUTABLE_PATH'] = '/usr/bin/chromium'
                 
-                # 构建mmdc命令并执行 - 添加无沙盒选项
+                # Build mmdc command and execute - add no sandbox option
                 cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent", "-p", "/app/puppeteer-config.json"]
                 result = subprocess.run(cmd, check=True, capture_output=True, text=True, env=env)
-                print(f"mmdc输出: {result.stdout}")
+                print(f"mmdc output: {result.stdout}")
                 
                 if os.path.exists(image_path) and os.path.getsize(image_path) > 1000:
                     print(f"Successfully generated diagram using mermaid-cli")
                     return image_path
                 else:
-                    print("mmdc生成的图像文件过小或不存在，尝试其他方法")
-                    # 尝试检查依赖问题
+                    print("Generated image file is too small or doesn't exist, trying other methods")
+                    # Try checking dependencies
                     try:
                         subprocess.run(["ldd", "/usr/bin/chromium"], check=True, capture_output=True, text=True)
-                        print("Chromium依赖检查完成")
+                        print("Chromium dependency check completed")
                     except Exception as dep_error:
-                        print(f"Chromium依赖检查出错: {str(dep_error)}")
+                        print(f"Chromium dependency check error: {str(dep_error)}")
             except Exception as mmdc_error:
-                print(f"mmdc命令行错误: {str(mmdc_error)}")
+                print(f"mmdc command line error: {str(mmdc_error)}")
                 if hasattr(mmdc_error, 'stderr'):
                     print(f"mmdc stderr: {mmdc_error.stderr}")
             
@@ -516,17 +516,17 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             title.text = "Database Query Results"
             subtitle.text = f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             
-            # 尝试创建和添加关系图表
+            # Try to create and add relationship diagram
             diagram_path = None
             try:
-                # 添加diagram slide
+                # Add diagram slide
                 blank_slide_layout = prs.slide_layouts[6]
                 slide = prs.slides.add_slide(blank_slide_layout)
                 
                 # Create and add relationship diagram
                 diagram_path = await self.create_mermaid_diagram(df)
                 
-                # 检查是否是有效的图像文件
+                # Check if it's a valid image file
                 if diagram_path is not None:
                     is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
                     
@@ -538,20 +538,20 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
                         slide.shapes.add_picture(diagram_path, left, top, width=width)
                     else:
-                        # 如果图像生成失败，添加一个文本框作为替代
+                        # If image generation failed, add a text box as fallback
                         txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                         tf = txt_box.text_frame
                         p = tf.add_paragraph()
-                        p.text = "无法生成关系图。请查看详细信息表格。"
+                        p.text = "Unable to generate relationship diagram. Please check the detailed information section."
                         p.font.size = Pt(14)
                         p.font.bold = True
                         
-                        # 如果是文本文件，读取内容并显示
+                        # If it's a text file, read and display content
                         if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
                             with open(diagram_path, 'r') as f:
                                 mermaid_content = f.read()
                                 p = tf.add_paragraph()
-                                p.text = "Mermaid定义（供参考）："
+                                p.text = "Mermaid definition (for reference):"
                                 p.font.size = Pt(12)
                                 p.font.bold = True
                                 
@@ -559,14 +559,14 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                                 p.text = mermaid_content
                                 p.font.size = Pt(8)
                 else:
-                    # 如果图表生成完全失败，添加错误信息
+                    # If diagram generation completely failed, add error message
                     left = Inches(0.25)
                     top = Inches(0.75)
                     width = Inches(9.5)
                     txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                     tf = txt_box.text_frame
                     p = tf.add_paragraph()
-                    p.text = "关系图生成失败。请查看详细信息表格。"
+                    p.text = "Relationship diagram generation failed. Please check the detailed information section."
                     p.font.size = Pt(14)
                     p.font.bold = True
                 
@@ -676,7 +676,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             # Open the existing presentation
             prs = Presentation(ppt_file)
             
-            # 如果数据中有content字段并且有表关系信息，尝试生成关系图并添加
+            # Check if data contains content field and table relationship information
             has_relationship_data = False
             for item in data:
                 content = item.get('content', '')
@@ -686,18 +686,18 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             
             if has_relationship_data:
                 try:
-                    # 创建一个临时DataFrame用于图表生成
+                    # Create a temporary DataFrame for diagram generation
                     import pandas as pd
                     temp_df = pd.DataFrame(data)
                     
-                    # 添加diagram slide
+                    # Add diagram slide
                     blank_slide_layout = prs.slide_layouts[6]
                     slide = prs.slides.add_slide(blank_slide_layout)
                     
                     # Create and add relationship diagram
                     diagram_path = await self.create_mermaid_diagram(temp_df)
                     
-                    # 检查是否是有效的图像文件
+                    # Check if it's a valid image file
                     if diagram_path is not None:
                         is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
                         
@@ -709,20 +709,20 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                         if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
                             slide.shapes.add_picture(diagram_path, left, top, width=width)
                         else:
-                            # 如果图像生成失败，添加一个文本框作为替代
+                            # If image generation failed, add a text box as fallback
                             txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                             tf = txt_box.text_frame
                             p = tf.add_paragraph()
-                            p.text = "无法生成关系图。请查看详细信息部分。"
+                            p.text = "Unable to generate relationship diagram. Please check the detailed information section."
                             p.font.size = Pt(14)
                             p.font.bold = True
                             
-                            # 如果是文本文件，读取内容并显示
+                            # If it's a text file, read and display content
                             if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
                                 with open(diagram_path, 'r') as f:
                                     mermaid_content = f.read()
                                     p = tf.add_paragraph()
-                                    p.text = "Mermaid定义（供参考）："
+                                    p.text = "Mermaid definition (for reference):"
                                     p.font.size = Pt(12)
                                     p.font.bold = True
                                     
@@ -730,14 +730,14 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                                     p.text = mermaid_content
                                     p.font.size = Pt(8)
                     else:
-                        # 如果图表生成完全失败，添加错误信息
+                        # If diagram generation completely failed, add error message
                         left = Inches(0.25)
                         top = Inches(0.75)
                         width = Inches(9.5)
                         txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                         tf = txt_box.text_frame
                         p = tf.add_paragraph()
-                        p.text = "关系图生成失败。请查看详细信息部分。"
+                        p.text = "Relationship diagram generation failed. Please check the detailed information section."
                         p.font.size = Pt(14)
                         p.font.bold = True
                     
@@ -758,24 +758,24 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             
             # Add slides for each data item with proper content handling
             for i, item in enumerate(data):
-                # 直接获取原始内容，不进行任何处理或格式化
+                # Get raw content without any processing or formatting
                 content = item.get('content', '')
                 source = item.get('source', 'search_result')
-                # 使用来源作为标题
+                # Use source as title
                 title_text = f"{source.capitalize()} Results"
                 
                 if not content:
                     continue
                 
-                # 添加一个新的幻灯片
+                # Add a new slide
                 slide_layout = prs.slide_layouts[5]  # Title and Content layout
                 slide = prs.slides.add_slide(slide_layout)
                 
-                # 设置幻灯片标题
+                # Set slide title
                 title = slide.shapes.title
                 title.text = title_text
                 
-                # 添加内容文本框
+                # Add content text box
                 left = Inches(0.5)
                 top = Inches(1.5)
                 width = Inches(9.0)
@@ -785,9 +785,9 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 tf = txBox.text_frame
                 tf.word_wrap = True
                 
-                # 添加原始内容，确保保留格式
+                # Add original content, ensuring format preservation
                 p = tf.add_paragraph()
-                # 确保内容是字符串
+                # Ensure content is string
                 if not isinstance(content, str):
                     try:
                         import json
@@ -806,5 +806,5 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
         except Exception as e:
             print(f"Error appending to PowerPoint: {str(e)}")
             traceback.print_exc()
-            # 返回原始文件路径，确保处理继续
+            # Return original file path to ensure processing continues
             return ppt_file 

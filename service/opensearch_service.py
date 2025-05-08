@@ -25,15 +25,15 @@ class OpenSearchService:
         self._connect()
 
     def _connect(self):
-        """连接到OpenSearch服务器"""
+        """Connect to OpenSearch server"""
         try:
-            # 从配置中获取SSL设置
+            # Get SSL settings from configuration
             use_ssl = OPENSEARCH_USE_SSL
             verify_certs = OPENSEARCH_VERIFY_CERTS
             
             logger.info(f"Connecting to OpenSearch at {OPENSEARCH_HOST}:{OPENSEARCH_PORT} (SSL: {use_ssl}, Verify: {verify_certs})")
             
-            # 创建OpenSearch客户端
+            # Create OpenSearch client
             self.client = OpenSearch(
                 hosts=[{'host': OPENSEARCH_HOST, 'port': OPENSEARCH_PORT}],
                 http_auth=(OPENSEARCH_USER, OPENSEARCH_PASSWORD),
@@ -42,7 +42,7 @@ class OpenSearchService:
                 ssl_show_warn=False
             )
             
-            # 测试连接
+            # Test connection
             try:
                 info = self.client.info()
                 logger.info(f"Successfully connected to OpenSearch {info.get('version', {}).get('number', 'unknown')} at {OPENSEARCH_HOST}:{OPENSEARCH_PORT}")
@@ -50,7 +50,7 @@ class OpenSearchService:
             except Exception as e:
                 logger.warning(f"Failed to connect with current settings: {str(e)}")
                 
-                # 如果使用SSL失败，尝试不使用SSL
+                # If SSL fails, try without SSL
                 if use_ssl:
                     logger.info("Attempting connection without SSL...")
                     self.client = OpenSearch(
@@ -65,7 +65,7 @@ class OpenSearchService:
                     except Exception as no_ssl_error:
                         logger.warning(f"Failed to connect without SSL: {str(no_ssl_error)}")
                 
-                # 尝试作为最后的手段，可能是本地开发环境不需要认证
+                # Try as a last resort, possibly local dev environment without auth
                 try:
                     logger.info("Attempting connection without authentication...")
                     self.client = OpenSearch(
@@ -83,31 +83,31 @@ class OpenSearchService:
             import traceback
             logger.error(f"Failed to connect to OpenSearch: {str(e)}")
             logger.error(traceback.format_exc())
-            # 不抛出异常，允许系统继续运行
+            # Don't raise exception, allow system to continue running
 
     async def get_indices(self) -> List[Dict[str, Any]]:
         """
-        获取所有索引的信息
+        Get information about all indices
         
         Returns:
-            索引信息列表
+            List of index information
         """
         try:
-            # 确保客户端已连接
+            # Ensure client is connected
             if not self.client:
                 self._connect()
                 if not self.client:
                     raise Exception("Unable to connect to OpenSearch")
             
-            # 获取所有索引信息
+            # Get all index information
             indices_info = []
             cats = self.client.cat.indices(format="json")
             cluster_health = self.client.cluster.health()
             
             for index in cats:
                 index_name = index.get('index')
-                # 获取索引健康状态
-                health = "yellow"  # 默认值
+                # Get index health status
+                health = "yellow"  # Default value
                 if index_name in cluster_health.get('indices', {}):
                     health = cluster_health['indices'][index_name]['status']
                 elif 'status' in cluster_health:
@@ -128,29 +128,29 @@ class OpenSearchService:
 
     async def create_index(self, index_name: str) -> Dict[str, Any]:
         """
-        创建新索引
+        Create a new index
         
         Args:
-            index_name: 索引名称
+            index_name: Name of the index
             
         Returns:
-            创建结果
+            Creation result
         """
         try:
-            # 确保客户端已连接
+            # Ensure client is connected
             if not self.client:
                 self._connect()
                 if not self.client:
                     raise Exception("Unable to connect to OpenSearch")
             
-            # 检查索引是否已存在
+            # Check if index already exists
             if self.client.indices.exists(index=index_name):
                 return {
                     "success": False,
                     "message": f"Index '{index_name}' already exists"
                 }
             
-            # 创建索引配置
+            # Create index configuration
             index_config = {
                 "settings": {
                     "index": {
@@ -167,7 +167,7 @@ class OpenSearchService:
                 }
             }
             
-            # 创建索引
+            # Create index
             response = self.client.indices.create(
                 index=index_name,
                 body=index_config
@@ -193,29 +193,29 @@ class OpenSearchService:
 
     async def delete_index(self, index_name: str) -> Dict[str, Any]:
         """
-        删除索引
+        Delete an index
         
         Args:
-            index_name: 索引名称
+            index_name: Name of the index
             
         Returns:
-            删除结果
+            Deletion result
         """
         try:
-            # 确保客户端已连接
+            # Ensure client is connected
             if not self.client:
                 self._connect()
                 if not self.client:
                     raise Exception("Unable to connect to OpenSearch")
             
-            # 检查索引是否存在
+            # Check if index exists
             if not self.client.indices.exists(index=index_name):
                 return {
                     "success": False,
                     "message": f"Index '{index_name}' does not exist"
                 }
             
-            # 删除索引
+            # Delete index
             response = self.client.indices.delete(index=index_name)
             
             if response.get('acknowledged', False):
@@ -238,23 +238,23 @@ class OpenSearchService:
 
     async def search(self, index_name: str, query_string: str) -> Dict[str, Any]:
         """
-        在指定索引中执行搜索
+        Execute search in specified index
         
         Args:
-            index_name: 索引名称
-            query_string: 查询字符串
+            index_name: Name of the index
+            query_string: Query string
             
         Returns:
-            搜索结果
+            Search results
         """
         try:
-            # 确保客户端已连接
+            # Ensure client is connected
             if not self.client:
                 self._connect()
                 if not self.client:
                     raise Exception("Unable to connect to OpenSearch")
             
-            # 构建查询
+            # Build query
             query = {
                 "query": {
                     "query_string": {
@@ -263,13 +263,13 @@ class OpenSearchService:
                 }
             }
             
-            # 执行搜索
+            # Execute search
             response = self.client.search(
                 body=query,
                 index=index_name
             )
             
-            # 处理搜索结果
+            # Process search results
             hits = []
             for hit in response['hits']['hits']:
                 hits.append({
@@ -287,41 +287,41 @@ class OpenSearchService:
 
     async def upload_document(self, index_name: str, file_content: bytes, file_name: str) -> Dict[str, Any]:
         """
-        将文档上传到索引
+        Upload document to index
         
         Args:
-            index_name: 索引名称
-            file_content: 文件内容
-            file_name: 文件名
+            index_name: Name of the index
+            file_content: File content
+            file_name: File name
             
         Returns:
-            上传结果
+            Upload result
         """
         try:
-            # 确保客户端已连接
+            # Ensure client is connected
             if not self.client:
                 self._connect()
                 if not self.client:
                     raise Exception("Unable to connect to OpenSearch")
             
-            # 检查索引是否存在，不存在则创建
+            # Check if index exists, create if not
             if not self.client.indices.exists(index=index_name):
                 create_result = await self.create_index(index_name)
                 if not create_result['success']:
                     return create_result
             
-            # 解析文件内容
+            # Parse file content
             file_ext = os.path.splitext(file_name)[1].lower()
             
-            # 处理不同类型的文件
+            # Handle different file types
             content = ""
             if file_ext == '.txt':
                 content = file_content.decode('utf-8')
             elif file_ext in ['.doc', '.docx']:
-                # 需要额外的库来处理Word文档
+                # Need additional library to handle Word documents
                 content = self._extract_text_from_word(file_content)
             elif file_ext in ['.xls', '.xlsx']:
-                # 需要额外的库来处理Excel文档
+                # Need additional library to handle Excel documents
                 content = self._extract_text_from_excel(file_content)
             else:
                 return {
@@ -329,7 +329,7 @@ class OpenSearchService:
                     "message": f"Unsupported file type: {file_ext}"
                 }
             
-            # 创建文档
+            # Create document
             document = {
                 "title": file_name,
                 "content": content,
@@ -340,7 +340,7 @@ class OpenSearchService:
                 }
             }
             
-            # 索引文档
+            # Index document
             response = self.client.index(
                 index=index_name,
                 body=document,
@@ -367,25 +367,25 @@ class OpenSearchService:
 
     def _extract_text_from_word(self, file_content: bytes) -> str:
         """
-        从Word文档中提取文本
+        Extract text from Word document
         
         Args:
-            file_content: Word文档内容
+            file_content: Word document content
             
         Returns:
-            提取的文本
+            Extracted text
         """
         try:
-            # 将文件内容保存到临时文件
+            # Save file content to temporary file
             temp_file = "temp_word.docx"
             with open(temp_file, "wb") as f:
                 f.write(file_content)
             
-            # 使用textract提取文本
+            # Use textract to extract text
             import textract
             text = textract.process(temp_file).decode('utf-8')
             
-            # 删除临时文件
+            # Delete temporary file
             os.remove(temp_file)
             
             return text
@@ -395,28 +395,28 @@ class OpenSearchService:
 
     def _extract_text_from_excel(self, file_content: bytes) -> str:
         """
-        从Excel文档中提取文本
+        Extract text from Excel document
         
         Args:
-            file_content: Excel文档内容
+            file_content: Excel document content
             
         Returns:
-            提取的文本
+            Extracted text
         """
         try:
-            # 将文件内容保存到临时文件
+            # Save file content to temporary file
             temp_file = "temp_excel.xlsx"
             with open(temp_file, "wb") as f:
                 f.write(file_content)
             
-            # 使用pandas读取Excel
+            # Use pandas to read Excel
             import pandas as pd
             dfs = pd.read_excel(temp_file, sheet_name=None)
             
-            # 删除临时文件
+            # Delete temporary file
             os.remove(temp_file)
             
-            # 将所有工作表转换为文本
+            # Convert all worksheets to text
             texts = []
             for sheet_name, df in dfs.items():
                 texts.append(f"Sheet: {sheet_name}")
@@ -429,10 +429,10 @@ class OpenSearchService:
 
     def _get_current_timestamp(self) -> str:
         """
-        获取当前时间戳
+        Get current timestamp
         
         Returns:
-            ISO格式的时间戳
+            ISO format timestamp
         """
         from datetime import datetime
         return datetime.now().isoformat()

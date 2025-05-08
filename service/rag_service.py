@@ -26,13 +26,13 @@ from tools.postgresql_tools import PostgreSQLTools
 class RAGService:
     def __init__(self):
         self.llm_service = LLMService()
-        # 不指定特定LLM类型，让系统自动使用全局配置
+        # Don't specify LLM type, let system use global configuration
         self.llm_service.init_llm()
         self.redis_tools = RedisTools()
         self.excel_service = ExportExcelService()
         self.ppt_service = ExportPPTService()
         self.postgresql_tools = PostgreSQLTools()
-        # 初始化token计数器
+        # Initialize token counter
         self.token_counter = TokenCounter()
         pass
     
@@ -66,7 +66,7 @@ class RAGService:
                             
                             doc_counter += 1
                 else:
-                    error_content = f"从 {source} 检索的结果格式不正确"
+                    error_content = f"Invalid format of results retrieved from {source}"
                     results.append(f"Doc#{doc_counter}: {error_content}")
                     
                     json_results.append({
@@ -77,12 +77,12 @@ class RAGService:
                     
                     doc_counter += 1
                 
-                # 返回每个检索器的完成状态
-                yield {"step": f"{source}_retriever", "message": f"{source.capitalize()}数据库查询完成"}
+                # Return completion status for each retriever
+                yield {"step": f"{source}_retriever", "message": f"{source.capitalize()} database query completed"}
                 
             except Exception as e:
                 import traceback
-                error_content = f"从 {source} 检索数据时出错: {str(e)}"
+                error_content = f"Error retrieving data from {source}: {str(e)}"
                 results.append(f"Doc#{doc_counter}: {error_content}")
                 
                 json_results.append({
@@ -94,7 +94,7 @@ class RAGService:
                 doc_counter += 1
         
         if not results:
-            default_content = "未能从任何数据源检索到相关信息"
+            default_content = "No relevant information retrieved from any data source"
             results.append(f"Doc#1: {default_content}")
             
             json_results.append({
@@ -136,7 +136,7 @@ class RAGService:
 
 Example
 Knowledge Base:
-Doc#1: 表 GetEmployeeDetails 通过字段 employee_id 关联到表 employee_details 的字段 employee_id
+Doc#1: Table GetEmployeeDetails is linked to table employee_details through field employee_id
 Doc#2: 
 Procedure 'ABCD_Procedure':
 --- ABCD_Procedure
@@ -188,7 +188,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             else:
                 final_check = "unknown"
             
-            # 返回LLM处理结果
+            # Return LLM processing result
             yield {"step": "_process_with_llm", "message": response}
             
             yield {
@@ -304,14 +304,14 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             print(f"Detailed error: {traceback.format_exc()}")
 
     async def retrieve(self, query: str, uuid: Optional[str] = None) -> AsyncGenerator[Dict[str, Any], None]:
-        """检索相关文档并生成回答"""
+        """Retrieve relevant documents and generate answer"""
         try:
             print(f"Starting RAG process for query: {query}, uuid: {uuid}")
             
-            # 返回处理开始信息
-            yield {"step": "process_start", "message": "开始处理查询"}
+            # Return process start message
+            yield {"step": "process_start", "message": "Starting to process query"}
             
-            # 获取文档
+            # Get documents
             docs = []
             async for doc_batch in self._multi_source_retrieve(query, uuid):
                 # Check if this is a status update
@@ -320,15 +320,15 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     continue
                 docs = doc_batch
             
-            # 返回文档检索完成状态
-            yield {"step": "docs_retrieved", "message": f"检索到 {len(docs)} 个文档"}
+            # Return document retrieval completion status
+            yield {"step": "docs_retrieved", "message": f"Retrieved {len(docs)} documents"}
             
             print("Retrieved documents:")
             for doc in docs[:3]:
                 print(f"  {doc[:100]}..." if len(doc) > 100 else f"  {doc}")
             print(f"  ... (total {len(docs)} documents)")
             
-            # 使用LLM处理文档
+            # Process documents with LLM
             llm_result = None
             async for result in self._process_with_llm(docs, query):
                 if isinstance(result, dict):
@@ -340,16 +340,16 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             if not llm_result:
                 llm_result = {"final_check": "unknown", "answer": "Failed to process query"}
             
-            # 返回LLM处理完成状态
-            yield {"step": "llm_process_complete", "message": "LLM处理完成"}
+            # Return LLM processing completion status
+            yield {"step": "llm_process_complete", "message": "LLM processing completed"}
             
-            # 获取token使用情况
+            # Get token usage
             token_usage = self.llm_service.get_formatted_token_usage()
             
-            # 如果final_check是yes，则生成Excel和PPT文档
+            # If final_check is yes, generate Excel and PPT documents
             if llm_result.get("final_check") == "yes" and uuid:
-                # 返回开始生成文档的状态
-                yield {"step": "generating_document", "message": "正在生成文档..."}
+                # Return document generation start status
+                yield {"step": "generating_document", "message": "Generating documents..."}
                 
                 print(f"final_check is 'yes', generating Excel and PPT files for uuid: {uuid}")
                 doc_path = None
@@ -357,36 +357,36 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     doc_path = path
                 print(f"Document generation result: {doc_path}")
                 
-                # 如果生成了文档，添加文档信息到响应中
+                # If document was generated, add document info to response
                 if doc_path and doc_path not in ["No data available to generate documents", "Error: PPT file was not created"] and not doc_path.startswith("Error"):
                     print(f"Adding document path to response: {doc_path}")
                     output_dir = os.path.abspath(self.ppt_service.output_dir)
                     full_file_path = os.path.join(output_dir, doc_path)
                     
                     if os.path.exists(full_file_path):
-                        # 生成markdown格式的链接
+                        # Generate markdown format link
                         file_name = os.path.basename(full_file_path)
                         file_url = f"http://localhost:8088/output/{file_name}"
-                        markdown_response = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。\n"
-                        markdown_response += f"[{'結果ファイル'}]({file_url})"
+                        markdown_response = "Processing completed. Please download the result file from the link below.\n"
+                        markdown_response += f"[{'Result File'}]({file_url})"
                         
-                        # 返回最终结果，使用正确的格式
+                        # Return final result in correct format
                         yield {"step": "final_answer", "message": markdown_response}
                     else:
                         print(f"Warning: Generated file does not exist at path: {full_file_path}")
-                        yield {"step": "error", "message": f"文件生成失败: 无法在 {full_file_path} 找到文件"}
+                        yield {"step": "error", "message": f"File generation failed: Cannot find file at {full_file_path}"}
                 elif doc_path:
-                    yield {"step": "error", "message": f"文档生成出错: {doc_path}"}
+                    yield {"step": "error", "message": f"Document generation error: {doc_path}"}
             else:
-                # 返回final_check不是yes的情况
+                # Return case where final_check is not yes
                 answer = llm_result.get("answer", "")
                 final_check = llm_result.get("final_check", "unknown")
                 
-                # 根据final_check的值返回不同的回答
+                # Return different answers based on final_check value
                 if final_check == "no":
-                    message = "申し訳ありませんが、ご質問に関連する情報が見つかりませんでした。テーブル名や列名を具体的に指定していただくか、別の質問をお試しください。"
+                    message = "Sorry, no information found related to your query. Please specify table names and column names more precisely, or try a different question."
                 else:
-                    message = answer if answer else "回答を生成できませんでした。"
+                    message = answer if answer else "Could not generate response."
                 
                 yield {"step": "final_answer", "message": message}
             
@@ -394,21 +394,21 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             import traceback
             error_msg = f"Error in RAG service: {str(e)}\n{traceback.format_exc()}"
             print(error_msg)
-            yield {"step": "error", "message": f"処理中にエラーが発生しました: {str(e)}"}
+            yield {"step": "error", "message": f"An error occurred during processing: {str(e)}"}
 
     async def _generate_document(self, uuid: str) -> str:
-        """生成文档包括Excel和PPT，并返回文件名"""
+        """Generate documents including Excel and PPT, and return filename"""
         try:
             print(f"Generating document for uuid: {uuid}")
-            # 生成唯一文件名前缀
+            # Generate unique filename prefix
             filename_prefix = f"doc_{uuid}"
             
-            # 从Redis获取存储的检索结果
+            # Get stored retrieval results from Redis
             neo4j_data = self.redis_tools.get(f"{uuid}:neo4j")
             opensearch_data = self.redis_tools.get(f"{uuid}:opensearch")
             postgresql_data = self.redis_tools.get(f"{uuid}:postgresql")
             
-            # 记录获取到的数据
+            # Log retrieved data
             print(f"Retrieved data from Redis - Neo4j: {type(neo4j_data)}, OpenSearch: {type(opensearch_data)}, PostgreSQL: {type(postgresql_data)}")
             if postgresql_data:
                 if isinstance(postgresql_data, list) and len(postgresql_data) > 0:
@@ -416,17 +416,17 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 elif isinstance(postgresql_data, str):
                     print(f"PostgreSQL data (string): {postgresql_data[:100]}...")
             
-            # 创建文档保存目录
+            # Create document save directory
             os.makedirs(self.ppt_service.output_dir, exist_ok=True)
             
-            # 路径变量初始化
+            # Initialize path variables
             ppt_path = ""
             
-            # 1. 首先尝试用Neo4j数据创建关系图PPT
+            # 1. First try to create relationship diagram PPT using Neo4j data
             if neo4j_data:
                 print("Creating diagram PPT using Neo4j data")
                 try:
-                    # 确保neo4j_data是列表格式
+                    # Ensure neo4j_data is in list format
                     if isinstance(neo4j_data, str):
                         try:
                             neo4j_data = json.loads(neo4j_data)
@@ -436,7 +436,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     if not isinstance(neo4j_data, list):
                         neo4j_data = [neo4j_data]
                     
-                    # 确保数据是一个字典列表
+                    # Ensure data is a list of dictionaries
                     processed_data = []
                     for item in neo4j_data:
                         if isinstance(item, dict):
@@ -444,14 +444,14 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         else:
                             processed_data.append({"content": str(item), "score": 0.9, "source": "neo4j"})
                     
-                    # 1.1 生成Excel文件
+                    # 1.1 Generate Excel file
                     excel_path = await self.excel_service.export_to_excel(processed_data, filename_prefix)
                     
-                    # 1.2 使用create_ppt函数创建包含关系图的PPT
+                    # 1.2 Use create_ppt function to create PPT with relationship diagram
                     ppt_path = os.path.join(self.ppt_service.output_dir, f"{filename_prefix}.pptx")
                     success = await self.ppt_service.create_ppt(excel_file=excel_path, output_file=ppt_path)
                     
-                    # 检查PPT创建是否成功
+                    # Check if PPT creation was successful
                     if not success or not os.path.exists(ppt_path):
                         print(f"Warning: Failed to create diagram PPT, falling back to regular PPT creation")
                         ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
@@ -459,10 +459,10 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     print(f"Error creating Neo4j diagram PPT: {str(e)}")
                     neo4j_data = None  # Reset to None so we can try other data sources
             
-            # 如果没有成功创建PPT，尝试使用其他数据源
+            # If PPT wasn't created successfully, try other data sources
             if not ppt_path or not os.path.exists(ppt_path):
                 print("No PPT created from Neo4j data, trying other data sources")
-                # 尝试使用OpenSearch或PostgreSQL数据创建基本PPT
+                # Try to create basic PPT using OpenSearch or PostgreSQL data
                 for data_source, data in [("opensearch", opensearch_data), ("postgresql", postgresql_data)]:
                     if data:
                         try:
@@ -476,7 +476,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                             if not isinstance(processed_data, list):
                                 processed_data = [processed_data]
                             
-                            # 将数据格式化为字典列表
+                            # Format data as list of dictionaries
                             formatted_data = []
                             for item in processed_data:
                                 if isinstance(item, dict):
@@ -484,10 +484,10 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                                 else:
                                     formatted_data.append({"content": str(item), "source": data_source})
                             
-                            # 生成Excel
+                            # Generate Excel
                             excel_path = await self.excel_service.export_to_excel(formatted_data, filename_prefix)
                             
-                            # 使用常规方法创建PPT
+                            # Create PPT using regular method
                             ppt_path = await self.ppt_service.export_to_ppt(excel_path, filename_prefix)
                             
                             if ppt_path and os.path.exists(ppt_path):
@@ -497,7 +497,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                             print(f"Error creating PPT from {data_source} data: {str(e)}")
                             continue
             
-            # 2. 如果已创建PPT，尝试追加OpenSearch数据（每项一页）
+            # 2. If PPT was created, try to append OpenSearch data (one page per item)
             if ppt_path and os.path.exists(ppt_path) and opensearch_data:
                 try:
                     if isinstance(opensearch_data, str):
@@ -509,7 +509,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     if not isinstance(opensearch_data, list):
                         opensearch_data = [opensearch_data]
                     
-                    # 确保每项放在单独页面
+                    # Ensure each item goes on a separate page
                     for item in opensearch_data:
                         if isinstance(item, dict):
                             await self.ppt_service.append_to_ppt([item], ppt_path)
@@ -519,7 +519,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     print(f"Error appending OpenSearch data to PPT: {str(e)}")
                     print(traceback.format_exc())
             
-            # 3. 如果已创建PPT，尝试追加PostgreSQL数据（确保内容不被截断）
+            # 3. If PPT was created, try to append PostgreSQL data (ensure content isn't truncated)
             if ppt_path and os.path.exists(ppt_path) and postgresql_data:
                 try:
                     print("Adding PostgreSQL data to PPT")
@@ -532,7 +532,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                     if not isinstance(postgresql_data, list):
                         postgresql_data = [postgresql_data]
                     
-                    # 收集所有PostgreSQL内容
+                    # Collect all PostgreSQL content
                     postgresql_content = []
                     for item in postgresql_data:
                         if isinstance(item, dict):
@@ -540,12 +540,12 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         else:
                             postgresql_content.append({"content": str(item), "source": "postgresql"})
                     
-                    # 将PostgreSQL数据添加到PPT，处理长内容
-                    # 检查内容长度，可能需要多页
+                    # Add PostgreSQL data to PPT, handling long content
+                    # Check content length, may need multiple pages
                     for item in postgresql_content:
                         content = item.get("content", "")
                         if isinstance(content, str) and len(content) > 1000:
-                            # 长内容分成多个部分并分别添加
+                            # Split long content into parts and add separately
                             chunks = [content[i:i+1000] for i in range(0, len(content), 1000)]
                             for i, chunk in enumerate(chunks):
                                 chunk_item = item.copy()
@@ -553,13 +553,13 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                                 chunk_item["title"] = f"PostgreSQL Data (Part {i+1}/{len(chunks)})"
                                 await self.ppt_service.append_to_ppt([chunk_item], ppt_path)
                         else:
-                            # 短内容直接添加
+                            # Add short content directly
                             await self.ppt_service.append_to_ppt([item], ppt_path)
                 except Exception as e:
                     print(f"Error appending PostgreSQL data to PPT: {str(e)}")
                     print(traceback.format_exc())
             
-            # 返回结果
+            # Return result
             if ppt_path and os.path.exists(ppt_path):
                 yield os.path.basename(ppt_path)
             else:

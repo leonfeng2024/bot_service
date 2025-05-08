@@ -12,7 +12,7 @@ class ChatService:
     def __init__(self):
         self.bot_name = "bot"
         self.llm_service = LLMService()
-        # 不指定特定LLM类型，让系统自动使用全局配置
+        # Don't specify LLM type, let system use global configuration
         self.llm_service.init_llm()
         self.rag_service = RAGService()
         self.redis_tools = RedisTools()
@@ -102,11 +102,11 @@ Response:
 """
 
         try:
-            # 调用LLM分析用户意图
+            # Call LLM to analyze user intent
             llm = self.llm_service.get_llm()
             response = await llm.generate(f"{intent_prompt}\n\n用户输入：{query}")
             
-            # 清理响应文本，确保只包含JSON
+            # Clean response text, ensure it only contains JSON
             response = response.strip()
             if response.startswith('```json'):
                 response = response[7:]
@@ -114,7 +114,7 @@ Response:
                 response = response[:-3]
             response = response.strip()
             
-            # 解析JSON响应
+            # Parse JSON response
             intent_result = json.loads(response)
             return intent_result
             
@@ -123,35 +123,35 @@ Response:
     
     async def handle_chat(self, username: str, query: str, uuid: str = None) -> dict:
         try:
-            # 分析用户意图
+            # Analyze user intent
             try:
                 intent_result = await self._analyze_user_intent(query)
-                # 返回意图识别结果
-                yield {"step": "_analyze_user_intent", "message": "语义识别完成"}
+                # Return intent recognition result
+                yield {"step": "_analyze_user_intent", "message": "Semantic recognition completed"}
             except Exception as e:
                 intent_result = {"category": "unknown", "message": "NG"}
                 
-            # 根据意图返回相应消息
+            # Return message based on intent
             if intent_result["category"] == "unknown":
-                # 先返回提示消息
+                # First return prompt message
                 yield {
                     "status": "success",
                     "username": self.bot_name,
-                    "message": "データベーステーブル変更の依存関係調査サービスを提供しております。変更対象のテーブルField名をお知らせください"
+                    "message": "We provide a database table change dependency investigation service. Please let us know the table field name you want to change."
                 }
                 
-                # 添加final_answer步骤
+                # Add final_answer step
                 yield {
                     "step": "final_answer",
-                    "message": "データベーステーブル変更の依存関係調査サービスを提供しております。変更対象のテーブルField名をお知らせください",
+                    "message": "We provide a database table change dependency investigation service. Please let us know the table field name you want to change.",
                     "type": "text"
                 }
                 
-                # 保存系统回复到聊天历史
-                self._save_chat_history(username, uuid, "データベーステーブル変更の依存関係調査サービスを提供しております。変更対象のテーブルField名をお知らせください", "bot")
+                # Save system reply to chat history
+                self._save_chat_history(username, uuid, "We provide a database table change dependency investigation service. Please let us know the table field name you want to change.", "bot")
                 return
             
-            # 识别字段
+            # Identify fields
             try:
                 column_results = {}
                 async for result in self.llm_service.identify_column(query):
@@ -163,44 +163,44 @@ Response:
                 
                 # Return the results if we have them
                 if column_results:
-                    yield {"step": "identify_column", "message": "字段识别成功", "data": column_results}
+                    yield {"step": "identify_column", "message": "Field identification successful", "data": column_results}
             except Exception as e:
                 print(f"Error identifying columns: {str(e)}")
             
-            # 获取相关文档
+            # Get relevant documents
             try:
-                # 保存用户查询到chat_history表
+                # Save user query to chat_history table
                 self._save_chat_history(username, uuid, query, "user")
                 
-                # 标记是否已经处理过最终答案
+                # Flag to track if final answer has been processed
                 final_answer_processed = False
                 
-                # 从RAG服务获取检索结果
+                # Get retrieval results from RAG service
                 async for chunk in self.rag_service.retrieve(query, uuid):
-                    # 直接传递中间状态更新
+                    # Directly pass intermediate status updates
                     if chunk.get("step") != "final_answer":
                         yield chunk
                         continue
                     
-                    # 防止重复的final_answer
+                    # Prevent duplicate final_answer
                     if final_answer_processed:
                         continue
                         
                     final_answer_processed = True
                     
-                    # 处理最终答案
+                    # Process final answer
                     answer_message = chunk.get("message", "")
                     
-                    # 从Redis获取缓存内容并保存为bot回复
+                    # Get cache content from Redis and save as bot reply
                     bot_message = answer_message
                     self._save_chat_history(username, uuid, bot_message, "bot")
                     
-                    # 返回最终答案
+                    # Return final answer
                     yield chunk
                 
             except Exception as e:
                 error_traceback = traceback.format_exc()
-                # 为开发环境返回详细错误信息
+                # Return detailed error message for development environment
                 detailed_error_message = f"Error type: {type(e).__name__}\nError message: {str(e)}\n\nTraceback:\n{error_traceback}"
                 
                 error_response = {
@@ -208,28 +208,28 @@ Response:
                     "message": f"Error: {str(e)}"
                 }
                 
-                # 记录错误信息
+                # Log error message
                 print(detailed_error_message)
                 
-                # 返回简化的错误信息给客户端
+                # Return simplified error message to client
                 yield error_response
                 
         except Exception as e:
             error_traceback = traceback.format_exc()
-            # 为开发环境返回详细错误信息
+            # Return detailed error message for development environment
             detailed_error_message = f"Error type: {type(e).__name__}\nError message: {str(e)}\n\nTraceback:\n{error_traceback}"
             
-            # 记录错误信息
+            # Log error message
             print(detailed_error_message)
             
-            # 返回统一格式的错误信息
+            # Return unified error message
             yield {
                 "step": "error",
                 "message": f"Error: {str(e)}"
             }
     
     def _get_redis_cache_content(self, uuid: str) -> str:
-        """从Redis获取缓存的postgresql、neo4j和opensearch内容"""
+        """Get cached postgresql, neo4j and opensearch content from Redis"""
         try:
             content = ""
             data_sources = ['postgresql', 'neo4j', 'opensearch']
@@ -245,7 +245,7 @@ Response:
             return f"Error retrieving cache data: {str(e)}"
     
     def _save_chat_history(self, username: str, uuid: str, message: str, sender: str) -> None:
-        """保存聊天历史到chat_history表"""
+        """Save chat history to chat_history table"""
         try:
             query = """
             INSERT INTO chat_history 
@@ -268,7 +268,7 @@ Response:
     
     async def logout(self, username: str, uuid: str) -> dict:
         try:
-            # 删除Redis中的会话数据
+            # Delete session data from Redis
             self.redis_tools.delete(uuid)
             
             return {
