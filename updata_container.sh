@@ -16,6 +16,7 @@ DIRS=(
     "utils"
     "tools"
     "models"
+    "Mock"
 )
 
 FILES=(

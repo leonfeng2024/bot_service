@@ -24,6 +24,7 @@ class ChatService:
         """
         intent_prompt = """
 Task Description
+You are a semantic analysis expert specializing in analyzing users' text messages. You support text content in both English and Japanese, and you must strictly adhere to the following rules when conducting semantic analysis.
 Analyze user input to determine if it's a database schema change impact inquiry, focusing on column/field modifications. Return classification results in JSON format.
 
 Logic & Rules
