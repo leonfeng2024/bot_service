@@ -3,7 +3,7 @@ FROM crpi-5va2c7blqnzmwnnn.cn-beijing.personal.cr.aliyuncs.com/aacoe/local_platf
 WORKDIR /app
 COPY requirements.txt .
 
-# 安装Node.js、npm和Puppeteer依赖
+# Install Node.js, npm and Puppeteer dependencies
 RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
@@ -30,20 +30,20 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# 配置Puppeteer
+# Configure Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV PUPPETEER_NO_SANDBOX=true
 ENV NODE_PATH=/usr/local/lib/node_modules
 
-# 全局安装Mermaid CLI
+# Install Mermaid CLI globally
 RUN npm install -g @mermaid-js/mermaid-cli
 
-# 复制Puppeteer配置文件并确保它可用
+# Copy Puppeteer config file and ensure it's available
 COPY puppeteer-config.json /app/
 RUN echo "Testing Puppeteer config:" && cat /app/puppeteer-config.json
 
-# 配置pip
+# Configure pip
 RUN mkdir -p /root/.config/pip && \
     echo "[global]" > /root/.config/pip/pip.conf && \
     echo "timeout = 300" >> /root/.config/pip/pip.conf && \
@@ -51,16 +51,16 @@ RUN mkdir -p /root/.config/pip && \
     echo "index-url = https://pypi.org/simple" >> /root/.config/pip/pip.conf && \
     echo "extra-index-url = https://pypi.tuna.tsinghua.edu.cn/simple https://download.pytorch.org/whl/cpu" >> /root/.config/pip/pip.conf
 
-# 安装Python依赖
+# Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt && \
     rm -rf /root/.cache/pip
 
-# 复制调试脚本和测试脚本
+# Copy debug and test scripts
 COPY debug_mermaid.sh test_mermaid_docker.sh test_simple_mermaid.sh /app/
 RUN chmod +x /app/debug_mermaid.sh /app/test_mermaid_docker.sh /app/test_simple_mermaid.sh
 
-# 复制应用代码
+# Copy application code
 COPY . .
 
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]

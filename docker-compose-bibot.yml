@@ -89,13 +89,13 @@ services:
         limits:
           memory: 1G 
 
-  bibot_neo4j:  # 新增服务 
+  bibot_neo4j:
     container_name: bibot_neo4j 
     image: neo4j:latest
     ports:
-      - "7474:7474"  # HTTP接口 
-      - "7473:7473"  # HTTPS接口 
-      - "7687:7687"  # Bolt协议端口 
+      - "7474:7474"
+      - "7473:7473"
+      - "7687:7687"
     environment:
       - NEO4J_AUTH=neo4j/neo4j2025 
       - NEO4J_apoc_export_file_enabled=true 

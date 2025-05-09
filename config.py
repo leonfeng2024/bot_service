@@ -1,31 +1,31 @@
 """
-配置文件，包含所有服务所需的配置项
+Configuration file containing all required service configurations
 """
 
-# Azure OpenAI 配置
+# Azure OpenAI Configuration
 AZURE_OPENAI_MODEL_NAME = "gpt-4o"
 AZURE_OPENAI_API_BASE = "https://openai-southus-trng-app-chatbot01.openai.azure.com/"
 AZURE_OPENAI_API_KEY = ""
 AZURE_OPENAI_API_VERSION = "2024-02-15-preview"
 
-# OpenAI GPT-4.1 配置
+# OpenAI GPT-4.1 Configuration
 OPENAI_API_KEY = ""
 OPENAI_PROJECT_ID = "proj_VRqlWoHHTIFracPfGLymyGQq"
 OPENAI_MODEL_NAME = "gpt-4.1"
 
-# Claude 配置
+# Claude Configuration
 CLAUDE_API_KEY = "your_claude_api_key_here"
 CLAUDE_MODEL_NAME = "claude-3-sonnet-20240229"
 
-# PostgreSQL 配置
+# PostgreSQL Configuration
 POSTGRESQL_DBNAME = "local_rag"
 POSTGRESQL_USER = "postgres"
 POSTGRESQL_PASSWORD = "Automation2025"
-# 修改PostgreSQL主机配置，使其在本地环境中可用
+# Modify PostgreSQL host configuration for local environment
 POSTGRESQL_HOST = "bibot_postgres"
 POSTGRESQL_PORT = "5432"
 
-# Neo4j 配置
+# Neo4j Configuration
 NEO4J_HOST = "bibot_neo4j"
 NEO4J_BOLT_PORT = 7687
 NEO4J_HTTP_PORT = 7474
@@ -34,25 +34,25 @@ NEO4J_USERNAME = "neo4j"
 NEO4J_PASSWORD = "neo4j2025"
 
 # Redis Configuration
-REDIS_HOST = "bibot_redis"  # bibot_redis 是 Redis 容器的名称
+REDIS_HOST = "bibot_redis"  # bibot_redis is the Redis container name
 REDIS_PORT = 6379
-REDIS_PASSWORD = "12345678"  # 本地容器需要密码认证
+REDIS_PASSWORD = "12345678"  # Password required for local container
 REDIS_DATABASE = 0
 REDIS_TIMEOUT = 3000
 REDIS_CONNECT_TIMEOUT = 3000
 REDIS_CLIENT_NAME = "automation-platform"
 
-# 生产环境配置 (可通过环境变量覆盖)
+# Production environment configuration (can be overridden by environment variables)
 import os
 if os.getenv("REDIS_ENV") == "production":
     REDIS_HOST = "coe_redis"
     REDIS_PASSWORD = "12345678"
 
-# JWT 配置
+# JWT Configuration
 JWT_SECRET = "your_jwt_secret_key"
 JWT_EXPIRATION = 3600
 
-# OpenSearch 配置
+# OpenSearch Configuration
 OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "bibot_opensearch")
 OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", 9200))
 OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin")

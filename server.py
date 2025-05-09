@@ -31,14 +31,14 @@ import json
 from contextlib import asynccontextmanager
 from config import JWT_SECRET, JWT_EXPIRATION
 
-# 配置日志
+# Configure logging
 import yaml
 import os
 
-# 确保logs目录存在
+# Ensure logs directory exists
 os.makedirs('logs', exist_ok=True)
 
-# 加载日志配置
+# Load logging configuration
 with open('logs/logging_config.yaml', 'r') as f:
     config = yaml.safe_load(f)
     logging.config.dictConfig(config)
@@ -79,18 +79,14 @@ user_service = UserService()
 postgres_service = PostgresService()
 opensearch_service = OpenSearchService()
 
-# 设置JWT密钥和过期时间(秒)
-# JWT_SECRET = "your_jwt_secret_key"  # 请修改为安全的密钥
-# JWT_EXPIRATION = 3600  # 1小时过期
-
-# 添加中间件记录API调用
+# Add middleware to log API calls
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    # 记录请求开始
+    # Log request start
     path = request.url.path
     method = request.method
     
-    # 记录请求参数
+    # Log request parameters
     request_params = {}
     if method == "GET":
         request_params = dict(request.query_params)
@@ -99,24 +95,24 @@ async def log_requests(request: Request, call_next):
             body = await request.body()
             if body:
                 try:
-                    # 尝试解析为JSON
+                    # Try to parse as JSON
                     request_params = json.loads(body)
                 except:
                     request_params = {"raw_body": str(body)}
         except Exception as e:
-            request_params = {"error": f"无法读取请求体: {str(e)}"}
+            request_params = {"error": f"Unable to read request body: {str(e)}"}
     
-    logger.info(f"API调用: {method} {path}, 参数: {request_params}")
+    logger.info(f"API Call: {method} {path}, Parameters: {request_params}")
     
-    # 处理请求
+    # Process request
     response = await call_next(request)
     
-    # 记录响应
-    logger.info(f"API完成: {method} {path}, 状态码: {response.status_code}")
+    # Log response
+    logger.info(f"API Complete: {method} {path}, Status Code: {response.status_code}")
     
     return response
 
-# 添加 HTTP Bearer 认证
+# Add HTTP Bearer authentication
 security = HTTPBearer()
 
 async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
@@ -134,7 +130,7 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
             }
             
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        # 检查令牌是否过期
+        # Check if token has expired
         if payload.get("exp") < int(time.time()):
             raise HTTPException(status_code=401, detail="Token has expired")
         
@@ -146,16 +142,16 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 async def chat(request: ChatRequest, token_data: dict = Depends(verify_token)):
     logger.info(f"Received chat request - User: {request.username}, UUID: {request.uuid}")
     
-    # 从请求中获取uuid并比较
+    # Get UUID from request and compare
     if request.uuid != token_data.get("uuid"):
         logger.warning(f"UUID mismatch - Request UUID: {request.uuid}, Token UUID: {token_data.get('uuid')}")
         raise HTTPException(status_code=403, detail="UUID mismatch")
     
     try:
-        # 使用生成器函数来流式返回结果
+        # Use generator function for streaming response
         async def generate_response():
             async for chunk in chat_service.handle_chat(request.username, request.query, request.uuid):
-                # 将每个chunk转换为JSON字符串并添加换行符
+                # Convert each chunk to JSON string and add newline
                 yield json.dumps(chunk) + "\n"
         
         return StreamingResponse(
@@ -169,25 +165,25 @@ async def chat(request: ChatRequest, token_data: dict = Depends(verify_token)):
 @app.post("/logout")
 async def logout(request: LogoutRequest, token_data: dict = Depends(verify_token)):
     """
-    用户登出，清除Redis缓存
+    User logout, clear Redis cache
     """
     try:
-        # 从请求中获取uuid
+        # Get UUID from request
         uuid_to_delete = request.uuid
-        logger.info(f"接收到登出请求，UUID: {uuid_to_delete}")
+        logger.info(f"Received logout request, UUID: {uuid_to_delete}")
         
-        # 删除Redis缓存
+        # Delete Redis cache
         success = redis_tools.delete(uuid_to_delete)
         
         if success:
-            logger.info(f"成功删除用户缓存数据，UUID: {uuid_to_delete}")
+            logger.info(f"Successfully deleted user cache data, UUID: {uuid_to_delete}")
             return {"message": "Logout successful", "status": "success"}
         else:
-            logger.warning(f"未找到用户缓存数据，UUID: {uuid_to_delete}")
+            logger.warning(f"No cache data found for user, UUID: {uuid_to_delete}")
             return {"message": "No cache data found for user", "status": "warning"}
             
     except Exception as e:
-        logger.error(f"登出过程中发生错误: {str(e)}")
+        logger.error(f"Error during logout: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Error during logout: {str(e)}"
@@ -293,7 +289,7 @@ async def upload_file(file: UploadFile = File(...)):
     Upload a single file and save it to the upload_documents directory
     """
     try:
-        # 验证文件类型
+        # Validate file type
         allowed_types = ["text/plain", "application/pdf", "application/msword", 
                         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
         content_type = file.content_type
@@ -303,7 +299,7 @@ async def upload_file(file: UploadFile = File(...)):
                 detail=f"File type {content_type} not allowed. Allowed types: {allowed_types}"
             )
         
-        # 验证文件大小（限制为10MB）
+        # Validate file size (limit to 10MB)
         MAX_SIZE = 10 * 1024 * 1024  # 10MB in bytes
         file_size = 0
         file_data = await file.read()
@@ -320,7 +316,6 @@ async def upload_file(file: UploadFile = File(...)):
         os.makedirs(upload_dir, exist_ok=True)
         
         # Save the uploaded file
-        # 使用字符串类型参数调用os.path.join
         file_path = os.path.join(str(upload_dir), str(file.filename))
         
         # Write the file
@@ -357,7 +352,6 @@ async def upload_multiple_files(files: List[UploadFile] = File(...)):
         logger.error(f"Error uploading files: {str(e)}")
         return {"status": "failed", "message": f"system error details: {str(e)}"}
 
-# 修改为FastAPI风格的路由，而不是Flask风格
 @app.post('/token')
 async def login(request: Request):
     logger.info("Login attempt")
@@ -367,11 +361,11 @@ async def login(request: Request):
         password = data.get('password')
         logger.info(f"Login attempt - Username: {username}")
         print(f"Login attempt - Username: {username}")
-        # 创建PostgreSQL工具并验证用户
+        # Create PostgreSQL tools and validate user
         pg_tools = PostgreSQLTools()
         result = pg_tools.validate_user_credentials(username, password)
         print(result)
-        # 验证失败
+        # Validation failed
         if not result:
             logger.warning(f"Login failed - Invalid credentials for username: {username}")
             return {
@@ -385,14 +379,14 @@ async def login(request: Request):
             'role': result['role']
         }
         
-        # 生成唯一UUID
+        # Generate unique UUID
         user_uuid = str(uuid.uuid4())
         
-        # 计算过期时间
+        # Calculate expiration time
         current_time = int(time.time())
         expiry_time = current_time + JWT_EXPIRATION
         
-        # 生成JWT令牌
+        # Generate JWT token
         payload = {
             "user_id": user_info['user_id'],
             "role": user_info['role'],
@@ -400,18 +394,18 @@ async def login(request: Request):
             "exp": expiry_time
         }
         
-        # 创建访问令牌
+        # Create access token
         access_token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
         
-        # 创建刷新令牌 (通常有更长的过期时间)
+        # Create refresh token (usually has longer expiration time)
         refresh_payload = {
             "user_id": user_info['user_id'],
             "uuid": user_uuid,
-            "exp": current_time + (JWT_EXPIRATION * 24 * 7)  # 7天
+            "exp": current_time + (JWT_EXPIRATION * 24 * 7)  # 7 days
         }
         refresh_token = jwt.encode(refresh_payload, JWT_SECRET, algorithm="HS256")
         
-        # 在Redis中存储用户信息
+        # Store user information in Redis
         initial_data = {
             "user_id": user_info['user_id'],
             "role": user_info['role'],
@@ -420,9 +414,9 @@ async def login(request: Request):
         }
         redis_tools.set(user_uuid, initial_data)
         
-        logger.info(f"登录成功: 用户ID = {user_info['user_id']}, 角色 = {user_info['role']}")
+        logger.info(f"Login successful: User ID = {user_info['user_id']}, Role = {user_info['role']}")
         
-        # 返回令牌信息
+        # Return token information
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
@@ -430,10 +424,9 @@ async def login(request: Request):
             "uuid": user_uuid
         }
     except Exception as e:
-        logger.error(f"登录过程中发生错误: {str(e)}")
+        logger.error(f"Error during login: {str(e)}")
         return {}
 
-# User Profile API
 @app.get("/user/profile", response_model=UserProfileResponse)
 async def get_user_profile(token_data: dict = Depends(verify_token)):
     """
@@ -460,7 +453,6 @@ async def get_user_profile(token_data: dict = Depends(verify_token)):
             detail=f"Error getting user profile: {str(e)}"
         )
 
-# Admin User Management API
 @app.get("/admin/users")
 async def get_all_users(token_data: dict = Depends(verify_token)):
     """
@@ -576,18 +568,17 @@ async def delete_user(user_id: str, token_data: dict = Depends(verify_token)):
             detail=f"Error deleting user: {str(e)}"
         )
 
-# PostgreSQL 管理 API
 @app.get("/postgres/tables", response_model=List[TableInfo])
 async def get_postgres_tables(token_data: dict = Depends(verify_token)):
     """
-    获取PostgreSQL数据库中的所有表
+    Get all tables from PostgreSQL database
     """
     try:
-        # 检查权限（可选，取决于你的需求）
+        # Check permissions (optional, depends on requirements)
         if token_data.get("role") not in ["admin", "kb_manager"]:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         
-        # 获取表列表
+        # Get table list
         tables = await postgres_service.get_tables()
         return tables
     except Exception as e:
@@ -600,14 +591,14 @@ async def get_postgres_tables(token_data: dict = Depends(verify_token)):
 @app.post("/postgres/execute", response_model=ExecuteQueryResponse)
 async def execute_postgres_query(request: ExecuteQueryRequest, token_data: dict = Depends(verify_token)):
     """
-    执行SQL查询并返回结果
+    Execute SQL query and return results
     """
     try:
-        # 检查权限（可选，取决于你的需求）
+        # Check permissions (optional, depends on requirements)
         if token_data.get("role") not in ["admin", "kb_manager"]:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         
-        # 执行查询
+        # Execute query
         results = await postgres_service.execute_query(request.query)
         return {"rows": results}
     except Exception as e:
@@ -620,17 +611,17 @@ async def execute_postgres_query(request: ExecuteQueryRequest, token_data: dict 
 @app.post("/postgres/import", response_model=ImportResponse)
 async def import_postgres_data(file: UploadFile = File(...), token_data: dict = Depends(verify_token)):
     """
-    从SQL文件导入数据到PostgreSQL
+    Import data from SQL file to PostgreSQL
     """
     try:        
-        # 检查文件类型
+        # Check file type
         if not file.filename.endswith('.sql'):
             raise HTTPException(status_code=400, detail="Only SQL files are allowed")
         
-        # 读取文件内容
+        # Read file content
         file_content = await file.read()
         
-        # 导入数据
+        # Import data
         result = await postgres_service.import_data(file_content)
         return result
     except HTTPException:
@@ -645,20 +636,20 @@ async def import_postgres_data(file: UploadFile = File(...), token_data: dict = 
 @app.get("/postgres/export/{table_name}")
 async def export_postgres_data(table_name: str, token_data: dict = Depends(verify_token)):
     """
-    将PostgreSQL表数据导出为CSV文件
+    Export PostgreSQL table data to CSV file
     """
     try:
-        # 检查权限（可选，取决于你的需求）
+        # Check permissions (optional, depends on requirements)
         if token_data.get("role") not in ["admin", "kb_manager"]:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         
-        # 导出数据
+        # Export data
         file_path = await postgres_service.export_data(table_name)
         
         if not file_path:
             raise HTTPException(status_code=404, detail=f"No data found for table: {table_name}")
         
-        # 返回CSV文件
+        # Return CSV file
         return FileResponse(
             file_path,
             media_type="text/csv",
@@ -667,7 +658,7 @@ async def export_postgres_data(table_name: str, token_data: dict = Depends(verif
     except HTTPException:
         raise
     except ValueError as e:
-        # 处理无效表名错误
+        # Handle invalid table name error
         logger.error(f"Invalid table name: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -677,11 +668,10 @@ async def export_postgres_data(table_name: str, token_data: dict = Depends(verif
             detail=f"Error exporting data: {str(e)}"
         )
 
-# OpenSearch 管理 API
 @app.get("/opensearch/indices", response_model=List[IndexInfo])
 async def get_opensearch_indices(token_data: dict = Depends(verify_token)):
     """
-    获取OpenSearch中的所有索引
+    Get all indices from OpenSearch
     """
     try:
         indices = await opensearch_service.get_indices()
@@ -690,10 +680,10 @@ async def get_opensearch_indices(token_data: dict = Depends(verify_token)):
         error_message = str(e)
         status_code = 500
         
-        # 处理连接错误
+        # Handle connection errors
         if "ConnectionError" in error_message or "connection" in error_message.lower():
             status_code = 503  # Service Unavailable
-            error_message = "OpenSearch服务不可用，请检查连接配置或服务状态"
+            error_message = "OpenSearch service unavailable, please check connection configuration or service status"
             
         logger.error(f"Error getting OpenSearch indices: {error_message}")
         raise HTTPException(
@@ -704,7 +694,7 @@ async def get_opensearch_indices(token_data: dict = Depends(verify_token)):
 @app.post("/opensearch/indices", response_model=GenericResponse)
 async def create_opensearch_index(request: CreateIndexRequest, token_data: dict = Depends(verify_token)):
     """
-    创建新的OpenSearch索引
+    Create new OpenSearch index
     """
     try:
         result = await opensearch_service.create_index(request.index)
@@ -726,7 +716,7 @@ async def create_opensearch_index(request: CreateIndexRequest, token_data: dict 
 @app.delete("/opensearch/indices/{index_name}", response_model=GenericResponse)
 async def delete_opensearch_index(index_name: str, token_data: dict = Depends(verify_token)):
     """
-    删除OpenSearch索引
+    Delete OpenSearch index
     """
     try:
         result = await opensearch_service.delete_index(index_name)
@@ -748,7 +738,7 @@ async def delete_opensearch_index(index_name: str, token_data: dict = Depends(ve
 @app.post("/opensearch/search", response_model=SearchResponse)
 async def search_opensearch(request: SearchRequest, token_data: dict = Depends(verify_token)):
     """
-    在OpenSearch索引中执行搜索
+    Execute search in OpenSearch index
     """
     try:
         result = await opensearch_service.search(request.index, request.query)
@@ -767,10 +757,10 @@ async def upload_to_opensearch(
     token_data: dict = Depends(verify_token)
 ):
     """
-    上传文档到OpenSearch索引
+    Upload document to OpenSearch index
     """
     try:
-        # 检查文件类型
+        # Check file type
         allowed_types = ['.txt', '.doc', '.docx', '.xls', '.xlsx']
         file_ext = os.path.splitext(file.filename)[1].lower()
         
@@ -780,10 +770,10 @@ async def upload_to_opensearch(
                 detail=f"Unsupported file type. Allowed types: {', '.join(allowed_types)}"
             )
         
-        # 读取文件内容
+        # Read file content
         file_content = await file.read()
         
-        # 上传文档
+        # Upload document
         result = await opensearch_service.upload_document(index, file_content, file.filename)
         
         if not result['success']:

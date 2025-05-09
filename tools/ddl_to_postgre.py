@@ -8,20 +8,20 @@ ddl_file = r"C:\Users\pinjing.wu\Desktop\ddl_test2.sql"
 
 
 def remove_sql_comments(any_sql: str) -> str:
-    """コメントを削除する"""
+    """Remove comments from SQL"""
     __pattern = re.compile(r"--.*?$|/\*.*?\*/", re.MULTILINE | re.DOTALL)
 
     return re.sub(pattern=__pattern, repl="", string=any_sql).strip()
 
 def clean_sql(any_sql):
-    """SQL文をクリーンアップし、不要なスペースや改行を削除する"""
-    any_sql = re.sub(pattern=r"\s+", repl=" ", string=any_sql)  # 多个空格变成一个
-    any_sql = any_sql.replace("[", "").replace("]", "") # 去掉中括号
-    any_sql = any_sql.replace(" ,", ",")  # 处理逗号前的多余空格
+    """Clean up SQL statement, remove unnecessary spaces and line breaks"""
+    any_sql = re.sub(pattern=r"\s+", repl=" ", string=any_sql)  # Convert multiple spaces to one
+    any_sql = any_sql.replace("[", "").replace("]", "") # Remove square brackets
+    any_sql = any_sql.replace(" ,", ",")  # Handle extra spaces before commas
     return any_sql.strip()
 
 def extract_tables_from_view(view_sql):
-    """ビューのSQLを解析し、テーブル名を抽出する（FROMおよびJOINに対応）"""
+    """Parse view SQL and extract table names (supports FROM and JOIN)"""
     table_pattern = re.compile(r"(?:FROM|JOIN)\s+(?:\(\s*)?(?!SELECT\b)(\w+(?:\.\w+)?)", flags=re.IGNORECASE)
     tables = set()
     for match in table_pattern.finditer(view_sql):
@@ -29,26 +29,26 @@ def extract_tables_from_view(view_sql):
     return list(tables)
 
 def parse_relation_from_ddl(ddl):
-    """DDLファイルを解析し、テーブルとフィールドの関係、およびビューとテーブルの関係を抽出する"""
+    """Parse DDL file to extract table-field relationships and view-table relationships"""
 
-    # SQLを前処理し、単一行に結合する。
+    # Preprocess SQL and combine into single line
     ddl = clean_sql(remove_sql_comments(ddl))
 
     table_fields = defaultdict(list)
     view_tables = defaultdict(list)
 
-    # "CREATE TABLE"を解析
+    # Parse "CREATE TABLE"
     table_pattern = re.compile(pattern=r"CREATE TABLE (\w+(?:\.\w+)?)\s*\((.*?)\)\s*[\w\s]+(;|GO)", flags=re.IGNORECASE)
     for match in table_pattern.finditer(ddl):
         table_name = match.group(1).split(".")[-1]
         fields_block = match.group(2)
 
-        # フィールド名の抽出
+        # Extract field names
         fields = []
         field_lines = re.split(r",\s*(?![^(]*\))", fields_block)
         for line in field_lines:
             line = line.strip()
-            if not line or "PRIMARY KEY" in line.upper():  # 跳过主键
+            if not line or "PRIMARY KEY" in line.upper():  # Skip primary keys
                 continue
             field_name = re.split(r"\s+", line, maxsplit=1)[0]
             fields.append(field_name)
@@ -56,7 +56,7 @@ def parse_relation_from_ddl(ddl):
         table_fields[table_name] = fields
         print("fields len: ", str(len(fields)))
 
-    # "CREATE VIEW"を解析
+    # Parse "CREATE VIEW"
     view_pattern = re.compile(pattern=r"CREATE (OR REPLACE )?VIEW (\w+(?:\.\w+)?) AS (.*?)(;|GO)$", flags=re.IGNORECASE)
     for match in view_pattern.finditer(ddl):
         view_name = match.group(2).split(".")[-1]
@@ -73,13 +73,13 @@ with open(ddl_file, "r", encoding="utf-8") as f:
 table_fields, view_tables = parse_relation_from_ddl(ddl)
 
 # print result
-print("Table-Field关系:")
+print("Table-Field relationship:")
 print(json.dumps(table_fields, indent=4, ensure_ascii=False))
 
-print("View-Table关系:")
+print("View-Table relationship:")
 print(json.dumps(view_tables, indent=4, ensure_ascii=False))
 
-# 判断Langchain用的表和view是否存在，不存在则创建
+# Check if Langchain tables and views exist, create if they don't
 db_uri = "postgresql+psycopg2://postgres:123456@localhost:5432/verify5"
 engine = create_engine(db_uri)
 inspector = inspect(engine)

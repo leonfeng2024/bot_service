@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 class RedisTools:
     def __init__(self):
         """
-        初始化Redis连接
+        Initialize Redis connection
         """
         self.redis_client = None
         try:
-            # 准备Redis连接参数
+            # Prepare Redis connection parameters
             redis_params = {
                 "host": REDIS_HOST,
                 "port": REDIS_PORT,
@@ -30,46 +30,46 @@ class RedisTools:
                 "socket_timeout": REDIS_TIMEOUT,
                 "socket_connect_timeout": REDIS_CONNECT_TIMEOUT,
                 "client_name": REDIS_CLIENT_NAME,
-                "decode_responses": True  # 自动将响应解码为字符串
+                "decode_responses": True  # Automatically decode responses to strings
             }
             
-            # 只有当密码不为None时才添加密码参数
+            # Only add password parameter if it's not None
             if REDIS_PASSWORD is not None:
                 redis_params["password"] = REDIS_PASSWORD
             
             self.redis_client = redis.Redis(**redis_params)
             
-            # 测试连接
+            # Test connection
             self.redis_client.ping()
             logger.info(f"Redis connection established successfully to {REDIS_HOST}:{REDIS_PORT}")
         except redis.ConnectionError as e:
             logger.error(f"Failed to connect to Redis: {e}")
             logger.warning("Running with Redis disabled. Cache operations will be no-ops.")
-            # 确保客户端为None
+            # Ensure client is None
             self.redis_client = None
 
     def set(self, key: str, value: Dict[str, Any], expire: int = JWT_EXPIRATION) -> bool:
         """
-        设置key-value并设置过期时间，默认与JWT令牌过期时间相同
+        Set key-value pair with expiration time, defaults to JWT token expiration time
         
         Args:
-            key: 键（通常是用户的UUID）
-            value: 要存储的值（字典）
-            expire: 过期时间（秒）
+            key: Key (usually user's UUID)
+            value: Value to store (dictionary)
+            expire: Expiration time (seconds)
             
         Returns:
-            bool: 操作是否成功
+            bool: Whether operation was successful
         """
         if not self.redis_client:
             logger.warning(f"Redis not connected. Set operation skipped for key: {key}")
             return False
             
         try:
-            # 将字典转换为JSON字符串
+            # Convert dictionary to JSON string
             json_value = json.dumps(value)
-            # 设置键值对
+            # Set key-value pair
             self.redis_client.set(key, json_value)
-            # 设置过期时间
+            # Set expiration time
             self.redis_client.expire(key, expire)
             logger.info(f"Successfully set key in Redis: {key}")
             return True
@@ -79,13 +79,13 @@ class RedisTools:
 
     def get(self, key: str) -> Optional[Dict[str, Any]]:
         """
-        获取指定key的值
+        Get value for specified key
         
         Args:
-            key: 键（通常是用户的UUID）
+            key: Key (usually user's UUID)
             
         Returns:
-            Optional[Dict]: 返回存储的字典，如果key不存在则返回None
+            Optional[Dict]: Stored dictionary, or None if key doesn't exist
         """
         if not self.redis_client:
             logger.warning("Redis not connected. Get operation skipped.")
@@ -102,13 +102,13 @@ class RedisTools:
 
     def delete(self, key: str) -> bool:
         """
-        删除指定key
+        Delete specified key
         
         Args:
-            key: 键（通常是用户的UUID）
+            key: Key (usually user's UUID)
             
         Returns:
-            bool: 操作是否成功
+            bool: Whether operation was successful
         """
         if not self.redis_client:
             logger.warning("Redis not connected. Delete operation skipped.")
@@ -123,36 +123,36 @@ class RedisTools:
 
     def edit(self, key: str, field: str, value: Union[str, List, Dict]) -> bool:
         """
-        编辑已存在key中的特定字段
+        Edit specific field in existing key
         
         Args:
-            key: 键（通常是用户的UUID）
-            field: 要更新的字段名
-            value: 新的字段值
+            key: Key (usually user's UUID)
+            field: Field name to update
+            value: New field value
             
         Returns:
-            bool: 操作是否成功
+            bool: Whether operation was successful
         """
         if not self.redis_client:
             logger.warning("Redis not connected. Edit operation skipped.")
             return False
             
         try:
-            # 获取当前数据
+            # Get current data
             current_data = self.get(key)
             if not current_data:
                 logger.warning(f"Key {key} not found for editing")
                 return False
             
-            # 更新字段
+            # Update field
             current_data[field] = value
             
-            # 获取当前的TTL（过期时间）
+            # Get current TTL (expiration time)
             ttl = self.redis_client.ttl(key)
-            if ttl < 0:  # 如果键不存在或没有过期时间
+            if ttl < 0:  # If key doesn't exist or has no expiration time
                 ttl = JWT_EXPIRATION
                 
-            # 保存更新后的数据，保持原有的过期时间
+            # Save updated data, maintaining original expiration time
             return self.set(key, current_data, ttl)
         except Exception as e:
             logger.error(f"Error editing key in Redis: {e}")

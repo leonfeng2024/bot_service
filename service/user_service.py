@@ -126,13 +126,13 @@ class UserService:
                 })
             )
             
-            # 如果执行到这里没有抛出异常，说明SQL执行成功
-            # 准备返回用户数据
+            # If we reach here without raising an exception, SQL execution was successful
+            # Prepare user data to return
             user_data = {}
             if result and isinstance(result, list) and len(result) > 0:
                 user_data = result[0]
             else:
-                # SQL执行成功但没有返回数据，构造基本用户数据
+                # SQL executed successfully but no data returned, construct basic user data
                 user_data = {
                     "id": username,
                     "username": username,
@@ -166,7 +166,7 @@ class UserService:
             Dictionary with success status, message, and updated user info
         """
         try:
-            # 第一次check
+            # First check if user exists
             check_query = """
             SELECT count(*) as count
             FROM user_info
@@ -226,13 +226,13 @@ class UserService:
                 lambda: self.pg_tools.execute_query(update_query, params)
             )
             
-            # 如果执行到这里没有抛出异常，说明SQL执行成功
-            # 准备返回用户数据
+            # If we reach here without raising an exception, SQL execution was successful
+            # Prepare user data to return
             user_data = {}
             if result and len(result) > 0:
                 user_data = result[0]
             else:
-                # SQL执行成功但没有返回数据，构造基本用户数据
+                # SQL executed successfully but no data returned, construct basic user data
                 user_data = {
                     "id": user_id,
                     "username": update_data.get("username", ""),
@@ -295,7 +295,7 @@ class UserService:
             )
             logger.info(f"Delete user result for {user_id}: {result}")
             
-            # 如果执行到这里没有抛出异常，说明SQL执行成功
+            # If we reach here without raising an exception, SQL execution was successful
             return {
                 "success": True,
                 "message": "User deleted successfully"
