@@ -126,7 +126,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 
             mermaid_definition += """
 """
-            print(f"Generated Mermaid definition:\n{mermaid_definition}")
+            # print(f"Generated Mermaid definition:\n{mermaid_definition}")
             
             # Ensure output directory exists
             output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')

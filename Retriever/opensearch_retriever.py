@@ -10,10 +10,10 @@ from tools.token_counter import TokenCounter
 import config
 
 class OpenSearchRetriever(BaseRetriever):
-    """OpenSearch检索器，用于从OpenSearch中检索数据"""
+    """OpenSearch retriever for retrieving data from OpenSearch"""
     
     def __init__(self):
-        # OpenSearch connection settings - 从配置中读取
+        # OpenSearch connection settings - read from config
         self.opensearch_host = config.OPENSEARCH_HOST
         self.opensearch_port = config.OPENSEARCH_PORT
         self.opensearch_user = config.OPENSEARCH_USER
@@ -58,7 +58,7 @@ class OpenSearchRetriever(BaseRetriever):
             print("Trying localhost as fallback...")
             
             try:
-                # 尝试使用localhost
+                # Try using localhost
                 client = OpenSearch(
                     hosts=[{"host": "localhost", "port": self.opensearch_port}],
                     http_auth=(self.opensearch_user, self.opensearch_password),
@@ -76,7 +76,7 @@ class OpenSearchRetriever(BaseRetriever):
                 print("Trying 127.0.0.1 as fallback...")
                 
                 try:
-                    # 尝试使用IP地址
+                    # Try using IP address
                     client = OpenSearch(
                         hosts=[{"host": "127.0.0.1", "port": self.opensearch_port}],
                         http_auth=(self.opensearch_user, self.opensearch_password),
@@ -112,14 +112,7 @@ class OpenSearchRetriever(BaseRetriever):
                         
                         # If dimensions match, no need to update
                         if current_dim == embedding_dimension:
-                            # print(f"Index {self.procedure_index} already has correct dimension {embedding_dimension}")
                             return True
-                        
-                        # print(f"Index {self.procedure_index} has dimension {current_dim}, but need {embedding_dimension}")
-                        
-                        # Delete the index to recreate with correct dimension
-                        self.client.indices.delete(index=self.procedure_index)
-                        # print(f"Deleted index {self.procedure_index} to recreate with correct dimension")
             
             # Create or recreate the index with the correct dimension
             index_config = {
@@ -152,22 +145,19 @@ class OpenSearchRetriever(BaseRetriever):
             }
             
             self.client.indices.create(index=self.procedure_index, body=index_config)
-            # print(f"Created index {self.procedure_index} with dimension {embedding_dimension}")
             return True
             
         except Exception as e:
-            # print(f"Error checking/updating index: {str(e)}")
             return False
     
     async def _search_term(self, term: str) -> List[Dict[str, Any]]:
-        """对单个字段名进行搜索"""
+        """Search for a single term"""
         try:
             # Generate embedding for the search term
             search_embedding = await self.embedding_service.get_embedding(term)
             
             # Get the actual dimension of the embedding
             actual_dim = len(search_embedding)
-            # print(f"Search term: {term}, embedding dimension: {actual_dim}")
             
             # Update the vector_dim to match the actual dimension
             self.vector_dim = actual_dim
@@ -175,8 +165,8 @@ class OpenSearchRetriever(BaseRetriever):
             # Check and update index if needed
             await self._check_and_update_index(self.vector_dim)
             
-            # 使用两种查询方式
-            # 1. 纯KNN查询 - 基于语义相似性
+            # Use two query approaches
+            # 1. Pure KNN query - based on semantic similarity
             knn_query = {
                 "size": 5,
                 "_source": ["procedure_name", "sql_content", "table_name", "view_name"],
@@ -190,7 +180,7 @@ class OpenSearchRetriever(BaseRetriever):
                 }
             }
 
-            # 2. 带过滤的KNN查询 - 结合精确匹配和语义相似性
+            # 2. Filtered KNN query - combining exact match and semantic similarity
             filtered_query = {
                 "size": 5,
                 "_source": ["procedure_name", "sql_content", "table_name", "view_name"],
@@ -217,31 +207,19 @@ class OpenSearchRetriever(BaseRetriever):
                 }
             }
             
-            # 首先尝试带过滤的查询
-            # print(f"Executing filtered query for: {term}")
+            # First try filtered query
             response = self.client.search(
                 body=filtered_query,
                 index=self.procedure_index
             )
             
-            # 如果没有结果，尝试纯KNN查询
+            # If no results, try pure KNN query
             hits = response.get("hits", {}).get("hits", [])
             if not hits:
-                # print(f"No results from filtered query, trying pure KNN query for: {term}")
                 response = self.client.search(
                     body=knn_query,
                     index=self.procedure_index
                 )
-            
-            # 打印原始结果以便调试
-            hits = response.get("hits", {}).get("hits", [])
-            # print(f"Found {len(hits)} results for term: {term}")
-            # if hits:
-            #     for hit in hits:
-            #         print(f"Hit score: {hit.get('_score')}, procedure: {hit.get('_source', {}).get('procedure_name')}")
-            #         # 添加SQL内容调试输出
-            #         sql_content = hit.get('_source', {}).get('sql_content', 'No SQL content')
-            #         print(f"SQL content for {hit.get('_source', {}).get('procedure_name')}: {sql_content[:100]}...")
             
             # Process results
             results = []
@@ -253,78 +231,75 @@ class OpenSearchRetriever(BaseRetriever):
                     table_name = source.get("table_name", "")
                     view_name = source.get("view_name", "")
                     
-                    # 基本内容
+                    # Basic content
                     base_content = f"Procedure '{procedure_name}':\n{sql_content}"
                     
-                    # 添加与搜索词相关的说明
-                    enhanced_content = f"{base_content}\n\n与{term}相关的procedure是：{sql_content}"
+                    # Add explanation related to search term
+                    enhanced_content = f"{base_content}\n\nProcedure related to {term} is: {sql_content}"
                     
-                    # 添加表和视图信息（如果有）
+                    # Add table and view information (if available)
                     if table_name:
-                        enhanced_content += f"\n相关表: {table_name}"
+                        enhanced_content += f"\nRelated table: {table_name}"
                     if view_name:
-                        enhanced_content += f"\n相关视图: {view_name}"
+                        enhanced_content += f"\nRelated view: {view_name}"
                     
-                    # 返回增强后的内容
+                    # Return enhanced content
                     results.append({"content": enhanced_content, "score": hit.get("_score", 0.89)})
             
-            # 如果没有找到结果，添加一个友好的提示
+            # If no results found, add a friendly message
             if not results:
-                results.append({"content": f"未找到与'{term}'相关的存储过程。", "score": 0.5})
+                results.append({"content": f"No stored procedures found related to '{term}'.", "score": 0.5})
             
             return results
             
         except Exception as e:
-            # print(f"Error searching for term '{term}': {str(e)}")
-            # print(f"Detailed error: {traceback.format_exc()}")
             return [{"content": f"Error searching for '{term}': {str(e)}", "score": 0.89}]
         
     async def _filter_results_with_llm(self, query: str, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """使用大语言模型过滤搜索结果，删除与用户查询无关的内容"""
+        """Use LLM to filter search results, removing content unrelated to user query"""
         print(f"_filter_results_with_llm")
         try:
             if not results:
                 return results
                 
-            # 创建包含所有结果的文本
+            # Create text containing all results
             results_text = ""
             for i, result in enumerate(results):
                 results_text += f"Result {i+1}:\n{result.get('content', '')}\n\n"
                 
-            # 创建提示文本
+            # Create prompt text
             prompt = f"""
-            你是一个专业的数据库知识审查专家。请审查以下从OpenSearch检索到的结果，判断哪些与用户查询相关，哪些无关。
+            You are a professional database knowledge reviewer. Please review the following results retrieved from OpenSearch and determine which ones are relevant to the user's query and which ones are not.
             
-            用户查询: {query}
+            User query: {query}
             
-            检索结果:
+            Retrieved results:
             {results_text}
             
-            请执行以下任务:
-            1. 分析每个检索结果与用户查询的相关性
-            2. 删除与用户查询完全无关的内容
-            3. 保留所有相关或可能相关的内容
-            4. 去掉重复内容，如果有相同的检索结果，只保留一个
-            5. 以JSON格式返回过滤后的结果，格式如下:
+            Please perform the following tasks:
+            1. Analyze the relevance of each retrieved result to the user's query
+            2. Remove content completely unrelated to the user's query
+            3. Keep all relevant or potentially relevant content
+            4. Remove duplicate content, if there are identical search results, keep only one
+            5. Return the filtered results in JSON format as follows:
             [
-                {{"content": "相关内容1", "score": 原始分数, "relevance": "说明为什么相关"}},
-                {{"content": "相关内容2", "score": 原始分数, "relevance": "说明为什么相关"}}
+                {{"content": "relevant content 1", "score": original_score, "relevance": "explain why relevant"}},
+                {{"content": "relevant content 2", "score": original_score, "relevance": "explain why relevant"}}
             ]
             
-            只返回JSON格式的结果，不要有其他文字说明。如果所有结果都不相关，返回空数组 []。
-            """
+            Return only the JSON format results, no other text explanation. If all results are irrelevant, return an empty array []."""
             
-            # 调用LLM服务进行过滤
+            # Call LLM service for filtering
             print(f"Prompt: {prompt}")
-            # 获取LLM实例
+            # Get LLM instance
             llm = self.llm_service.get_llm()
-            # 使用LLM生成文本
+            # Generate text using LLM
             llm_response = await llm.generate(prompt)
             print(f"LLM response: {llm_response}")
             
-            # 尝试解析JSON响应
+            # Try to parse JSON response
             try:
-                # 提取JSON部分（如果LLM返回了额外文本）
+                # Extract JSON part (if LLM returned additional text)
                 json_str = llm_response.strip()
                 if json_str.startswith("```json"):
                     json_str = json_str.split("```json")[1]
@@ -333,9 +308,9 @@ class OpenSearchRetriever(BaseRetriever):
                     
                 filtered_results = json.loads(json_str.strip())
                 
-                # 确保结果格式正确
+                # Ensure results format is correct
                 if isinstance(filtered_results, list):
-                    # 移除可能的额外字段，保持与原始结果格式一致
+                    # Remove possible extra fields, maintain original result format
                     standardized_results = []
                     for item in filtered_results:
                         if isinstance(item, dict) and "content" in item:
@@ -343,7 +318,7 @@ class OpenSearchRetriever(BaseRetriever):
                                 "content": item["content"],
                                 "score": item.get("score", 0.5)
                             }
-                            # 保留token_usage如果存在
+                            # Keep token_usage if exists
                             if "token_usage" in results[0]:
                                 result["token_usage"] = results[0]["token_usage"]
                             standardized_results.append(result)
@@ -354,41 +329,41 @@ class OpenSearchRetriever(BaseRetriever):
                 print(f"Error parsing LLM response as JSON: {str(json_error)}")
                 print(f"Raw LLM response: {llm_response}")
                 
-            # 如果解析失败，返回原始结果
+            # If parsing fails, return original results
             return results
             
         except Exception as e:
             print(f"Error filtering results with LLM: {str(e)}")
             print(f"Detailed error: {traceback.format_exc()}")
-            # 出错时返回原始结果
+            # Return original results on error
             return results
     
     async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
         """
-        从OpenSearch中检索与查询相关的数据
+        Retrieve data from OpenSearch related to the query
         
         Args:
-            query: 用户查询
-            uuid: 会话ID(可选)
+            query: User query
+            uuid: Session ID (optional)
             
         Returns:
-            检索结果列表
+            List of retrieval results
         """
         try:
-            # 检查客户端连接
+            # Check client connection
             if not self.client:
                 print("OpenSearch client is not connected, attempting to reconnect...")
                 self.client = self._connect_to_opensearch()
                 if not self.client:
-                    error_msg = "无法连接到OpenSearch服务器，请检查配置"
+                    error_msg = "Unable to connect to OpenSearch server, please check configuration"
                     error_result = [{"content": error_msg, "score": 0.0, "source": "opensearch"}]
                     
-                    # 如果提供了UUID，将结果缓存
+                    # If UUID provided, cache result
                     if uuid:
                         try:
                             key = f"{uuid}:opensearch"
                             self.redis_tools.set(key, error_result)
-                            # 同时更新主缓存
+                            # Also update main cache
                             cached_data = self.redis_tools.get(uuid) or {}
                             cached_data["opensearch"] = error_result
                             self.redis_tools.set(uuid, cached_data)
@@ -398,14 +373,14 @@ class OpenSearchRetriever(BaseRetriever):
                     
                     return error_result
             
-            # 记录开始时的token使用情况
+            # Record token usage at start
             start_usage = self.llm_service.get_token_usage()
             
-            # 构建并打印prompt
-            prompt = f"OpenSearch检索查询:\n{query}"
+            # Build and print prompt
+            prompt = f"OpenSearch retrieval query:\n{query}"
             print(prompt)
             
-            # 调用LLM服务获取查询意图
+            # Call LLM service to get query intent
             intent_analysis = {}
             async for result in self.llm_service.identify_column(query):
                 if isinstance(result, dict):
@@ -415,38 +390,38 @@ class OpenSearchRetriever(BaseRetriever):
             
             results = []
             
-            # 如果识别出了意图，对每个关键术语进行搜索
+            # If intent was identified, search for each key term
             if intent_analysis:
                 for key, term in intent_analysis.items():
                     print(f"Searching for term: {term}")
                     term_results = await self._search_term(term)
                     results.extend(term_results)
             
-            # 如果没有识别出意图或没有结果，直接使用原始查询
+            # If no intent identified or no results, use original query directly
             if not intent_analysis or not results:
                 print(f"No intent identified or no results, using original query: {query}")
                 direct_results = await self._search_term(query)
                 results.extend(direct_results)
             
-            # 如果有3个以上结果，使用LLM过滤
+            # If more than 3 results, use LLM to filter
             if len(results) > 3:
                 results = await self._filter_results_with_llm(query, results)
             
-            # 记录结束时的token使用情况
+            # Record token usage at end
             end_usage = self.llm_service.get_token_usage()
             
-            # 计算token使用量
+            # Calculate token usage
             input_tokens = end_usage["input_tokens"] - start_usage["input_tokens"]
             output_tokens = end_usage["output_tokens"] - start_usage["output_tokens"]
             
-            # 打印token使用情况
+            # Print token usage
             print(f"[OpenSearch Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
             
-            # 更新token计数器
+            # Update token counter
             self.token_counter.total_input_tokens += input_tokens
             self.token_counter.total_output_tokens += output_tokens
             
-            # 记录调用历史
+            # Record call history
             call_record = {
                 "source": "opensearch-retriever",
                 "input_tokens": input_tokens,
@@ -454,11 +429,11 @@ class OpenSearchRetriever(BaseRetriever):
             }
             self.token_counter.calls_history.append(call_record)
             
-            # 确保结果不为空
+            # Ensure results are not empty
             if not results:
-                results = [{"content": "未找到相关的存储过程或SQL代码", "score": 0.0, "source": "opensearch"}]
+                results = [{"content": "No relevant stored procedures or SQL code found", "score": 0.0, "source": "opensearch"}]
             
-            # 为结果添加元数据
+            # Add metadata to results
             for result in results:
                 result["source"] = "opensearch"
                 result["token_usage"] = {
@@ -466,14 +441,14 @@ class OpenSearchRetriever(BaseRetriever):
                     "output_tokens": output_tokens
                 }
             
-            # 如果提供了UUID，将结果缓存
+            # If UUID provided, cache results
             if uuid:
                 try:
-                    # 使用专用key
+                    # Use dedicated key
                     key = f"{uuid}:opensearch"
                     self.redis_tools.set(key, results)
                     
-                    # 同时更新主缓存
+                    # Also update main cache
                     cached_data = self.redis_tools.get(uuid) or {}
                     cached_data["opensearch"] = results
                     self.redis_tools.set(uuid, cached_data)
@@ -484,22 +459,22 @@ class OpenSearchRetriever(BaseRetriever):
             return results
             
         except Exception as e:
-            error_msg = f"OpenSearch检索错误: {str(e)}"
+            error_msg = f"OpenSearch retrieval error: {str(e)}"
             print(error_msg)
             print(traceback.format_exc())
             
             error_result = [{"content": error_msg, "score": 0.0, "source": "opensearch"}]
             
-            # 如果提供了UUID，将错误结果缓存
+            # If UUID provided, cache error result
             if uuid:
                 try:
                     key = f"{uuid}:opensearch"
                     self.redis_tools.set(key, error_result)
-                    # 同时更新主缓存
+                    # Also update main cache
                     cached_data = self.redis_tools.get(uuid) or {}
                     cached_data["opensearch"] = error_result
                     self.redis_tools.set(uuid, cached_data)
                 except Exception:
-                    pass  # 忽略缓存错误
+                    pass  # Ignore cache errors
             
             return error_result

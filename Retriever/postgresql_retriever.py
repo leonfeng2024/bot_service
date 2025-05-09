@@ -67,7 +67,7 @@ class PostgreSQLRetriever(BaseRetriever):
                       - **概要**: 各 `テーブル` の構造情報を格納する。
                       - **主なフィールド**:
                         - `physical_name` → テーブルの物理名  
-                        - `logical_name` → テーブルのロジック名（検索には使用しない）  
+                        - `logical_name` → テーブルのロジック名
                         - `field` → そのテーブルを構成するカラム名
                         - `field_jpn` → そのカラムの日本語名 
 
@@ -75,7 +75,7 @@ class PostgreSQLRetriever(BaseRetriever):
                       - **概要**: 各 `ビュー` の構成情報を格納する。
                       - **主なフィールド**:
                         - `view_physical_name` → ビューの物理名  
-                        - `view_logical_name` → ビューのロジック名（検索には使用しない）  
+                        - `view_logical_name` → ビューのロジック名
                         - `table_physical_name` → そのビューを構成するテーブル名
                         - `table_logical_name` → そのテーブルの日本語名 
                         - `field` → そのテーブルを構成するカラム名
@@ -85,7 +85,7 @@ class PostgreSQLRetriever(BaseRetriever):
                       - **概要**: データセット（`dataset`）の構成情報を格納する。 
                       - **主なフィールド**:
                         - `ds_physical_name` → データセット名  
-                        - `ds_logical_name` → データセットのロジック名（検索には使用しない）  
+                        - `ds_logical_name` → データセットのロジック名
                         - `view_name` → そのデータセットを構成するビュー名
                         - `table_name` → そのビューを構成するテーブル名
                         - `field` → そのテーブルを構成するカラム名

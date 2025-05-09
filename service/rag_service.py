@@ -367,8 +367,8 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                         # Generate markdown format link
                         file_name = os.path.basename(full_file_path)
                         file_url = f"http://localhost:8088/output/{file_name}"
-                        markdown_response = "Processing completed. Please download the result file from the link below.\n"
-                        markdown_response += f"[{'Result File'}]({file_url})"
+                        markdown_response = "処理が完了いたしました。下記リンクより結果ファイルをダウンロード願います。\n"
+                        markdown_response += f"[{'結果ファイル'}]({file_url})"
                         
                         # Return final result in correct format
                         yield {"step": "final_answer", "message": markdown_response}

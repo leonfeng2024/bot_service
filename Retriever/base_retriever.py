@@ -2,26 +2,26 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 
 class BaseRetriever(ABC):
-    """基础抽象检索器类，所有检索器都应该继承这个类"""
+    """Base abstract retriever class, all retrievers should inherit from this class"""
     
     def _print_prompt(self, prompt: str) -> None:
         """
-        打印prompt到控制台
+        Print prompt to console
         
         Args:
-            prompt: 要打印的prompt字符串
+            prompt: The prompt string to print
         """
         print(f"\n=== Retriever Prompt ===\n{prompt}\n=====================\n")
 
     @abstractmethod
     async def retrieve(self, query: str) -> List[Dict[str, Any]]:
         """
-        检索相关文档
+        Retrieve relevant documents
         
         Args:
-            query: 用户查询字符串
+            query: User query string
             
         Returns:
-            List[Dict[str, Any]]: 返回检索结果列表，每个结果包含内容和相关性分数
+            List[Dict[str, Any]]: List of retrieval results, each containing content and relevance score
         """
         pass
