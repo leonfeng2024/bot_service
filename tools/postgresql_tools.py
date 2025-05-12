@@ -216,20 +216,16 @@ class PostgreSQLTools:
                         # Check if it's a SELECT statement
                         is_select = query.strip().upper().startswith("SELECT")
                         
-                        # Convert %(name)s format parameters to :name format
+                        # Convert query to SQLAlchemy text object
+                        sql = text(query)
+                        
+                        # Execute with or without parameters
                         if parameters:
-                            # Replace parameter format
-                            modified_query = query
-                            for key in parameters.keys():
-                                modified_query = modified_query.replace(f'%({key})s', f':{key}')
-                            sql = text(modified_query)
                             result = connection.execute(sql, parameters)
                         else:
-                            # Convert query to SQLAlchemy text object
-                            sql = text(query)
                             result = connection.execute(sql)
                         
-                        if is_select:
+                        if is_select or "RETURNING" in query.upper():
                             # Get column names
                             columns = result.keys()
                             

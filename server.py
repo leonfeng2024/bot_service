@@ -20,14 +20,17 @@ import logging
 import logging.config
 import os
 import shutil
-from typing import List
+from typing import List, Dict, Any
 import jwt
 import uuid
 import time
 from flask import request, jsonify
 from tools.postgresql_tools import PostgreSQLTools
 from tools.redis_tools import RedisTools
+from tools.ddl_to_postgre import process_ddl_file
+from tools.excel_to_postgre import process_excel_file
 import json
+import asyncio
 from contextlib import asynccontextmanager
 from config import JWT_SECRET, JWT_EXPIRATION
 
@@ -48,10 +51,52 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
+    try:
+        # Ensure the postgre_doc_status table exists
+        await ensure_doc_status_table()
+    except Exception as e:
+        logger.error(f"Error during startup: {str(e)}")
+    
     yield
     # Shutdown logic
     neo4j_service.close()
     await export_service.close()
+
+async def ensure_doc_status_table():
+    """Ensure the postgre_doc_status table exists in the database"""
+    try:
+        # Check if the table exists
+        check_query = """
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = 'postgre_doc_status'
+        ) as exists
+        """
+        
+        result = await postgres_service.execute_query(check_query)
+        table_exists = result[0]['exists'] if result else False
+        
+        if not table_exists:
+            logger.info("Creating postgre_doc_status table")
+            
+            # Create the table
+            create_query = """
+            CREATE TABLE postgre_doc_status (
+                id SERIAL PRIMARY KEY,
+                document_name VARCHAR(255) NOT NULL,
+                document_type VARCHAR(50),
+                process_status VARCHAR(20) DEFAULT 'In Process',
+                upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                uploader VARCHAR(100)
+            )
+            """
+            
+            await postgres_service.execute_query(create_query)
+            logger.info("postgre_doc_status table created successfully")
+    
+    except Exception as e:
+        logger.error(f"Error ensuring postgre_doc_status table exists: {str(e)}")
+        raise
 
 app = FastAPI(lifespan=lifespan)
 
@@ -791,6 +836,510 @@ async def upload_to_opensearch(
             status_code=500,
             detail=f"Error uploading document to OpenSearch: {str(e)}"
         )
+
+@app.post("/kb/sql/upload")
+async def upload_sql_file(
+    file: UploadFile = File(...),
+    token_data: dict = Depends(verify_token),
+    uploader: str = Form(None)
+):
+    """
+    Upload and process SQL file for knowledge base
+    
+    Args:
+        file: SQL file to upload
+        token_data: User token data
+        uploader: Name of the user who uploaded the file (optional)
+        
+    Returns:
+        Response with status and message
+    """
+    try:
+        # Validate file type
+        if not file.filename.endswith('.sql'):
+            raise HTTPException(
+                status_code=400,
+                detail="Only SQL files are allowed"
+            )
+        
+        # Create kb_document directory if it doesn't exist
+        kb_dir = "kb_document"
+        os.makedirs(kb_dir, exist_ok=True)
+        
+        # Save the uploaded file
+        file_path = os.path.join(kb_dir, file.filename)
+        file_content = await file.read()
+        
+        # Write the file (overwrite if exists)
+        with open(file_path, "wb") as buffer:
+            buffer.write(file_content)
+        
+        # Get username from token or form
+        username = uploader
+        if not username and token_data:
+            # Try to get user ID from token and convert to username
+            user_id = token_data.get("user_id")
+            if user_id:
+                try:
+                    user_profile = await user_service.get_user_profile(user_id)
+                    username = user_profile.get("username", str(user_id))
+                except:
+                    username = str(user_id)
+        
+        # Record status in PostgreSQL
+        document_type = "SQL"
+        insert_query = """
+        INSERT INTO postgre_doc_status 
+        (document_name, document_type, process_status, uploader)
+        VALUES (:document_name, :document_type, :process_status, :uploader)
+        RETURNING id
+        """
+        
+        result = await postgres_service.execute_query(
+            insert_query, 
+            {
+                "document_name": file.filename,
+                "document_type": document_type,
+                "process_status": "In Process",
+                "uploader": username
+            }
+        )
+        
+        # Get the document ID
+        doc_id = result[0]['id'] if result and len(result) > 0 else None
+        
+        # Start background task to process the file
+        asyncio.create_task(process_sql_file_background(file_path, doc_id))
+        
+        return {"status": "success", "message": "file upload success.start process kb document"}
+        
+    except Exception as e:
+        logger.error(f"Error uploading SQL file: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error uploading SQL file: {str(e)}"
+        )
+
+async def process_sql_file_background(file_path, doc_id):
+    """
+    Background task to process SQL file
+    
+    Args:
+        file_path: Path to the SQL file
+        doc_id: Document ID in postgre_doc_status table
+    """
+    try:
+        logger.info(f"Processing SQL file: {file_path}")
+        
+        # Get database URI from PostgreSQL tools
+        pg_tools = PostgreSQLTools()
+        db_uri = pg_tools.get_sqlalchemy_uri()
+        
+        # Process the DDL file
+        process_ddl_file(file_path, db_uri)
+        
+        # Update status to "Completed"
+        if doc_id:
+            update_query = """
+            UPDATE postgre_doc_status 
+            SET process_status = 'Completed' 
+            WHERE id = :id
+            """
+            
+            await postgres_service.execute_query(
+                update_query,
+                {"id": doc_id}
+            )
+            
+        logger.info(f"SQL file processing completed: {file_path}")
+        
+    except Exception as e:
+        logger.error(f"Error processing SQL file {file_path}: {str(e)}")
+        # Update status to "Failed" if there's an error
+        if doc_id:
+            try:
+                update_query = """
+                UPDATE postgre_doc_status 
+                SET process_status = 'Failed' 
+                WHERE id = :id
+                """
+                
+                await postgres_service.execute_query(
+                    update_query,
+                    {"id": doc_id}
+                )
+            except Exception as update_error:
+                logger.error(f"Error updating status: {str(update_error)}")
+
+@app.get("/kb/doc/status")
+async def get_document_status(token_data: dict = Depends(verify_token)):
+    """
+    Get status of all document processing records
+    
+    Returns:
+        List of document status records
+    """
+    try:
+        query = """
+        SELECT 
+            id,
+            document_name,
+            document_type,
+            process_status,
+            upload_date,
+            uploader
+        FROM 
+            postgre_doc_status
+        ORDER BY 
+            upload_date DESC
+        """
+        
+        result = await postgres_service.execute_query(query)
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error getting document status: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting document status: {str(e)}"
+        )
+
+@app.delete("/kb/dataset/delete")
+async def delete_dataset(document_name: str, token_data: dict = Depends(verify_token)):
+    """
+    Delete dataset from dataset_view_tables based on document name
+    
+    Args:
+        document_name: Document name (e.g. "PD003_01マスタ_施設マスタ.xlsx" or "some_file.sql")
+        
+    Returns:
+        Response with status and message
+    """
+    try:
+        # Check file extension to determine processing logic
+        file_extension = os.path.splitext(document_name)[1].lower()
+        
+        if file_extension in ['.xlsx', '.xls']:
+            # Excel file processing
+            # Extract dataset name from document name following the same logic in excel_to_postgre.py
+            _file_name_list = document_name.split(".")[0].split("_")
+            if len(_file_name_list) >= 3:
+                dataset_name = _file_name_list[0] + "_" + _file_name_list[2]
+            else:
+                # Fallback if file name doesn't match expected format
+                dataset_name = document_name.split(".")[0]
+            
+            # Delete from dataset_view_tables
+            delete_query = """
+            DELETE FROM dataset_view_tables
+            WHERE physical_name = :physical_name
+            """
+            
+            await postgres_service.execute_query(
+                delete_query,
+                {"physical_name": dataset_name}
+            )
+            
+            logger.info(f"Deleted Excel dataset {dataset_name} from dataset_view_tables")
+            
+        elif file_extension == '.sql':
+            # SQL file processing
+            # Placeholder for future implementation
+            await delete_sql_dataset(document_name)
+            logger.info(f"Processed SQL file deletion: {document_name}")
+            
+        else:
+            # Unsupported file type
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported file type: {file_extension}. Only Excel and SQL files are supported."
+            )
+        
+        return {
+            "status": "success", 
+            "message": "Document data delete complete"
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting dataset: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting dataset: {str(e)}"
+        )
+
+async def delete_sql_dataset(document_name: str):
+    """
+    Delete dataset created from SQL file
+    
+    Args:
+        document_name: SQL file name
+        
+    Returns:
+        None
+    """
+    # Placeholder for future implementation
+    # This method will be implemented in the future to handle SQL file dataset deletion
+    pass
+
+@app.post("/kb/dataset/delete")
+async def delete_dataset_data(request: Request, token_data: dict = Depends(verify_token)):
+    """
+    Delete dataset from dataset_view_tables and related record from postgre_doc_status
+    
+    Request body format:
+        {
+            "id": "8", 
+            "document_name": "PD003_01マスタ_施設マスタ.xlsx"
+        }
+        
+    Returns:
+        Response with status and message
+    """
+    try:
+        # Parse JSON request body
+        data = await request.json()
+        document_name = data.get("document_name")
+        doc_id = data.get("id")
+        
+        if not document_name:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing required parameter: document_name"
+            )
+            
+        if not doc_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing required parameter: id"
+            )
+        
+        # Check file extension to determine processing logic
+        file_extension = os.path.splitext(document_name)[1].lower()
+        
+        if file_extension in ['.xlsx', '.xls']:
+            # Excel file processing
+            # Extract dataset name from document name following the same logic in excel_to_postgre.py
+            _file_name_list = document_name.split(".")[0].split("_")
+            if len(_file_name_list) >= 3:
+                dataset_name = _file_name_list[0] + "_" + _file_name_list[2]
+            else:
+                # Fallback if file name doesn't match expected format
+                dataset_name = document_name.split(".")[0]
+            
+            # Delete from dataset_view_tables
+            delete_query = """
+            DELETE FROM dataset_view_tables
+            WHERE physical_name = :physical_name
+            """
+            
+            await postgres_service.execute_query(
+                delete_query,
+                {"physical_name": dataset_name}
+            )
+            
+            logger.info(f"Deleted Excel dataset {dataset_name} from dataset_view_tables")
+            
+        elif file_extension == '.sql':
+            # SQL file processing
+            # Placeholder for future implementation
+            await delete_sql_dataset(document_name)
+            logger.info(f"Processed SQL file deletion: {document_name}")
+            
+        else:
+            # Unsupported file type
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported file type: {file_extension}. Only Excel and SQL files are supported."
+            )
+        
+        # Delete record from postgre_doc_status
+        delete_status_query = """
+        DELETE FROM postgre_doc_status
+        WHERE id = :id
+        """
+        
+        await postgres_service.execute_query(
+            delete_status_query,
+            {"id": doc_id}
+        )
+        
+        logger.info(f"Deleted document status record with ID {doc_id}")
+        
+        return {
+            "status": "success", 
+            "message": "Document data delete complete"
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting dataset: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting dataset: {str(e)}"
+        )
+
+@app.post("/kb/excel/upload")
+async def upload_excel_file(
+    file: UploadFile = File(...),
+    token_data: dict = Depends(verify_token),
+    uploader: str = Form(None),
+    sheet_name: str = Form("資材一覧"),
+    header_row: int = Form(2),
+    table_col_name: str = Form("テーブル名")
+):
+    """
+    Upload and process Excel file for knowledge base
+    
+    Args:
+        file: Excel file to upload
+        token_data: User token data
+        uploader: Name of the user who uploaded the file (optional)
+        sheet_name: Name of the sheet containing table info
+        header_row: Row number containing headers (1-based)
+        table_col_name: Column name containing table names
+        
+    Returns:
+        Response with status and message
+    """
+    try:
+        # Validate file type
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        if file_extension not in ['.xlsx', '.xls']:
+            raise HTTPException(
+                status_code=400,
+                detail="Only Excel files (.xlsx, .xls) are allowed"
+            )
+        
+        # Create kb_document directory if it doesn't exist
+        kb_dir = "kb_document"
+        os.makedirs(kb_dir, exist_ok=True)
+        
+        # Save the uploaded file
+        file_path = os.path.join(kb_dir, file.filename)
+        file_content = await file.read()
+        
+        # Write the file (overwrite if exists)
+        with open(file_path, "wb") as buffer:
+            buffer.write(file_content)
+        
+        # Get username from token or form
+        username = uploader
+        if not username and token_data:
+            # Try to get user ID from token and convert to username
+            user_id = token_data.get("user_id")
+            if user_id:
+                try:
+                    user_profile = await user_service.get_user_profile(user_id)
+                    username = user_profile.get("username", str(user_id))
+                except:
+                    username = str(user_id)
+        
+        # Record status in PostgreSQL
+        document_type = "Excel"
+        insert_query = """
+        INSERT INTO postgre_doc_status 
+        (document_name, document_type, process_status, uploader)
+        VALUES (:document_name, :document_type, :process_status, :uploader)
+        RETURNING id
+        """
+        
+        result = await postgres_service.execute_query(
+            insert_query, 
+            {
+                "document_name": file.filename,
+                "document_type": document_type,
+                "process_status": "In Process",
+                "uploader": username
+            }
+        )
+        
+        # Get the document ID
+        doc_id = result[0]['id'] if result and len(result) > 0 else None
+        
+        # Start background task to process the file
+        asyncio.create_task(process_excel_file_background(
+            file_path, 
+            doc_id, 
+            sheet_name, 
+            header_row, 
+            table_col_name
+        ))
+        
+        return {"status": "success", "message": "file upload success.start process kb document"}
+        
+    except Exception as e:
+        logger.error(f"Error uploading Excel file: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error uploading Excel file: {str(e)}"
+        )
+
+async def process_excel_file_background(file_path, doc_id, sheet_name, header_row, table_col_name):
+    """
+    Background task to process Excel file
+    
+    Args:
+        file_path: Path to the Excel file
+        doc_id: Document ID in postgre_doc_status table
+        sheet_name: Name of the sheet containing table info
+        header_row: Row number containing headers (1-based)
+        table_col_name: Column name containing table names
+    """
+    try:
+        logger.info(f"Processing Excel file: {file_path}")
+        
+        # Get database URI from PostgreSQL tools
+        pg_tools = PostgreSQLTools()
+        db_uri = pg_tools.get_sqlalchemy_uri()
+        
+        # Process the Excel file
+        dataset_name, table_set = process_excel_file(
+            file_path, 
+            db_uri, 
+            sheet_name, 
+            header_row, 
+            table_col_name
+        )
+        
+        logger.info(f"Extracted dataset: {dataset_name} with {len(table_set)} tables")
+        
+        # Update status to "Completed"
+        if doc_id:
+            update_query = """
+            UPDATE postgre_doc_status 
+            SET process_status = 'Completed' 
+            WHERE id = :id
+            """
+            
+            await postgres_service.execute_query(
+                update_query,
+                {"id": doc_id}
+            )
+            
+        logger.info(f"Excel file processing completed: {file_path}")
+        
+    except Exception as e:
+        logger.error(f"Error processing Excel file {file_path}: {str(e)}")
+        # Update status to "Failed" if there's an error
+        if doc_id:
+            try:
+                update_query = """
+                UPDATE postgre_doc_status 
+                SET process_status = 'Failed' 
+                WHERE id = :id
+                """
+                
+                await postgres_service.execute_query(
+                    update_query,
+                    {"id": doc_id}
+                )
+            except Exception as update_error:
+                logger.error(f"Error updating status: {str(update_error)}")
 
 if __name__ == "__main__":
     import uvicorn

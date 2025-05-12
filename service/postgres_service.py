@@ -47,12 +47,13 @@ class PostgresService:
             logger.error(f"Error getting tables: {str(e)}")
             raise
     
-    async def execute_query(self, query: str) -> List[Dict[str, Any]]:
+    async def execute_query(self, query: str, parameters: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """
         Execute SQL query
         
         Args:
             query: SQL query statement
+            parameters: Optional query parameters
             
         Returns:
             List of query result rows
@@ -63,13 +64,16 @@ class PostgresService:
                 
             # Check if query is read-only
             normalized_query = query.strip().upper()
-            if not normalized_query.startswith(('SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN')):
+            is_read_only = normalized_query.startswith(('SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN'))
+            
+            # Only check for read-only if no parameters are provided (DML with parameters is allowed)
+            if not is_read_only and not parameters and not "RETURNING" in normalized_query:
                 logger.warning(f"Non-read query attempted: {query}")
                 
             loop = asyncio.get_running_loop()
             result = await loop.run_in_executor(
                 None,
-                lambda: self.pg_tools.execute_query(query)
+                lambda: self.pg_tools.execute_query(query, parameters)
             )
             
             return result or []
