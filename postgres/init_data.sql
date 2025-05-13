@@ -553,3 +553,25 @@ CREATE TABLE chat_history (
 -- 用户 Alice 的聊天记录 
 INSERT INTO chat_history (username, uuid, sender, message, createDate) 
 VALUES ('Alice', '550e8400-e29b-41d4-a716-446655440000', 'user', '你好，我想查询我的订单状态', '2023-05-10 09:15:22+08');
+
+
+
+CREATE TABLE postgre_doc_status (
+    id SERIAL PRIMARY KEY,
+    document_name VARCHAR(255) NOT NULL,
+    document_type VARCHAR(50),
+    process_status VARCHAR(20) DEFAULT 'pending',
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    uploader VARCHAR(100)
+);
+
+
+CREATE TABLE opensearch_doc_status (
+    id SERIAL PRIMARY KEY,
+    document_name VARCHAR(255) NOT NULL,
+    document_type VARCHAR(50),
+    process_status VARCHAR(20) DEFAULT 'pending',
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    uploader VARCHAR(100),
+	index_name VARCHAR(100)
+);

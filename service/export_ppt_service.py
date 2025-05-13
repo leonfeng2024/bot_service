@@ -26,6 +26,56 @@ class ExportPPTService:
         # Create output directory if it doesn't exist
         os.makedirs(self.output_dir, exist_ok=True)
 
+    def _prepare_neo4j_data(self, data):
+        """
+        Prepares Neo4j data for diagram generation
+        
+        Args:
+            data: List of dictionaries or DataFrame with Neo4j relationship data
+            
+        Returns:
+            DataFrame with standardized format for diagram generation
+        """
+        import pandas as pd
+        
+        # Convert data to DataFrame if it's a list
+        if isinstance(data, list):
+            df = pd.DataFrame(data)
+        else:
+            df = data.copy()
+            
+        # Check if this is Neo4j format data
+        neo4j_columns = ['source_table', 'target_table', 'source_field', 'target_field']
+        has_neo4j_format = any(col in df.columns for col in neo4j_columns)
+        
+        if has_neo4j_format:
+            print("Converting Neo4j data format for diagram generation")
+            # Create content field with clear relationship descriptions
+            content_list = []
+            
+            for _, row in df.iterrows():
+                source_table = row.get('source_table', '')
+                target_table = row.get('target_table', '')
+                source_field = row.get('source_field', '')
+                target_field = row.get('target_field', '')
+                
+                if source_table and target_table:
+                    relationship_text = f"Table {source_table} connects to table {target_table} via field {source_field} -> {target_field}"
+                    content_list.append({
+                        'content': relationship_text,
+                        'source_table': source_table,
+                        'target_table': target_table,
+                        'source_field': source_field,
+                        'target_field': target_field
+                    })
+            
+            # Create new DataFrame with the content field
+            if content_list:
+                return pd.DataFrame(content_list)
+            
+        # Return original DataFrame if it doesn't match Neo4j format or conversion failed
+        return df
+
     async def create_mermaid_diagram(self, relationships_df: pd.DataFrame, sandbox: bool = True) -> str:
         """
         Create a diagram using Mermaid from relationship data
@@ -74,59 +124,130 @@ classDef tableNode fill:#d7e9f7,stroke:#3c78d8,stroke-width:2px,font-size:14px,t
 classDef fieldNode fill:#fff2cc,stroke:#f1c232,stroke-width:1px,font-size:12px,text-align:left;
 classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
 
-            # 提取所有唯一的表名
+            # Step 1: Try to directly extract relationship data from Neo4j format
             all_tables = set()
-            for content in relationships_df['content']:
-                if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
-                    parts = content.split(" 通过字段 ")
-                    if len(parts) >= 2:
-                        source_part = parts[0].replace("表 ", "").strip()
-                        target_part = parts[1].split(" 关联到表 ")[1].split(" 的字段 ")[0].strip()
-                        all_tables.add(source_part)
-                        all_tables.add(target_part)
-                    else:
-                        print(f"Warning: Unexpected content format: {content}")
-
+            relationships = []
+            
+            # Check if the data is in Neo4j format with source_table and target_table fields
+            has_neo4j_format = False
+            for col in relationships_df.columns:
+                if col == 'source_table' or col == 'target_table':
+                    has_neo4j_format = True
+                    break
+            
+            if has_neo4j_format:
+                print("Detected Neo4j relationship data format")
+                # Extract tables from Neo4j format
+                if 'source_table' in relationships_df.columns and 'target_table' in relationships_df.columns:
+                    for _, row in relationships_df.iterrows():
+                        source_table = row.get('source_table')
+                        target_table = row.get('target_table')
+                        if source_table and target_table:
+                            all_tables.add(source_table)
+                            all_tables.add(target_table)
+                            source_field = row.get('source_field', '')
+                            target_field = row.get('target_field', '')
+                            relationship = {
+                                'source': source_table,
+                                'target': target_table,
+                                'label': f"{source_field} -> {target_field}"
+                            }
+                            relationships.append(relationship)
+            
+            # Step 2: Try the original Chinese format if no Neo4j data was found
+            if not all_tables or not relationships:
+                print("Trying to extract relationships from content field...")
+                # 提取所有唯一的表名
+                for content in relationships_df['content']:
+                    if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
+                        parts = content.split(" 通过字段 ")
+                        if len(parts) >= 2:
+                            source_part = parts[0].replace("表 ", "").strip()
+                            target_part = parts[1].split(" 关联到表 ")[1].split(" 的字段 ")[0].strip()
+                            all_tables.add(source_part)
+                            all_tables.add(target_part)
+                        else:
+                            print(f"Warning: Unexpected content format: {content}")
+                
+                # 添加关系
+                for content in relationships_df['content']:
+                    if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
+                        try:
+                            # 解析内容
+                            parts = content.split(" 通过字段 ")
+                            source_table = parts[0].replace("表 ", "").strip()
+                            remaining = parts[1].split(" 关联到表 ")
+                            source_field = remaining[0].strip()
+                            target_remaining = remaining[1].split(" 的字段 ")
+                            target_table = target_remaining[0].strip()
+                            target_field = target_remaining[1].strip() if len(target_remaining) > 1 else "unknown"
+                            
+                            relationship = {
+                                'source': source_table,
+                                'target': target_table,
+                                'label': f"{source_field} -> {target_field}"
+                            }
+                            relationships.append(relationship)
+                        except Exception as e:
+                            print(f"Error processing relationship: {content}, Error: {str(e)}")
+            
+            # Step 3: If still no relationships, try to parse from content text
+            if not all_tables or not relationships:
+                print("Attempting to extract database table relationships from description text...")
+                for content in relationships_df['content']:
+                    if isinstance(content, str):
+                        # Try to extract relationships from English text descriptions
+                        if "table" in content.lower() and "field" in content.lower():
+                            # Simple regex-like parsing for common relationship descriptions
+                            import re
+                            # Look for table names mentioned together
+                            table_mentions = re.findall(r'table (\w+)', content.lower())
+                            for table in table_mentions:
+                                if len(table) > 2:  # Avoid short words
+                                    all_tables.add(table)
+                
+                # If we found tables but no relationships, create basic connections
+                if all_tables and not relationships:
+                    tables_list = list(all_tables)
+                    for i in range(len(tables_list)):
+                        for j in range(i+1, len(tables_list)):
+                            # Create a simple relationship between tables
+                            relationship = {
+                                'source': tables_list[i],
+                                'target': tables_list[j],
+                                'label': "related"
+                            }
+                            relationships.append(relationship)
+            
             # 为每个表生成节点
             for table in all_tables:
                 table_id = table.replace('.', '_').replace('-', '_')
                 mermaid_definition += f"\n    {table_id}[<div style='padding:5px;'>{table}</div>]"
-
-            # 添加关系
-            for content in relationships_df['content']:
-                if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
-                    try:
-                        # 解析内容
-                        parts = content.split(" 通过字段 ")
-                        source_table = parts[0].replace("表 ", "").strip()
-                        remaining = parts[1].split(" 关联到表 ")
-                        source_field = remaining[0].strip()
-                        target_remaining = remaining[1].split(" 的字段 ")
-                        target_table = target_remaining[0].strip()
-                        target_field = target_remaining[1].strip() if len(target_remaining) > 1 else "unknown"
-                        
-                        # 创建关系ID
-                        table1_id = source_table.replace('.', '_').replace('-', '_')
-                        table2_id = target_table.replace('.', '_').replace('-', '_')
-                        
-                        # 添加关系
-                        label = f"{source_field} -> {target_field}"
-                        mermaid_definition += f"\n    {table1_id} -->|{label}| {table2_id}"
-                    except Exception as e:
-                        print(f"Error processing relationship: {content}, Error: {str(e)}")
-
+            
+            # 添加关系边
+            for relationship in relationships:
+                source_table = relationship['source']
+                target_table = relationship['target']
+                label = relationship['label']
+                
+                # 创建关系ID
+                source_id = source_table.replace('.', '_').replace('-', '_')
+                target_id = target_table.replace('.', '_').replace('-', '_')
+                
+                # 添加关系
+                mermaid_definition += f"\n    {source_id} -->|{label}| {target_id}"
+            
             # 设置样式类
             for table in all_tables:
                 table_id = table.replace('.', '_').replace('-', '_')
                 mermaid_definition += f"\n    class {table_id} tableNode;"
-
+            
             # 处理无法识别的数据
             if not all_tables:
                 mermaid_definition += "\n    error[无法识别的数据格式]\n"
                 
             mermaid_definition += """
 """
-            # print(f"Generated Mermaid definition:\n{mermaid_definition}")
             
             # Ensure output directory exists
             output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
@@ -141,16 +262,30 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             with open(mermaid_file, 'w', encoding='utf-8') as f:
                 f.write(mermaid_definition)
             
+            # Check for Docker vs local environment
+            docker_config_path = "/app/puppeteer-config.json"
+            local_config_param = ""
+            
+            # If we're not in Docker, don't use the config file parameter
+            if not os.path.exists("/app"):
+                print("Running in local environment, not using Docker puppeteer config")
+                local_config_param = ""
+            else:
+                local_config_param = f"-p {docker_config_path}"
+            
             # Use directly installed mmdc command line tool to render image - using no sandbox mode
             print("Attempting to generate diagram using mmdc command line tool...")
             try:
                 # Use environment variables to ensure Puppeteer runs correctly
                 env = os.environ.copy()
                 env['PUPPETEER_NO_SANDBOX'] = 'true'
-                env['PUPPETEER_EXECUTABLE_PATH'] = '/usr/bin/chromium'
+                env['PUPPETEER_EXECUTABLE_PATH'] = '/usr/bin/chromium' if os.path.exists('/usr/bin/chromium') else ''
                 
                 # Build mmdc command and execute - add no sandbox option
-                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent", "-p", "/app/puppeteer-config.json"]
+                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent"]
+                if local_config_param:
+                    cmd.extend(["-p", docker_config_path])
+                
                 result = subprocess.run(cmd, check=True, capture_output=True, text=True, env=env)
                 print(f"mmdc output: {result.stdout}")
                 
@@ -159,12 +294,6 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     return image_path
                 else:
                     print("Generated image file is too small or doesn't exist, trying other methods")
-                    # Try checking dependencies
-                    try:
-                        subprocess.run(["ldd", "/usr/bin/chromium"], check=True, capture_output=True, text=True)
-                        print("Chromium dependency check completed")
-                    except Exception as dep_error:
-                        print(f"Chromium dependency check error: {str(dep_error)}")
             except Exception as mmdc_error:
                 print(f"mmdc command line error: {str(mmdc_error)}")
                 if hasattr(mmdc_error, 'stderr'):
@@ -174,7 +303,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             print("尝试使用npx运行mermaid-cli...")
             try:
                 # 使用npx安装并运行mmdc，添加无沙盒选项
-                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent -p /app/puppeteer-config.json"
+                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent {local_config_param}"
                 result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, env=env)
                 print(f"npx mmdc输出: {result.stdout}")
                 
@@ -201,47 +330,47 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 G.add_node(table)
             
             # 添加边
-            for content in relationships_df['content']:
-                if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
-                    try:
-                        parts = content.split(" 通过字段 ")
-                        source_table = parts[0].replace("表 ", "").strip()
-                        remaining = parts[1].split(" 关联到表 ")
-                        source_field = remaining[0].strip()
-                        target_remaining = remaining[1].split(" 的字段 ")
-                        target_table = target_remaining[0].strip()
-                        target_field = target_remaining[1].strip() if len(target_remaining) > 1 else "unknown"
-                        
-                        # 添加边
-                        G.add_edge(source_table, target_table, label=f"{source_field} -> {target_field}")
-                    except Exception as edge_err:
-                        print(f"Error adding edge from content: {content}, Error: {str(edge_err)}")
+            for relationship in relationships:
+                source = relationship['source']
+                target = relationship['target']
+                label = relationship['label']
+                G.add_edge(source, target, label=label)
             
-            # 如果没有边，尝试从纯过程/表名关系中提取
+            # 如果没有边，尝试从列中提取关系
             if not list(G.edges()):
-                print("没有找到完整关系描述，尝试从内容中提取基本关系...")
-                for content in relationships_df['content']:
-                    try:
-                        # 尝试匹配 "procedure x uses table y" 模式
+                print("没有找到关系，尝试直接从数据列提取...")
+                # 检查是否包含source_table和target_table列
+                if 'source_table' in relationships_df.columns and 'target_table' in relationships_df.columns:
+                    for _, row in relationships_df.iterrows():
+                        source_table = row.get('source_table')
+                        target_table = row.get('target_table')
+                        if source_table and target_table:
+                            G.add_node(source_table)
+                            G.add_node(target_table)
+                            source_field = row.get('source_field', '')
+                            target_field = row.get('target_field', '')
+                            G.add_edge(source_table, target_table, label=f"{source_field} -> {target_field}")
+                
+                # 如果仍然没有边，尝试从content中提取
+                if not list(G.edges()):
+                    print("从content列中提取关系...")
+                    for content in relationships_df['content']:
                         if isinstance(content, str):
                             words = content.split()
-                            # 查找表/过程/视图等名称
-                            for i, word in enumerate(words):
-                                if i > 0 and len(word) > 3 and not word.startswith(('the', 'and', 'with', 'from', 'into')):
-                                    # 简单启发式：添加看起来像表/过程名的词作为节点
-                                    if word.lower() not in ('table', 'view', 'procedure', 'function'):
-                                        G.add_node(word)
-                            
-                            # 尝试连接明显相关的节点
-                            nodes = list(G.nodes())
-                            for i in range(len(nodes)):
-                                for j in range(i+1, len(nodes)):
-                                    if nodes[i] in content and nodes[j] in content:
-                                        # 检查两个节点名称是否在同一个句子中出现
-                                        if abs(content.find(nodes[i]) - content.find(nodes[j])) < 100:
-                                            G.add_edge(nodes[i], nodes[j], label="related")
-                    except Exception as text_err:
-                        print(f"Error processing text relations: {str(text_err)}")
+                            # Use a sliding window to extract potential table names and relationships
+                            for i in range(len(words)-1):
+                                for j in range(i+1, min(i+5, len(words))):
+                                    word1 = words[i].strip('.,;:"\'()[]{}')
+                                    word2 = words[j].strip('.,;:"\'()[]{}')
+                                    # Check if words look like table/field names (alphanumeric with possible underscores)
+                                    if (len(word1) > 3 and word1.isalnum() or '_' in word1) and \
+                                       (len(word2) > 3 and word2.isalnum() or '_' in word2):
+                                        if word1.lower() != word2.lower():  # Avoid self-loops
+                                            G.add_node(word1)
+                                            G.add_node(word2)
+                                            # If the words are close, they might be related
+                                            if abs(i - j) < 3:
+                                                G.add_edge(word1, word2, label="related")
             
             # 图为空的情况处理
             if not G.nodes():
@@ -312,6 +441,9 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             df = pd.read_excel(excel_file)
             print(f"Excel columns: {df.columns.tolist()}")
             
+            # Prepare data for diagram generation if it's in Neo4j format
+            prepared_df = self._prepare_neo4j_data(df)
+            
             # Create presentation
             prs = Presentation()
             
@@ -331,7 +463,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             # Create and add relationship diagram
             diagram_path = None
             try:
-                diagram_path = await self.create_mermaid_diagram(df)
+                diagram_path = await self.create_mermaid_diagram(prepared_df)
                 
                 # 检查是否是有效的图像文件
                 if diagram_path is not None:
@@ -428,6 +560,16 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     3: 'score' if 'score' in df.columns else None,
                     4: 'source' if 'source' in df.columns else None
                 }
+            elif 'source_table' in df.columns and 'target_table' in df.columns:
+                # Neo4j format headers
+                headers = ["Source Table", "Target Table", "Source Field", "Target Field", "Description"]
+                col_map = {
+                    0: 'source_table',
+                    1: 'target_table',
+                    2: 'source_field',
+                    3: 'target_field',
+                    4: 'description' if 'description' in df.columns else None
+                }
             else:
                 # 使用默认表头
                 headers = ["Table", "First Relationship", "View", "Second Relationship", "Dataset"]
@@ -507,6 +649,9 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             import pandas as pd
             df = pd.read_excel(excel_file)
             
+            # Prepare data for diagram generation if it's in Neo4j format
+            prepared_df = self._prepare_neo4j_data(df)
+            
             # Add a title slide
             title_slide_layout = prs.slide_layouts[0]
             slide = prs.slides.add_slide(title_slide_layout)
@@ -524,7 +669,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 slide = prs.slides.add_slide(blank_slide_layout)
                 
                 # Create and add relationship diagram
-                diagram_path = await self.create_mermaid_diagram(df)
+                diagram_path = await self.create_mermaid_diagram(prepared_df)
                 
                 # Check if it's a valid image file
                 if diagram_path is not None:
@@ -676,26 +821,34 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             # Open the existing presentation
             prs = Presentation(ppt_file)
             
+            # Check if data is in Neo4j format and prepare it accordingly
+            import pandas as pd
+            temp_df = pd.DataFrame(data)
+            prepared_df = self._prepare_neo4j_data(temp_df)
+            
             # Check if data contains content field and table relationship information
             has_relationship_data = False
-            for item in data:
-                content = item.get('content', '')
-                if content and isinstance(content, str) and "表" in content and "关联到表" in content:
-                    has_relationship_data = True
-                    break
+            
+            # Check for Neo4j formatted data
+            if 'source_table' in prepared_df.columns and 'target_table' in prepared_df.columns:
+                has_relationship_data = True
+            else:
+                # Check for relationship data in content field
+                for item in data:
+                    content = item.get('content', '')
+                    if content and isinstance(content, str) and ("表" in content and "关联到表" in content or 
+                        "table" in content.lower() and "field" in content.lower()):
+                        has_relationship_data = True
+                        break
             
             if has_relationship_data:
                 try:
-                    # Create a temporary DataFrame for diagram generation
-                    import pandas as pd
-                    temp_df = pd.DataFrame(data)
-                    
                     # Add diagram slide
                     blank_slide_layout = prs.slide_layouts[6]
                     slide = prs.slides.add_slide(blank_slide_layout)
                     
                     # Create and add relationship diagram
-                    diagram_path = await self.create_mermaid_diagram(temp_df)
+                    diagram_path = await self.create_mermaid_diagram(prepared_df)
                     
                     # Check if it's a valid image file
                     if diagram_path is not None:
@@ -745,7 +898,13 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
                     title_frame = title_box.text_frame
                     title_para = title_frame.add_paragraph()
-                    title_para.text = "Additional Field Relationships"
+                    
+                    # Choose title based on data type
+                    if 'source_table' in prepared_df.columns:
+                        title_para.text = "Database Table Relationships"
+                    else:
+                        title_para.text = "Additional Field Relationships"
+                        
                     title_para.alignment = PP_ALIGN.CENTER
                     title_para.font.size = Pt(18)
                     title_para.font.bold = True

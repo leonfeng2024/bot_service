@@ -384,9 +384,9 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
                 
                 # Return different answers based on final_check value
                 if final_check == "no":
-                    message = "Sorry, no information found related to your query. Please specify table names and column names more precisely, or try a different question."
+                    message = "申し訳ありませんが、ご質問に関連する情報が見つかりませんでした。テーブル名や列名を具体的に指定していただくか、別の質問をお試しください。"
                 else:
-                    message = answer if answer else "Could not generate response."
+                    message = answer if answer else "回答を生成できませんでした。"
                 
                 yield {"step": "final_answer", "message": message}
             
@@ -394,7 +394,7 @@ Reason 2: column [avg_file_size] is bot exist in knowledge base.
             import traceback
             error_msg = f"Error in RAG service: {str(e)}\n{traceback.format_exc()}"
             print(error_msg)
-            yield {"step": "error", "message": f"An error occurred during processing: {str(e)}"}
+            yield {"step": "error", "message": f"処理中にエラーが発生しました:{str(e)}"}
 
     async def _generate_document(self, uuid: str) -> str:
         """Generate documents including Excel and PPT, and return filename"""

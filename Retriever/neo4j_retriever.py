@@ -167,21 +167,10 @@ class Neo4jRetriever(BaseRetriever):
                 broader_results = self.neo4j_service.neo4j.execute_query(broader_query)
                 if broader_results:
                     print(f"Found {len(broader_results)} relationships with broader query")
-                    
-                    # Create a message showing found relationships
-                    examples = []
-                    for record in broader_results:
-                        source_table = record.get('source_table', 'Unknown')
-                        target_table = record.get('target_table', 'Unknown')
-                        source_field = record.get('source_field', 'Unknown')
-                        target_field = record.get('target_field', 'Unknown')
-                        examples.append(f"{source_table}.{source_field} -> {target_table}.{target_field}")
-                    
-                    examples_str = "\n".join(examples)
                     formatted_results.append({
-                        "content": f"No direct table relationships found for '{term}', but here are some example relationships in the database:\n{examples_str}",
+                        "content": f"No direct table relationships found for '{term}'",
                         "description": "Example relationships in database",
-                        "score": 0.7,
+                        "score": 0.0,
                         "source": "neo4j"
                     })
                 else:
@@ -199,14 +188,14 @@ class Neo4jRetriever(BaseRetriever):
                             formatted_results.append({
                                 "content": f"Found these tables: {', '.join(tables)}, but no relationships with '{term}'",
                                 "description": "Found tables but no relationships",
-                                "score": 0.5,
+                                "score": 0.1,
                                 "source": "neo4j"
                             })
                     else:
                         formatted_results.append({
                             "content": f"No tables or relationships found in Neo4j database",
                             "description": "Empty database",
-                            "score": 0.3,
+                            "score": 0.0,
                             "source": "neo4j"
                         })
             

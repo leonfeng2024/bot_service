@@ -1,13 +1,28 @@
 from opensearchpy import OpenSearch
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 import traceback
+import os
+import re
+import asyncio
+from opensearchpy import helpers
+from config import (
+    OPENSEARCH_HOST, 
+    OPENSEARCH_PORT, 
+    OPENSEARCH_USER, 
+    OPENSEARCH_PASSWORD, 
+    OPENSEARCH_USE_SSL,
+    OPENSEARCH_VERIFY_CERTS
+)
+
+# Index name for procedures
+PROCEDURE_INDEX = "procedure_index"
 
 class OpenSearchConfig:
     """Configuration for OpenSearch connection."""
-    HOST = "bibot_opensearch"
-    PORT = 9200
+    HOST = OPENSEARCH_HOST
+    PORT = OPENSEARCH_PORT
     URL = f"http://{HOST}:{PORT}"
-    AUTH = None
+    AUTH = (OPENSEARCH_USER, OPENSEARCH_PASSWORD) if OPENSEARCH_USER and OPENSEARCH_PASSWORD else None
     HEADERS = {"Content-Type": "application/json"}
 
 class OpenSearchTools:
@@ -22,7 +37,10 @@ class OpenSearchTools:
         self.client = OpenSearch(
             hosts=[{"host": config.HOST, "port": config.PORT}],
             http_auth=config.AUTH,
-            headers=config.HEADERS
+            headers=config.HEADERS,
+            use_ssl=OPENSEARCH_USE_SSL,
+            verify_certs=OPENSEARCH_VERIFY_CERTS,
+            ssl_show_warn=False
         )
 
     def get_index_list(self) -> List[str]:
@@ -229,6 +247,235 @@ class OpenSearchTools:
                 "message": f"Delete failed: {str(e)}"
             }
 
+    def connect_to_opensearch(self) -> OpenSearch:
+        """Create and return an OpenSearch client"""
+        try:
+            client = OpenSearch(
+                hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
+                http_auth=(OPENSEARCH_USER, OPENSEARCH_PASSWORD),
+                use_ssl=OPENSEARCH_USE_SSL,
+                verify_certs=OPENSEARCH_VERIFY_CERTS,
+                ssl_show_warn=False,
+                timeout=30
+            )
+            # Test connection
+            client.info()
+            print("Successfully connected to OpenSearch")
+            self.client = client
+            return client
+        except Exception as e:
+            print(f"Error connecting to OpenSearch: {str(e)}")
+            print("Make sure OpenSearch is running and configuration is correct.")
+            raise
+
+    async def create_procedure_index(self, dimension: int, index_name: str = PROCEDURE_INDEX) -> None:
+        """Create the procedure index with KNN mapping if it doesn't exist"""
+        try:
+            client = self.client or self.connect_to_opensearch()
+            
+            # Delete the index if it exists with wrong dimension
+            if client.indices.exists(index=index_name):
+                # Get the mapping
+                mapping = client.indices.get_mapping(index=index_name)
+                
+                # Check vector dimension in the mapping
+                if index_name in mapping:
+                    props = mapping[index_name].get('mappings', {}).get('properties', {})
+                    sql_embedding = props.get('sql_embedding', {})
+                    
+                    if sql_embedding and sql_embedding.get('type') == 'knn_vector':
+                        current_dim = sql_embedding.get('dimension')
+                        
+                        # If dimensions don't match, delete the index to recreate
+                        if current_dim != dimension:
+                            print(f"Index {index_name} has dimension {current_dim}, but need {dimension}")
+                            client.indices.delete(index=index_name)
+                            print(f"Deleted index {index_name} to recreate with correct dimension")
+                        else:
+                            print(f"Index {index_name} already has correct dimension {dimension}")
+                            return
+            
+            if not client.indices.exists(index=index_name):
+                mapping = {
+                    "settings": {
+                        "index": {
+                            "knn": True,
+                            "knn.algo_param.ef_search": 100
+                        }
+                    },
+                    "mappings": {
+                        "properties": {
+                            "procedure_name": {
+                                "type": "text"
+                            },
+                            "sql_content": {
+                                "type": "text"
+                            },
+                            "sql_embedding": {
+                                "type": "knn_vector",
+                                "dimension": dimension  # Use the detected dimension
+                            },
+                            "table_name": {
+                                "type": "keyword"
+                            },
+                            "view_name": {
+                                "type": "keyword"
+                            }
+                        }
+                    }
+                }
+                
+                client.indices.create(index=index_name, body=mapping)
+                print(f"Created index {index_name} with dimension {dimension}")
+            else:
+                print(f"Index {index_name} already exists and has correct dimension")
+        except Exception as e:
+            print(f"Error creating index: {str(e)}")
+            raise
+
+    def parse_procedure_file(self, file_path: str) -> List[Dict[str, Any]]:
+        """
+        Parse the SQL file to extract procedures, their names, and referenced tables/views
+        """
+        with open(file_path, 'r') as f:
+            content = f.read()
+        
+        # Pattern to match CREATE OR REPLACE FUNCTION blocks
+        procedure_pattern = r"---\s+(\w+)(?:\s+---\s+(.*?))?(?:\s+CREATE\s+OR\s+REPLACE\s+FUNCTION\s+\w+\(.*?\)\s+.*?LANGUAGE\s+plpgsql;)"
+        
+        procedures = []
+        for match in re.finditer(procedure_pattern, content, re.DOTALL):
+            procedure_name = match.group(1)
+            comments = match.group(2) if match.group(2) else ""
+            
+            # Extract the full procedure definition
+            start_pos = match.span()[0]
+            end_marker = "--- 调用示例"
+            end_pos = content.find(end_marker, start_pos)
+            if end_pos == -1:
+                # If no end marker, go to the next procedure or end of file
+                next_proc = content.find("--- ", start_pos + 1)
+                end_pos = next_proc if next_proc != -1 else len(content)
+            
+            procedure_sql = content[start_pos:end_pos].strip()
+            
+            # Extract referenced tables and views from comments and SQL
+            tables = []
+            views = []
+            
+            # Look for tables in the SQL (common patterns)
+            table_patterns = [
+                r'FROM\s+(\w+)',
+                r'JOIN\s+(\w+)',
+                r'UPDATE\s+(\w+)',
+                r'INSERT\s+INTO\s+(\w+)'
+            ]
+            
+            for pattern in table_patterns:
+                for table_match in re.finditer(pattern, procedure_sql, re.IGNORECASE):
+                    table_name = table_match.group(1)
+                    if "view" in comments.lower() and table_name in comments:
+                        views.append(table_name)
+                    else:
+                        tables.append(table_name)
+            
+            # Extract view names from comments
+            view_pattern = r'视图\s+(\w+)'
+            for view_match in re.finditer(view_pattern, comments):
+                views.append(view_match.group(1))
+                
+            # Make lists unique
+            tables = list(set(tables))
+            views = list(set(views))
+            
+            procedures.append({
+                "procedure_name": procedure_name,
+                "sql_content": procedure_sql,
+                "tables": tables,
+                "views": views
+            })
+        
+        return procedures
+
+    def index_procedures(self, procedures: List[Dict[str, Any]], index_name: str = PROCEDURE_INDEX) -> None:
+        """Index the procedures in OpenSearch"""
+        client = self.client or self.connect_to_opensearch()
+        
+        # Prepare bulk indexing actions
+        actions = [
+            {
+                "_index": index_name,
+                "_id": f"procedure_{i}",
+                "_source": proc
+            }
+            for i, proc in enumerate(procedures)
+        ]
+        
+        # Perform bulk indexing
+        helpers.bulk(client, actions)
+        print(f"Indexed {len(procedures)} procedures to {index_name}")
+
+    async def process_sql_file(self, file_path: str, embedding_service, index_name: str = PROCEDURE_INDEX) -> tuple[bool, str]:
+        """
+        Process SQL file and index procedures to OpenSearch
+        
+        Args:
+            file_path: Path to SQL file
+            embedding_service: EmbeddingService instance for generating embeddings
+            index_name: Name of the index to use (default: PROCEDURE_INDEX)
+            
+        Returns:
+            Tuple of (success, message)
+        """
+        try:
+            # Connect to OpenSearch
+            self.connect_to_opensearch()
+            
+            # Parse SQL file
+            procedures = self.parse_procedure_file(file_path)
+            print(f"Found {len(procedures)} procedures")
+            
+            if not procedures:
+                return False, "No procedures found in file"
+            
+            # Generate embeddings for each procedure
+            embedded_procedures = []
+            for proc in procedures:
+                # Generate embedding for the SQL content
+                embedding = await embedding_service.get_embedding(proc["sql_content"])
+                
+                # Create document for OpenSearch
+                doc = {
+                    "procedure_name": proc["procedure_name"],
+                    "sql_content": proc["sql_content"],
+                    "sql_embedding": embedding,
+                    "table_name": proc["tables"],
+                    "view_name": proc["views"]
+                }
+                
+                embedded_procedures.append(doc)
+            
+            # Determine embedding dimension dynamically
+            if embedded_procedures and "sql_embedding" in embedded_procedures[0]:
+                embedding_dimension = len(embedded_procedures[0]["sql_embedding"])
+                print(f"Detected embedding dimension: {embedding_dimension}")
+            else:
+                # Default to 1024 if we can't determine
+                embedding_dimension = 1024
+                print(f"Using default embedding dimension: {embedding_dimension}")
+            
+            # Create procedure index with correct dimension
+            await self.create_procedure_index(embedding_dimension, index_name)
+            
+            # Index the procedures
+            self.index_procedures(embedded_procedures, index_name)
+            
+            return True, f"Successfully indexed {len(procedures)} procedures to OpenSearch index {index_name}"
+            
+        except Exception as e:
+            error_msg = f"Error processing SQL file: {str(e)}"
+            print(error_msg)
+            return False, error_msg
 
 if __name__ == "__main__":
     # Initialize OpenSearch client with default config

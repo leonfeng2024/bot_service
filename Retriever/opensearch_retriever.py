@@ -55,44 +55,7 @@ class OpenSearchRetriever(BaseRetriever):
             return client
         except Exception as e:
             print(f"Error connecting to OpenSearch at {self.opensearch_host}:{self.opensearch_port}: {str(e)}")
-            print("Trying localhost as fallback...")
-            
-            try:
-                # Try using localhost
-                client = OpenSearch(
-                    hosts=[{"host": "localhost", "port": self.opensearch_port}],
-                    http_auth=(self.opensearch_user, self.opensearch_password),
-                    use_ssl=self.use_ssl,
-                    verify_certs=False,
-                    ssl_show_warn=False,
-                    timeout=30
-                )
-                # Test connection
-                info = client.info()
-                print(f"OpenSearchRetriever successfully connected to OpenSearch at localhost:{self.opensearch_port}")
-                return client
-            except Exception as local_e:
-                print(f"Error connecting to OpenSearch at localhost:{self.opensearch_port}: {str(local_e)}")
-                print("Trying 127.0.0.1 as fallback...")
-                
-                try:
-                    # Try using IP address
-                    client = OpenSearch(
-                        hosts=[{"host": "127.0.0.1", "port": self.opensearch_port}],
-                        http_auth=(self.opensearch_user, self.opensearch_password),
-                        use_ssl=self.use_ssl,
-                        verify_certs=False,
-                        ssl_show_warn=False,
-                        timeout=30
-                    )
-                    # Test connection
-                    info = client.info()
-                    print(f"OpenSearchRetriever successfully connected to OpenSearch at 127.0.0.1:{self.opensearch_port}")
-                    return client
-                except Exception as ip_e:
-                    print(f"Error connecting to OpenSearch at 127.0.0.1:{self.opensearch_port}: {str(ip_e)}")
-                    print("All connection attempts failed.")
-                    return None
+            return None
     
     async def _check_and_update_index(self, embedding_dimension: int) -> bool:
         """Check if the index exists and has the correct dimension, recreate if needed"""
@@ -168,13 +131,13 @@ class OpenSearchRetriever(BaseRetriever):
             # Use two query approaches
             # 1. Pure KNN query - based on semantic similarity
             knn_query = {
-                "size": 5,
+                "size": 10,
                 "_source": ["procedure_name", "sql_content", "table_name", "view_name"],
                 "query": {
                     "knn": {
                         "sql_embedding": {
                             "vector": search_embedding,
-                            "k": 5
+                            "k": 10
                         }
                     }
                 }
@@ -182,7 +145,7 @@ class OpenSearchRetriever(BaseRetriever):
 
             # 2. Filtered KNN query - combining exact match and semantic similarity
             filtered_query = {
-                "size": 5,
+                "size": 10,
                 "_source": ["procedure_name", "sql_content", "table_name", "view_name"],
                 "query": {
                     "bool": {
@@ -191,7 +154,7 @@ class OpenSearchRetriever(BaseRetriever):
                                 "knn": {
                                     "sql_embedding": {
                                         "vector": search_embedding,
-                                        "k": 5
+                                        "k": 10
                                     }
                                 }
                             }

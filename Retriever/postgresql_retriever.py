@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from langchain_community.utilities import SQLDatabase
 from Retriever.base_retriever import BaseRetriever
 from service.llm_service import LLMService
@@ -7,6 +7,7 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit, create_sql_ag
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate, AIMessagePromptTemplate
 import json
 import os
+import time
 from tools.redis_tools import RedisTools
 from tools.postgresql_tools import PostgreSQLTools
 from tools.token_counter import TokenCounter
@@ -27,9 +28,44 @@ class PostgreSQLRetriever(BaseRetriever):
         self.llm_service.init_agent_llm("openai-gpt41")
         self.llm = self.llm_service.llm_agent_instance
         
+        # 设置超时和重试参数
+        self.request_timeout = int(os.environ.get("PG_REQUEST_TIMEOUT", 120))  # 默认120秒超时
+        self.max_retries = int(os.environ.get("PG_MAX_RETRIES", 3))  # 默认最多重试3次
+        self.retry_delay = int(os.environ.get("PG_RETRY_DELAY", 2))  # 默认重试间隔2秒
+        
+        # 缓存相关设置
+        self.cache_ttl = int(os.environ.get("PG_CACHE_TTL", 3600))  # 缓存有效期，默认1小时
+        self.use_cache = os.environ.get("PG_USE_CACHE", "True").lower() == "true"
+        
+        # 初始化token计数器
+        self.token_counter = TokenCounter()
+        
         # 初始化其他变量
         self.toolkit = None
         self.agent = None
+
+    async def _get_from_cache(self, query: str, uuid: str) -> Optional[List[Dict[str, Any]]]:
+        """尝试从缓存获取结果"""
+        if not self.use_cache or not uuid:
+            return None
+            
+        cache_key = f"pg_cache:{uuid}:{hash(query)}"
+        cached_result = self.redis_tools.get(cache_key)
+        
+        if cached_result:
+            print(f"[PostgreSQL Retriever] Cache hit for query: {query[:50]}...")
+            return cached_result
+            
+        return None
+        
+    def _save_to_cache(self, query: str, uuid: str, results: List[Dict[str, Any]]) -> None:
+        """将结果保存到缓存"""
+        if not self.use_cache or not uuid:
+            return
+            
+        cache_key = f"pg_cache:{uuid}:{hash(query)}"
+        self.redis_tools.set(cache_key, results, expire=self.cache_ttl)
+        print(f"[PostgreSQL Retriever] Saved to cache: {query[:50]}...")
 
     async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
         """
@@ -42,22 +78,24 @@ class PostgreSQLRetriever(BaseRetriever):
         Returns:
             包含检索结果的列表
         """
+        # 尝试从缓存获取
+        cached_result = await self._get_from_cache(query, uuid)
+        if cached_result:
+            return cached_result
+            
         try:
             # 记录开始时的token使用情况
             start_usage = self.llm_service.get_token_usage()
+            start_time = time.time()
             
             # 构建并打印prompt
             prompt = f"PostgreSQL检索查询:\n{query}"
             print(prompt)
             
-            # 确保token计数器已初始化
-            if not hasattr(self, 'token_counter'):
-                self.token_counter = TokenCounter()
-            
             # 获取搜索对象（视图和表名列表）
             search_object = self.pg_tools.get_search_objects()
             
-            # 创建系统提示
+            # 创建更简洁的系统提示，减少token数量
             system_template = """あなたは SQL データベースの専門家であり、PostgreSQL によるデータ分析を得意としています。
                     あなたの任務は、ユーザーのクエリ要求に基づいて、正確かつ効率的な SQL 文を構築することです。
                     クエリが正しく、漏れがないことを保証し、以下のルールに従ってください。
@@ -128,21 +166,46 @@ class PostgreSQLRetriever(BaseRetriever):
             
             # 确保 self.llm 不为 None
             if self.llm is not None:
+                # 创建带有超时设置的LLM实例
+                timeout_llm = self.llm.with_config({"timeout": self.request_timeout})
+                
                 # 创建 SQL 工具包和代理
-                self.toolkit = SQLDatabaseToolkit(db=db, llm=self.llm)
+                self.toolkit = SQLDatabaseToolkit(db=db, llm=timeout_llm)
                 self.agent = create_sql_agent(
-                    llm=self.llm,
+                    llm=timeout_llm,
                     toolkit=self.toolkit,
                     agent_type=AgentType.OPENAI_FUNCTIONS,
-                    verbose=False,  # 关闭详细输出以抑制代理输出
+                    verbose=False,
                     prompt=chat_prompt,
-                    top_k=50000
+                    top_k=10000  # 减少top_k参数值以减少token使用量
                 )
             else:
                 raise ValueError("LLM instance is not initialized properly")
 
-            # 运行代理
-            result = await self.agent.ainvoke({"input": query})
+            # 使用重试机制运行代理
+            retries = 0
+            result = None
+            last_error = None
+            
+            while retries < self.max_retries:
+                try:
+                    # 运行代理，设置超时
+                    result = await self.agent.ainvoke(
+                        {"input": query},
+                        config={"timeout": self.request_timeout}
+                    )
+                    break  # 成功执行，跳出循环
+                except Exception as e:
+                    last_error = e
+                    retries += 1
+                    if retries < self.max_retries:
+                        print(f"[PostgreSQL Retriever] Attempt {retries} failed: {str(e)}. Retrying in {self.retry_delay}s...")
+                        time.sleep(self.retry_delay)
+                    else:
+                        print(f"[PostgreSQL Retriever] All {self.max_retries} attempts failed.")
+            
+            if result is None:
+                raise last_error or Exception("Failed to execute agent after multiple retries")
 
             # 提取代理的响应
             postgres_results = [{"content": result['output'], "score": 0.99, "source": "postgresql"}]
@@ -158,13 +221,16 @@ class PostgreSQLRetriever(BaseRetriever):
             
             # 记录结束时的token使用情况
             end_usage = self.llm_service.get_token_usage()
+            end_time = time.time()
             
-            # 计算本次调用消耗的token
+            # 计算本次调用消耗的token和时间
             input_tokens = end_usage["input_tokens"] - start_usage["input_tokens"]
             output_tokens = end_usage["output_tokens"] - start_usage["output_tokens"]
+            execution_time = end_time - start_time
             
-            # 打印token使用情况
+            # 打印token使用情况和执行时间
             print(f"[PostgreSQL Retriever] Total token usage - Input: {input_tokens} tokens, Output: {output_tokens} tokens")
+            print(f"[PostgreSQL Retriever] Execution time: {execution_time:.2f} seconds")
             
             # 记录token使用情况到计数器
             self.token_counter.total_input_tokens += input_tokens
@@ -175,7 +241,8 @@ class PostgreSQLRetriever(BaseRetriever):
                 "source": "postgresql-retriever",
                 "model": "azure-gpt4",
                 "input_tokens": input_tokens,
-                "output_tokens": output_tokens
+                "output_tokens": output_tokens,
+                "execution_time": execution_time
             }
             self.token_counter.calls_history.append(call_record)
             
@@ -183,8 +250,12 @@ class PostgreSQLRetriever(BaseRetriever):
             for result in postgres_results:
                 result["token_usage"] = {
                     "input_tokens": input_tokens,
-                    "output_tokens": output_tokens
+                    "output_tokens": output_tokens,
+                    "execution_time": execution_time
                 }
+            
+            # 保存到缓存
+            self._save_to_cache(query, uuid, postgres_results)
             
             # 返回结果
             return postgres_results

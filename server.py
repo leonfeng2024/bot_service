@@ -12,6 +12,7 @@ from service.export_ppt_service import ExportPPTService
 from service.user_service import UserService
 from service.postgres_service import PostgresService
 from service.opensearch_service import OpenSearchService
+from service.opensearch_procedure_service import OpenSearchProcedureService
 from models.models import ChatRequest, DatabaseSchemaRequest, TokenData, LogoutRequest
 from models.user_models import CreateUserRequest, UpdateUserRequest, UserProfileResponse, UserResponseWithMessage, DeleteUserResponse
 from models.postgres_models import TableInfo, ExecuteQueryRequest, ExecuteQueryResponse, ErrorResponse, ImportResponse
@@ -123,6 +124,7 @@ redis_tools = RedisTools()
 user_service = UserService()
 postgres_service = PostgresService()
 opensearch_service = OpenSearchService()
+opensearch_procedure_service = OpenSearchProcedureService()
 
 # Add middleware to log API calls
 @app.middleware("http")
@@ -1340,6 +1342,364 @@ async def process_excel_file_background(file_path, doc_id, sheet_name, header_ro
                 )
             except Exception as update_error:
                 logger.error(f"Error updating status: {str(update_error)}")
+
+@app.post("/kb/openserch/upload")
+async def upload_opensearch_sql(
+    file: UploadFile = File(...),
+    token_data: dict = Depends(verify_token),
+    uploader: str = Form(None),
+    process_index: str = Form("procedure_index")
+):
+    """
+    Upload and process SQL file for OpenSearch procedure indexing
+    
+    Args:
+        file: SQL file to upload
+        token_data: User token data
+        uploader: Name of the user who uploaded the file (optional)
+        process_index: Name of the OpenSearch index to use (default: procedure_index)
+        
+    Returns:
+        Response with status and message
+    """
+    try:
+        # Validate file type
+        if not file.filename.endswith('.sql'):
+            raise HTTPException(
+                status_code=400,
+                detail="Only SQL files are allowed"
+            )
+        
+        # Create kb_document directory if it doesn't exist
+        kb_dir = "kb_document"
+        os.makedirs(kb_dir, exist_ok=True)
+        
+        # Save the uploaded file
+        file_path = os.path.join(kb_dir, file.filename)
+        file_content = await file.read()
+        
+        # Write the file (overwrite if exists)
+        with open(file_path, "wb") as buffer:
+            buffer.write(file_content)
+        
+        # Get username from token or form
+        username = uploader
+        if not username and token_data:
+            # Try to get user ID from token and convert to username
+            user_id = token_data.get("user_id")
+            if user_id:
+                try:
+                    user_profile = await user_service.get_user_profile(user_id)
+                    username = user_profile.get("username", str(user_id))
+                except:
+                    username = str(user_id)
+        
+        # Insert record into opensearch_doc_status table
+        # First check if the table exists, create if not
+        await ensure_opensearch_doc_status_table()
+        
+        # Record status in PostgreSQL
+        document_type = "SQL"
+        insert_query = """
+        INSERT INTO opensearch_doc_status 
+        (document_name, document_type, process_status, uploader, index_name)
+        VALUES (:document_name, :document_type, :process_status, :uploader, :index_name)
+        RETURNING id
+        """
+        
+        result = await postgres_service.execute_query(
+            insert_query, 
+            {
+                "document_name": file.filename,
+                "document_type": document_type,
+                "process_status": "pending",
+                "uploader": username,
+                "index_name": process_index
+            }
+        )
+        
+        # Get the document ID
+        doc_id = result[0]['id'] if result and len(result) > 0 else None
+        
+        # Start background task to process the file
+        asyncio.create_task(process_opensearch_sql_file_background(file_path, doc_id, process_index))
+        
+        return {"status": "success", "message": "file upload success.start process kb document"}
+        
+    except Exception as e:
+        logger.error(f"Error uploading SQL file for OpenSearch: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error uploading SQL file: {str(e)}"
+        )
+
+async def ensure_opensearch_doc_status_table():
+    """Ensure the opensearch_doc_status table exists in the database"""
+    try:
+        # Check if the table exists
+        check_query = """
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = 'opensearch_doc_status'
+        ) as exists
+        """
+        
+        result = await postgres_service.execute_query(check_query)
+        table_exists = result[0]['exists'] if result else False
+        
+        if not table_exists:
+            logger.info("Creating opensearch_doc_status table")
+            
+            # Create the table with index_name column and error_message
+            create_query = """
+            CREATE TABLE opensearch_doc_status (
+                id SERIAL PRIMARY KEY,
+                document_name VARCHAR(255) NOT NULL,
+                document_type VARCHAR(50),
+                process_status VARCHAR(20) DEFAULT 'pending',
+                upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                uploader VARCHAR(100),
+                index_name VARCHAR(100),
+                error_message TEXT
+            )
+            """
+            
+            await postgres_service.execute_query(create_query)
+            logger.info("opensearch_doc_status table created successfully")
+        else:
+            # Check if columns exist and add them if not
+            
+            # Check if index_name column exists
+            column_check_query = """
+            SELECT EXISTS (
+                SELECT FROM information_schema.columns 
+                WHERE table_name = 'opensearch_doc_status' AND column_name = 'index_name'
+            ) as exists
+            """
+            
+            column_result = await postgres_service.execute_query(column_check_query)
+            column_exists = column_result[0]['exists'] if column_result else False
+            
+            if not column_exists:
+                # Add index_name column if it doesn't exist
+                alter_query = """
+                ALTER TABLE opensearch_doc_status
+                ADD COLUMN index_name VARCHAR(100)
+                """
+                
+                await postgres_service.execute_query(alter_query)
+                logger.info("Added index_name column to opensearch_doc_status table")
+                
+            # Check if error_message column exists
+            error_column_check_query = """
+            SELECT EXISTS (
+                SELECT FROM information_schema.columns 
+                WHERE table_name = 'opensearch_doc_status' AND column_name = 'error_message'
+            ) as exists
+            """
+            
+            error_column_result = await postgres_service.execute_query(error_column_check_query)
+            error_column_exists = error_column_result[0]['exists'] if error_column_result else False
+            
+            if not error_column_exists:
+                # Add error_message column if it doesn't exist
+                alter_query = """
+                ALTER TABLE opensearch_doc_status
+                ADD COLUMN error_message TEXT
+                """
+                
+                await postgres_service.execute_query(alter_query)
+                logger.info("Added error_message column to opensearch_doc_status table")
+    
+    except Exception as e:
+        logger.error(f"Error ensuring opensearch_doc_status table exists: {str(e)}")
+        raise
+
+async def process_opensearch_sql_file_background(file_path, doc_id, index_name="procedure_index"):
+    """
+    Background task to process SQL file for OpenSearch
+    
+    Args:
+        file_path: Path to the SQL file
+        doc_id: Document ID in opensearch_doc_status table
+        index_name: Name of the OpenSearch index to use
+    """
+    try:
+        logger.info(f"Processing SQL file for OpenSearch: {file_path} to index: {index_name}")
+        
+        try:
+            # Process the SQL file
+            success = await opensearch_procedure_service.process_sql_file(file_path, doc_id, index_name)
+            
+            if success:
+                logger.info(f"SQL file processing for OpenSearch completed: {file_path}")
+            else:
+                logger.error(f"SQL file processing for OpenSearch failed: {file_path}")
+        except Exception as process_error:
+            # Log the specific processing error
+            logger.error(f"Error processing SQL file for OpenSearch: {file_path}, Error: {str(process_error)}")
+            
+            if "ConnectionError" in str(process_error) or "connection refused" in str(process_error).lower():
+                error_message = "OpenSearch connection failed. Please verify OpenSearch is running and connection details are correct."
+            else:
+                error_message = f"Error during processing: {str(process_error)}"
+                
+            # Update status to "connection_error" or "failed"
+            if doc_id:
+                update_query = """
+                UPDATE opensearch_doc_status 
+                SET process_status = :status, 
+                    error_message = :error_message
+                WHERE id = :id
+                """
+                
+                try:
+                    await postgres_service.execute_query(
+                        update_query,
+                        {
+                            "id": doc_id, 
+                            "status": "connection_error" if "ConnectionError" in str(process_error) else "failed",
+                            "error_message": error_message[:500]  # Limit error message length
+                        }
+                    )
+                except Exception as db_error:
+                    logger.error(f"Error updating status: {str(db_error)}")
+                    
+                # Re-raise to be caught by outer exception handler
+                raise
+        
+    except Exception as e:
+        logger.error(f"Error in background processing of SQL file for OpenSearch {file_path}: {str(e)}")
+        # Update status to "Failed" if there's an error
+        if doc_id:
+            try:
+                update_query = """
+                UPDATE opensearch_doc_status 
+                SET process_status = 'failed'
+                WHERE id = :id
+                """
+                
+                await postgres_service.execute_query(
+                    update_query,
+                    {"id": doc_id}
+                )
+            except Exception as update_error:
+                logger.error(f"Error updating status: {str(update_error)}")
+
+@app.get("/kb/opensearch/status")
+async def get_opensearch_document_status(token_data: dict = Depends(verify_token)):
+    """
+    Get status of all OpenSearch document processing records
+    
+    Returns:
+        List of document status records
+    """
+    try:
+        result = await opensearch_procedure_service.get_document_status()
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error getting OpenSearch document status: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting document status: {str(e)}"
+        )
+
+@app.post("/kb/opensearch/delete")
+async def delete_opensearch_document(request: Request, token_data: dict = Depends(verify_token)):
+    """
+    Delete document from OpenSearch and related record from opensearch_doc_status
+    
+    Request body format:
+        {
+            "id": "8", 
+            "document_name": "procedure_mock.sql"
+        }
+        
+    Returns:
+        Response with status and message
+    """
+    try:
+        # Parse JSON request body
+        data = await request.json()
+        document_name = data.get("document_name")
+        doc_id = data.get("id")
+        
+        if not document_name:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing required parameter: document_name"
+            )
+            
+        if not doc_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing required parameter: id"
+            )
+        
+        # Get the document information from the database
+        select_query = """
+        SELECT id, document_name, index_name 
+        FROM opensearch_doc_status 
+        WHERE id = :id
+        """
+        
+        result = await postgres_service.execute_query(
+            select_query,
+            {"id": doc_id}
+        )
+        
+        if not result:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Document with ID {doc_id} not found"
+            )
+        
+        # Get the index name from the record
+        index_name = result[0].get("index_name", "procedure_index")
+        
+        # Try to delete from OpenSearch
+        # This is a best-effort operation - we'll continue even if this fails
+        try:
+            # Create OpenSearch tools
+            opensearch_tools = OpenSearchTools()
+            
+            # Delete document from OpenSearch
+            delete_result = opensearch_tools.delete_document_by_name(index_name, document_name)
+            
+            if delete_result["status"] != "success":
+                logger.warning(f"Warning when deleting from OpenSearch: {delete_result['message']}")
+        except Exception as e:
+            logger.warning(f"Unable to delete from OpenSearch: {str(e)}")
+            # Continue processing - we'll still delete the database record
+        
+        # Delete record from opensearch_doc_status
+        delete_status_query = """
+        DELETE FROM opensearch_doc_status
+        WHERE id = :id
+        """
+        
+        await postgres_service.execute_query(
+            delete_status_query,
+            {"id": doc_id}
+        )
+        
+        logger.info(f"Deleted document status record with ID {doc_id}")
+        
+        return {
+            "status": "success", 
+            "message": "Document deleted successfully"
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting document: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error deleting document: {str(e)}"
+        )
 
 if __name__ == "__main__":
     import uvicorn
