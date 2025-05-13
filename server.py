@@ -26,6 +26,7 @@ import jwt
 import uuid
 import time
 from flask import request, jsonify
+from tools.opensearch_tools import OpenSearchTools
 from tools.postgresql_tools import PostgreSQLTools
 from tools.redis_tools import RedisTools
 from tools.ddl_to_postgre import process_ddl_file
@@ -1664,11 +1665,13 @@ async def delete_opensearch_document(request: Request, token_data: dict = Depend
             # Create OpenSearch tools
             opensearch_tools = OpenSearchTools()
             
-            # Delete document from OpenSearch
+            # 直接使用改进后的delete_document_by_name方法删除文档
             delete_result = opensearch_tools.delete_document_by_name(index_name, document_name)
             
             if delete_result["status"] != "success":
                 logger.warning(f"Warning when deleting from OpenSearch: {delete_result['message']}")
+            else:
+                logger.info(f"Successfully deleted from OpenSearch: {delete_result['message']}")
         except Exception as e:
             logger.warning(f"Unable to delete from OpenSearch: {str(e)}")
             # Continue processing - we'll still delete the database record

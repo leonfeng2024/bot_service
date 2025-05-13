@@ -203,6 +203,7 @@ class OpenSearchTools:
         Returns:
             Dict[str, str]: Operation result with status and message
         """
+        print(f" delete_document_by_name : {index_name} {document_name}")
         try:
             # 检查索引是否存在
             if not self.client.indices.exists(index=index_name):
@@ -211,16 +212,16 @@ class OpenSearchTools:
                     "message": f"Index {index_name} does not exist"
                 }
             
-            # 构建删除查询
+            # 构建删除查询 - 使用term查询精确匹配document_name字段
             query = {
                 "query": {
-                    "match": {
-                        "document_name": document_name
+                    "term": {
+                        "document_name.keyword": document_name
                     }
                 }
             }
             
-            # 执行删除操作
+            # 先尝试term查询，如果没有结果再尝试match查询
             response = self.client.delete_by_query(
                 index=index_name,
                 body=query,
@@ -234,10 +235,33 @@ class OpenSearchTools:
                     "message": f"Successfully deleted {deleted_count} documents"
                 }
             else:
-                return {
-                    "status": "failed",
-                    "message": "No documents found to delete"
+                # 如果term查询没有结果，尝试使用match查询
+                match_query = {
+                    "query": {
+                        "match": {
+                            "document_name": document_name
+                        }
+                    }
                 }
+                
+                match_response = self.client.delete_by_query(
+                    index=index_name,
+                    body=match_query,
+                    refresh=True
+                )
+                
+                match_deleted_count = match_response.get("deleted", 0)
+                print(f"match_deleted_count : {match_deleted_count}")
+                if match_deleted_count > 0:
+                    return {
+                        "status": "success",
+                        "message": f"Successfully deleted {match_deleted_count} documents using match query"
+                    }
+                else:
+                    return {
+                        "status": "failed", 
+                        "message": "No documents found to delete"
+                    }
                 
         except Exception as e:
             print(f"Error deleting document by name: {str(e)}")
@@ -305,6 +329,9 @@ class OpenSearchTools:
                     },
                     "mappings": {
                         "properties": {
+                            "document_name": {
+                                "type": "keyword"
+                            },
                             "procedure_name": {
                                 "type": "text"
                             },
@@ -415,7 +442,7 @@ class OpenSearchTools:
         helpers.bulk(client, actions)
         print(f"Indexed {len(procedures)} procedures to {index_name}")
 
-    async def process_sql_file(self, file_path: str, embedding_service, index_name: str = PROCEDURE_INDEX) -> tuple[bool, str]:
+    async def process_sql_file(self, file_path: str, embedding_service, index_name: str = PROCEDURE_INDEX) -> Tuple[bool, str]:
         """
         Process SQL file and index procedures to OpenSearch
         
@@ -438,6 +465,9 @@ class OpenSearchTools:
             if not procedures:
                 return False, "No procedures found in file"
             
+            # Get document name from file path (just the file name, not the full path)
+            document_name = os.path.basename(file_path)
+            
             # Generate embeddings for each procedure
             embedded_procedures = []
             for proc in procedures:
@@ -446,6 +476,7 @@ class OpenSearchTools:
                 
                 # Create document for OpenSearch
                 doc = {
+                    "document_name": document_name,
                     "procedure_name": proc["procedure_name"],
                     "sql_content": proc["sql_content"],
                     "sql_embedding": embedding,
@@ -467,6 +498,11 @@ class OpenSearchTools:
             # Create procedure index with correct dimension
             await self.create_procedure_index(embedding_dimension, index_name)
             
+            # 先删除已存在的相同document_name的文档
+            delete_result = self.delete_document_by_name(index_name, document_name)
+            if delete_result["status"] == "success" and "deleted" in delete_result["message"]:
+                print(f"Deleted existing documents with name {document_name}")
+            
             # Index the procedures
             self.index_procedures(embedded_procedures, index_name)
             
@@ -476,6 +512,59 @@ class OpenSearchTools:
             error_msg = f"Error processing SQL file: {str(e)}"
             print(error_msg)
             return False, error_msg
+
+    def delete_procedures_by_file(self, index_name: str) -> Dict[str, str]:
+        """
+        Delete all procedures in the specified index.
+        This is used for SQL procedure files where we want to completely clear an index.
+        
+        Args:
+            index_name (str): Name of the index to clear
+        
+        Returns:
+            Dict[str, str]: Operation result with status and message
+        """
+        try:
+            # 检查索引是否存在
+            if not self.client.indices.exists(index=index_name):
+                return {
+                    "status": "failed",
+                    "message": f"Index {index_name} does not exist"
+                }
+            
+            # 构建删除所有文档的查询
+            query = {
+                "query": {
+                    "match_all": {}
+                }
+            }
+            
+            # 执行删除操作
+            response = self.client.delete_by_query(
+                index=index_name,
+                body=query,
+                refresh=True
+            )
+            
+            deleted_count = response.get("deleted", 0)
+            if deleted_count > 0:
+                return {
+                    "status": "success",
+                    "message": f"Successfully deleted {deleted_count} procedures from index {index_name}"
+                }
+            else:
+                return {
+                    "status": "success",
+                    "message": "No procedures found to delete"
+                }
+                
+        except Exception as e:
+            print(f"Error deleting procedures from index: {str(e)}")
+            print(traceback.format_exc())
+            return {
+                "status": "failed",
+                "message": f"Delete failed: {str(e)}"
+            }
 
 if __name__ == "__main__":
     # Initialize OpenSearch client with default config
