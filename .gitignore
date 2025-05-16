@@ -76,5 +76,5 @@ app.log
 server.pid
 cache/
 config.py
-config_bk.py
+config_server.py
 config_local.py

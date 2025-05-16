@@ -297,7 +297,7 @@ class OpenSearchTools:
         try:
             client = self.client or self.connect_to_opensearch()
             
-            # Delete the index if it exists with wrong dimension
+            # Delete the index if it exists with wrong dimension or wrong field type
             if client.indices.exists(index=index_name):
                 # Get the mapping
                 mapping = client.indices.get_mapping(index=index_name)
@@ -307,17 +307,19 @@ class OpenSearchTools:
                     props = mapping[index_name].get('mappings', {}).get('properties', {})
                     sql_embedding = props.get('sql_embedding', {})
                     
-                    if sql_embedding and sql_embedding.get('type') == 'knn_vector':
-                        current_dim = sql_embedding.get('dimension')
-                        
+                    # Check if sql_embedding exists and is the correct type
+                    if not sql_embedding or sql_embedding.get('type') != 'knn_vector':
+                        print(f"Index {index_name} has incorrect field type for sql_embedding: {sql_embedding.get('type', 'not defined')}")
+                        client.indices.delete(index=index_name)
+                        print(f"Deleted index {index_name} to recreate with correct field type")
+                    elif sql_embedding.get('type') == 'knn_vector' and sql_embedding.get('dimension') != dimension:
                         # If dimensions don't match, delete the index to recreate
-                        if current_dim != dimension:
-                            print(f"Index {index_name} has dimension {current_dim}, but need {dimension}")
-                            client.indices.delete(index=index_name)
-                            print(f"Deleted index {index_name} to recreate with correct dimension")
-                        else:
-                            print(f"Index {index_name} already has correct dimension {dimension}")
-                            return
+                        print(f"Index {index_name} has dimension {sql_embedding.get('dimension')}, but need {dimension}")
+                        client.indices.delete(index=index_name)
+                        print(f"Deleted index {index_name} to recreate with correct dimension")
+                    else:
+                        print(f"Index {index_name} already has correct dimension {dimension}")
+                        return
             
             if not client.indices.exists(index=index_name):
                 mapping = {
@@ -565,6 +567,149 @@ class OpenSearchTools:
                 "status": "failed",
                 "message": f"Delete failed: {str(e)}"
             }
+
+    async def create_employees_index(self, client, dimension=1024):
+        """Create the employees index with KNN mapping if it doesn't exist"""
+        try:
+            index_name = "employees"
+            
+            # Check if index exists and has wrong configuration
+            if client.indices.exists(index=index_name):
+                # Delete the index to recreate with correct structure
+                client.indices.delete(index=index_name)
+                print(f"Deleted index {index_name} to recreate with correct vector field")
+            
+            # Create index with proper mappings
+            mapping = {
+                "settings": {
+                    "index": {
+                        "knn": True,
+                        "knn.algo_param.ef_search": 100
+                    }
+                },
+                "mappings": {
+                    "properties": {
+                        "employee_id": {"type": "integer"},
+                        "first_name": {"type": "text"},
+                        "last_name": {"type": "text"},
+                        "email": {"type": "keyword"},
+                        "job_title": {"type": "text"},
+                        "department_id": {"type": "integer"},
+                        "salary": {"type": "float"},
+                        # Add a vector embedding field
+                        "sql_embedding": {
+                            "type": "knn_vector",
+                            "dimension": dimension
+                        }
+                    }
+                }
+            }
+            
+            client.indices.create(index=index_name, body=mapping)
+            print(f"Created index {index_name} with dimension {dimension}")
+            return True
+            
+        except Exception as e:
+            print(f"Error creating index: {str(e)}")
+            return False
+
+    async def fix_index_field_types(self, index_name: str = PROCEDURE_INDEX, dimension: int = 1024) -> bool:
+        """
+        Fix an existing index with incorrect field types, specifically for sql_embedding field
+        
+        Args:
+            index_name: Name of the index to fix
+            dimension: Vector dimension for knn_vector field
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            client = self.client or self.connect_to_opensearch()
+            
+            # Check if index exists
+            if not client.indices.exists(index=index_name):
+                print(f"Index {index_name} does not exist")
+                return False
+            
+            # Get the mapping
+            mapping = client.indices.get_mapping(index=index_name)
+            
+            # Check if sql_embedding field exists and has incorrect type
+            if index_name in mapping:
+                props = mapping[index_name].get('mappings', {}).get('properties', {})
+                sql_embedding = props.get('sql_embedding', {})
+                
+                if not sql_embedding:
+                    print(f"Index {index_name} does not have sql_embedding field")
+                    return False
+                
+                field_type = sql_embedding.get('type')
+                if field_type == 'knn_vector':
+                    print(f"Index {index_name} already has correct field type for sql_embedding: knn_vector")
+                    return True
+                
+                print(f"Index {index_name} has incorrect field type for sql_embedding: {field_type}")
+                
+                # Need to recreate the index with correct field type
+                # First, get all documents from the index
+                query = {
+                    "query": {
+                        "match_all": {}
+                    },
+                    "size": 10000  # Adjust as needed
+                }
+                
+                response = client.search(index=index_name, body=query)
+                documents = []
+                
+                for hit in response['hits']['hits']:
+                    documents.append(hit['_source'])
+                
+                print(f"Retrieved {len(documents)} documents from index {index_name}")
+                
+                # Delete the index
+                client.indices.delete(index=index_name)
+                print(f"Deleted index {index_name}")
+                
+                # Create the index with correct mapping
+                await self.create_procedure_index(dimension, index_name)
+                
+                # Reindex the documents if any were found
+                if documents:
+                    # Need to generate embeddings for the documents
+                    from service.embedding_service import EmbeddingService
+                    embedding_service = EmbeddingService()
+                    
+                    # For each document, generate embedding if needed
+                    for doc in documents:
+                        if 'sql_content' in doc and 'sql_embedding' not in doc:
+                            # Generate embedding
+                            embedding = await embedding_service.get_embedding(doc['sql_content'])
+                            doc['sql_embedding'] = embedding
+                    
+                    # Bulk index the documents
+                    actions = []
+                    for i, doc in enumerate(documents):
+                        actions.append({
+                            "_index": index_name,
+                            "_source": doc
+                        })
+                    
+                    if actions:
+                        from opensearchpy import helpers
+                        helpers.bulk(client, actions)
+                        print(f"Reindexed {len(actions)} documents to index {index_name}")
+                
+                return True
+            
+            return False
+            
+        except Exception as e:
+            print(f"Error fixing index field types: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            return False
 
 if __name__ == "__main__":
     # Initialize OpenSearch client with default config

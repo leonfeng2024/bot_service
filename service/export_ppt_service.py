@@ -460,73 +460,91 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             blank_slide_layout = prs.slide_layouts[6]
             slide = prs.slides.add_slide(blank_slide_layout)
             
-            # Create and add relationship diagram
-            diagram_path = None
-            try:
-                diagram_path = await self.create_mermaid_diagram(prepared_df)
-                
-                # 检查是否是有效的图像文件
-                if diagram_path is not None:
-                    is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
-                    
-                    # Add the diagram to the slide with adjusted size and position
-                    # Use most of the slide area
-                    left = Inches(0.25)  # Reduced margin
-                    top = Inches(0.75)   # Reduced top margin
-                    width = Inches(9.5)  # Almost full width
-                    
-                    if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
-                        slide.shapes.add_picture(diagram_path, left, top, width=width)
-                    else:
-                        # 如果图像生成失败，添加一个文本框作为替代
-                        txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
-                        tf = txt_box.text_frame
-                        p = tf.add_paragraph()
-                        p.text = "无法生成关系图。请查看详细信息表格。"
-                        p.font.size = Pt(14)
-                        p.font.bold = True
-                        
-                        # 如果是文本文件，读取内容并显示
-                        if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
-                            with open(diagram_path, 'r') as f:
-                                mermaid_content = f.read()
-                                p = tf.add_paragraph()
-                                p.text = "Mermaid定义（供参考）："
-                                p.font.size = Pt(12)
-                                p.font.bold = True
-                                
-                                p = tf.add_paragraph()
-                                p.text = mermaid_content
-                                p.font.size = Pt(8)
-                else:
-                    # 如果图表生成完全失败，添加错误信息
-                    left = Inches(0.25)
-                    top = Inches(0.75)
-                    width = Inches(9.5)
-                    txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
-                    tf = txt_box.text_frame
-                    p = tf.add_paragraph()
-                    p.text = "关系图生成失败。请查看详细信息表格。"
-                    p.font.size = Pt(14)
-                    p.font.bold = True
-            except Exception as diagram_error:
-                print(f"Error adding diagram to PPT: {str(diagram_error)}")
-                traceback.print_exc()
-                txt_box = slide.shapes.add_textbox(Inches(0.25), Inches(0.75), Inches(9.5), Inches(5))
-                tf = txt_box.text_frame
-                p = tf.add_paragraph()
-                p.text = "生成关系图时出错。请查看详细信息表格。"
-                p.font.size = Pt(14)
-                p.font.bold = True
+            # Check if there are valid relationships in the data
+            has_relationship_data = False
             
-            # Add title to the diagram slide
-            title_box = slide.shapes.add_textbox(Inches(0.25), Inches(0.1), Inches(9.5), Inches(0.5))
+            # Check for Neo4j formatted data
+            if 'source_table' in prepared_df.columns and 'target_table' in prepared_df.columns:
+                # Check if we have actual relationship data (not empty values)
+                for _, row in prepared_df.iterrows():
+                    source_table = row.get('source_table')
+                    target_table = row.get('target_table')
+                    if source_table and target_table:
+                        has_relationship_data = True
+                        break
+            else:
+                # Check for relationship data in content field
+                for _, row in prepared_df.iterrows():
+                    content = row.get('content', '')
+                    if content and isinstance(content, str) and ("表" in content and "关联到表" in content or 
+                        "table" in content.lower() and "field" in content.lower()):
+                        has_relationship_data = True
+                        break
+            
+            # Define common slide parameters
+            left = Inches(0.25)  # Reduced margin
+            top = Inches(0.75)   # Reduced top margin
+            width = Inches(9.5)  # Almost full width
+            
+            # Add title to the diagram slide first
+            title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
             title_frame = title_box.text_frame
             title_para = title_frame.add_paragraph()
             title_para.text = "Table Relationships Diagram"
             title_para.alignment = PP_ALIGN.CENTER
             title_para.font.size = Pt(18)
             title_para.font.bold = True
+            
+            # Create and add relationship diagram only if we have relationship data
+            if has_relationship_data:
+                try:
+                    diagram_path = await self.create_mermaid_diagram(prepared_df)
+                    
+                    # Check if it's a valid image file
+                    if diagram_path is not None:
+                        is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+                        
+                        if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
+                            slide.shapes.add_picture(diagram_path, left, top, width=width)
+                        else:
+                            # If image generation failed, add Japanese message
+                            txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                            tf = txt_box.text_frame
+                            p = tf.add_paragraph()
+                            p.text = "当前検索の内容には関係図がありません"
+                            p.font.size = Pt(16)
+                            p.font.bold = True
+                            p.alignment = PP_ALIGN.CENTER
+                    else:
+                        # If diagram generation completely failed, add Japanese message
+                        txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                        tf = txt_box.text_frame
+                        p = tf.add_paragraph()
+                        p.text = "当前検索の内容には関係図がありません"
+                        p.font.size = Pt(16)
+                        p.font.bold = True
+                        p.alignment = PP_ALIGN.CENTER
+                except Exception as diagram_error:
+                    print(f"Error adding diagram to PPT: {str(diagram_error)}")
+                    traceback.print_exc()
+                    # Add Japanese message when an error occurs
+                    txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                    tf = txt_box.text_frame
+                    p = tf.add_paragraph()
+                    p.text = "当前検索の内容には関係図がありません"
+                    p.font.size = Pt(16)
+                    p.font.bold = True
+                    p.alignment = PP_ALIGN.CENTER
+            else:
+                # If no relationship data, add Japanese message
+                txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                tf = txt_box.text_frame
+                p = tf.add_paragraph()
+                p.text = "当前検索の内容には関係図がありません"
+                p.font.size = Pt(16)
+                p.font.bold = True
+                p.alignment = PP_ALIGN.CENTER
+                print("No relationship data found, added message slide instead")
             
             # Add details slide
             table_slide_layout = prs.slide_layouts[6]
@@ -661,74 +679,97 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             title.text = "Database Query Results"
             subtitle.text = f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             
-            # Try to create and add relationship diagram
-            diagram_path = None
-            try:
-                # Add diagram slide
-                blank_slide_layout = prs.slide_layouts[6]
-                slide = prs.slides.add_slide(blank_slide_layout)
-                
-                # Create and add relationship diagram
-                diagram_path = await self.create_mermaid_diagram(prepared_df)
-                
-                # Check if it's a valid image file
-                if diagram_path is not None:
-                    is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+            # Check if there are valid relationships in the data
+            has_relationship_data = False
+            
+            # Check for Neo4j formatted data
+            if 'source_table' in prepared_df.columns and 'target_table' in prepared_df.columns:
+                # Check if we have actual relationship data (not empty values)
+                for _, row in prepared_df.iterrows():
+                    source_table = row.get('source_table')
+                    target_table = row.get('target_table')
+                    if source_table and target_table:
+                        has_relationship_data = True
+                        break
+            else:
+                # Check for relationship data in content field
+                for _, row in prepared_df.iterrows():
+                    content = row.get('content', '')
+                    if content and isinstance(content, str) and ("表" in content and "关联到表" in content or 
+                        "table" in content.lower() and "field" in content.lower()):
+                        has_relationship_data = True
+                        break
+            
+            # Add diagram slide
+            blank_slide_layout = prs.slide_layouts[6]
+            slide = prs.slides.add_slide(blank_slide_layout)
+            
+            # Add title to the diagram slide
+            left = Inches(0.25)
+            top = Inches(0.75)
+            width = Inches(9.5)
+            
+            title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
+            title_frame = title_box.text_frame
+            title_para = title_frame.add_paragraph()
+            title_para.text = "Field Relationships Diagram"
+            title_para.alignment = PP_ALIGN.CENTER
+            title_para.font.size = Pt(18)
+            title_para.font.bold = True
+            
+            # Try to create and add relationship diagram only if we have relationship data
+            if has_relationship_data:
+                try:
+                    # Create and add relationship diagram
+                    diagram_path = await self.create_mermaid_diagram(prepared_df)
                     
-                    # Add the diagram to the slide with adjusted size and position
-                    left = Inches(0.25)
-                    top = Inches(0.75)
-                    width = Inches(9.5)
-                    
-                    if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
-                        slide.shapes.add_picture(diagram_path, left, top, width=width)
+                    # Check if it's a valid image file
+                    if diagram_path is not None:
+                        is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+                        
+                        if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
+                            slide.shapes.add_picture(diagram_path, left, top, width=width)
+                            print(f"Added relationship diagram to PPT")
+                        else:
+                            # If image generation failed, add Japanese message
+                            txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                            tf = txt_box.text_frame
+                            p = tf.add_paragraph()
+                            p.text = "当前検索の内容には関係図がありません"
+                            p.font.size = Pt(16)
+                            p.font.bold = True
+                            p.alignment = PP_ALIGN.CENTER
                     else:
-                        # If image generation failed, add a text box as fallback
+                        # If diagram generation completely failed, add Japanese message
                         txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                         tf = txt_box.text_frame
                         p = tf.add_paragraph()
-                        p.text = "Unable to generate relationship diagram. Please check the detailed information section."
-                        p.font.size = Pt(14)
+                        p.text = "当前検索の内容には関係図がありません"
+                        p.font.size = Pt(16)
                         p.font.bold = True
-                        
-                        # If it's a text file, read and display content
-                        if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
-                            with open(diagram_path, 'r') as f:
-                                mermaid_content = f.read()
-                                p = tf.add_paragraph()
-                                p.text = "Mermaid definition (for reference):"
-                                p.font.size = Pt(12)
-                                p.font.bold = True
-                                
-                                p = tf.add_paragraph()
-                                p.text = mermaid_content
-                                p.font.size = Pt(8)
-                else:
-                    # If diagram generation completely failed, add error message
-                    left = Inches(0.25)
-                    top = Inches(0.75)
-                    width = Inches(9.5)
+                        p.alignment = PP_ALIGN.CENTER
+                except Exception as diagram_error:
+                    print(f"Error creating diagram: {str(diagram_error)}")
+                    traceback.print_exc()
+                    # Add Japanese message when an error occurs
                     txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                     tf = txt_box.text_frame
                     p = tf.add_paragraph()
-                    p.text = "Relationship diagram generation failed. Please check the detailed information section."
-                    p.font.size = Pt(14)
+                    p.text = "当前検索の内容には関係図がありません"
+                    p.font.size = Pt(16)
                     p.font.bold = True
-                
-                # Add title to the diagram slide
-                title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
-                title_frame = title_box.text_frame
-                title_para = title_frame.add_paragraph()
-                title_para.text = "Field Relationships Diagram"
-                title_para.alignment = PP_ALIGN.CENTER
-                title_para.font.size = Pt(18)
-                title_para.font.bold = True
-                
-                print(f"Added relationship diagram to PPT")
-            except Exception as diagram_error:
-                print(f"Error creating diagram: {str(diagram_error)}")
-                traceback.print_exc()
-                print(f"Continuing with PPT creation without diagram")
+                    p.alignment = PP_ALIGN.CENTER
+                    print(f"Continuing with PPT creation without diagram")
+            else:
+                # If no relationship data, add Japanese message
+                txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                tf = txt_box.text_frame
+                p = tf.add_paragraph()
+                p.text = "当前検索の内容には関係図がありません"
+                p.font.size = Pt(16)
+                p.font.bold = True
+                p.alignment = PP_ALIGN.CENTER
+                print("No relationship data found, added message slide instead")
             
             # Add content slides
             # We'll create a table slide for the data
@@ -828,92 +869,107 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             
             # Check if data contains content field and table relationship information
             has_relationship_data = False
+            is_neo4j_data = False
+            is_postgresql_data = False
             
-            # Check for Neo4j formatted data
-            if 'source_table' in prepared_df.columns and 'target_table' in prepared_df.columns:
-                has_relationship_data = True
-            else:
-                # Check for relationship data in content field
-                for item in data:
-                    content = item.get('content', '')
-                    if content and isinstance(content, str) and ("表" in content and "关联到表" in content or 
-                        "table" in content.lower() and "field" in content.lower()):
-                        has_relationship_data = True
-                        break
+            # Check if this is PostgreSQL data that should be skipped for diagram generation
+            for item in data:
+                content = item.get('content', '')
+                source = item.get('source', '').lower()
+                if source and ('postgresql' in source or 'postgres' in source):
+                    is_postgresql_data = True
+                    break
+                if source and 'neo4j' in source:
+                    is_neo4j_data = True
             
-            if has_relationship_data:
-                try:
-                    # Add diagram slide
-                    blank_slide_layout = prs.slide_layouts[6]
-                    slide = prs.slides.add_slide(blank_slide_layout)
-                    
-                    # Create and add relationship diagram
-                    diagram_path = await self.create_mermaid_diagram(prepared_df)
-                    
-                    # Check if it's a valid image file
-                    if diagram_path is not None:
-                        is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+            # Only process Neo4j data for relationship diagrams
+            if is_neo4j_data and not is_postgresql_data:
+                # Check for Neo4j formatted data
+                if 'source_table' in prepared_df.columns and 'target_table' in prepared_df.columns:
+                    # Check if we have actual relationship data (not empty values)
+                    for _, row in prepared_df.iterrows():
+                        source_table = row.get('source_table')
+                        target_table = row.get('target_table')
+                        if source_table and target_table:
+                            has_relationship_data = True
+                            break
+                else:
+                    # Check for relationship data in content field
+                    for item in data:
+                        content = item.get('content', '')
+                        if content and isinstance(content, str) and ("表" in content and "关联到表" in content or 
+                            "table" in content.lower() and "field" in content.lower()):
+                            has_relationship_data = True
+                            break
+                
+                # Add a slide for Neo4j data regardless of whether we have relationship data
+                blank_slide_layout = prs.slide_layouts[6]
+                slide = prs.slides.add_slide(blank_slide_layout)
+                
+                left = Inches(0.25)
+                top = Inches(0.75)
+                width = Inches(9.5)
+                
+                # Add title to the diagram slide
+                title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
+                title_frame = title_box.text_frame
+                title_para = title_frame.add_paragraph()
+                title_para.text = "Database Table Relationships"
+                title_para.alignment = PP_ALIGN.CENTER
+                title_para.font.size = Pt(18)
+                title_para.font.bold = True
+                
+                if has_relationship_data:
+                    try:
+                        # Create and add relationship diagram
+                        diagram_path = await self.create_mermaid_diagram(prepared_df)
                         
-                        # Add the diagram to the slide with adjusted size and position
-                        left = Inches(0.25)
-                        top = Inches(0.75)
-                        width = Inches(9.5)
-                        
-                        if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
-                            slide.shapes.add_picture(diagram_path, left, top, width=width)
+                        # Check if it's a valid image file
+                        if diagram_path is not None:
+                            is_image = diagram_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))
+                            
+                            if is_image and os.path.exists(diagram_path) and os.path.getsize(diagram_path) > 1000:
+                                slide.shapes.add_picture(diagram_path, left, top, width=width)
+                                print(f"Added new relationship diagram to PPT")
+                            else:
+                                # If image generation failed, add the Japanese message
+                                txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                                tf = txt_box.text_frame
+                                p = tf.add_paragraph()
+                                p.text = "当前検索の内容には関係図がありません"
+                                p.font.size = Pt(16)
+                                p.font.bold = True
+                                p.alignment = PP_ALIGN.CENTER
                         else:
-                            # If image generation failed, add a text box as fallback
+                            # If diagram generation completely failed, add the Japanese message
                             txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                             tf = txt_box.text_frame
                             p = tf.add_paragraph()
-                            p.text = "Unable to generate relationship diagram. Please check the detailed information section."
-                            p.font.size = Pt(14)
+                            p.text = "当前検索の内容には関係図がありません"
+                            p.font.size = Pt(16)
                             p.font.bold = True
-                            
-                            # If it's a text file, read and display content
-                            if diagram_path is not None and diagram_path.lower().endswith('.txt') and os.path.exists(diagram_path):
-                                with open(diagram_path, 'r') as f:
-                                    mermaid_content = f.read()
-                                    p = tf.add_paragraph()
-                                    p.text = "Mermaid definition (for reference):"
-                                    p.font.size = Pt(12)
-                                    p.font.bold = True
-                                    
-                                    p = tf.add_paragraph()
-                                    p.text = mermaid_content
-                                    p.font.size = Pt(8)
-                    else:
-                        # If diagram generation completely failed, add error message
-                        left = Inches(0.25)
-                        top = Inches(0.75)
-                        width = Inches(9.5)
+                            p.alignment = PP_ALIGN.CENTER
+                    except Exception as diagram_error:
+                        print(f"Error creating additional diagram: {str(diagram_error)}")
+                        traceback.print_exc()
+                        # Add the Japanese message when an error occurs
                         txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
                         tf = txt_box.text_frame
                         p = tf.add_paragraph()
-                        p.text = "Relationship diagram generation failed. Please check the detailed information section."
-                        p.font.size = Pt(14)
+                        p.text = "当前検索の内容には関係図がありません"
+                        p.font.size = Pt(16)
                         p.font.bold = True
-                    
-                    # Add title to the diagram slide
-                    title_box = slide.shapes.add_textbox(left, Inches(0.1), width, Inches(0.5))
-                    title_frame = title_box.text_frame
-                    title_para = title_frame.add_paragraph()
-                    
-                    # Choose title based on data type
-                    if 'source_table' in prepared_df.columns:
-                        title_para.text = "Database Table Relationships"
-                    else:
-                        title_para.text = "Additional Field Relationships"
-                        
-                    title_para.alignment = PP_ALIGN.CENTER
-                    title_para.font.size = Pt(18)
-                    title_para.font.bold = True
-                    
-                    print(f"Added new relationship diagram to PPT")
-                except Exception as diagram_error:
-                    print(f"Error creating additional diagram: {str(diagram_error)}")
-                    traceback.print_exc()
-                    print(f"Continuing with presentation without additional diagram")
+                        p.alignment = PP_ALIGN.CENTER
+                else:
+                    # If no relationship data, add the Japanese message
+                    txt_box = slide.shapes.add_textbox(left, top, width, Inches(5))
+                    tf = txt_box.text_frame
+                    p = tf.add_paragraph()
+                    p.text = "当前検索の内容には関係図がありません"
+                    p.font.size = Pt(16)
+                    p.font.bold = True
+                    p.alignment = PP_ALIGN.CENTER
+                    print("No relationship data found in Neo4j results, added message slide instead")
             
             # Add slides for each data item with proper content handling
             for i, item in enumerate(data):

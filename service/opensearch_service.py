@@ -521,6 +521,21 @@ class OpenSearchService:
             if not self.os_tools.client.indices.exists(index=index_name):
                 return []
 
+            # Check if the embedding field has the correct type
+            try:
+                mapping = self.os_tools.client.indices.get_mapping(index=index_name)
+                if index_name in mapping:
+                    props = mapping[index_name].get('mappings', {}).get('properties', {})
+                    field_info = props.get(embedding_field, {})
+                    
+                    if field_info and field_info.get('type') != 'knn_vector':
+                        print(f"Warning: Field '{embedding_field}' in index '{index_name}' is not of type 'knn_vector'")
+                        print(f"Current type: {field_info.get('type')}")
+                        print(f"Please run the fix_opensearch_index.py script to fix the index")
+                        return []
+            except Exception as e:
+                print(f"Error checking field type: {str(e)}")
+
             # Get query embedding
             query_embedding = await self.embedding_service.get_embedding(query)
 

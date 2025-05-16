@@ -35,6 +35,7 @@ import json
 import asyncio
 from contextlib import asynccontextmanager
 from config import JWT_SECRET, JWT_EXPIRATION
+import re
 
 # Configure logging
 import yaml
@@ -1345,7 +1346,7 @@ async def process_excel_file_background(file_path, doc_id, sheet_name, header_ro
                 logger.error(f"Error updating status: {str(update_error)}")
 
 @app.post("/kb/openserch/upload")
-async def upload_opensearch_sql(
+async def upload_opensearch_procedure(
     file: UploadFile = File(...),
     token_data: dict = Depends(verify_token),
     uploader: str = Form(None),
@@ -1422,8 +1423,8 @@ async def upload_opensearch_sql(
         # Get the document ID
         doc_id = result[0]['id'] if result and len(result) > 0 else None
         
-        # Start background task to process the file
-        asyncio.create_task(process_opensearch_sql_file_background(file_path, doc_id, process_index))
+        # Process the file directly (similar to import_procedure_embedding.py)
+        asyncio.create_task(process_procedure_file_background(file_path, doc_id, process_index, file.filename))
         
         return {"status": "success", "message": "file upload success.start process kb document"}
         
@@ -1433,6 +1434,81 @@ async def upload_opensearch_sql(
             status_code=500,
             detail=f"Error uploading SQL file: {str(e)}"
         )
+
+async def process_procedure_file_background(file_path, doc_id, index_name, file_name):
+    """
+    Background task to process SQL procedure file for OpenSearch
+    following the same approach as import_procedure_embedding.py
+    
+    Args:
+        file_path: Path to the SQL file
+        doc_id: Document ID in opensearch_doc_status table
+        index_name: Name of the OpenSearch index to use
+        file_name: Original file name
+    """
+    try:
+        logger.info(f"Processing SQL procedure file for OpenSearch: {file_path} to index: {index_name}")
+        
+        # Update status to "processing"
+        if doc_id:
+            update_query = """
+            UPDATE opensearch_doc_status 
+            SET process_status = 'processing' 
+            WHERE id = :id
+            """
+            await postgres_service.execute_query(update_query, {"id": doc_id})
+        
+        # We'll use the opensearch_tools directly which has the proven working implementation
+        opensearch_tools = OpenSearchTools()
+        
+        # Process the SQL file using the opensearch_tools implementation
+        success, message = await opensearch_tools.process_sql_file(
+            file_path,
+            embedding_service,
+            index_name
+        )
+        
+        # Update status based on success
+        if doc_id:
+            status = "completed" if success else "failed"
+            error_message = "" if success else message
+            
+            update_query = """
+            UPDATE opensearch_doc_status 
+            SET process_status = :status,
+                error_message = :error_message
+            WHERE id = :id
+            """
+            
+            await postgres_service.execute_query(
+                update_query,
+                {
+                    "id": doc_id, 
+                    "status": status, 
+                    "error_message": error_message[:500] if error_message else None
+                }
+            )
+        
+        logger.info(f"SQL file processing result: {success}, {message}")
+            
+    except Exception as e:
+        logger.error(f"Error processing SQL procedure file {file_path}: {str(e)}")
+        # Update status to "failed" if there's an error
+        if doc_id:
+            try:
+                update_query = """
+                UPDATE opensearch_doc_status 
+                SET process_status = 'failed',
+                    error_message = :error_message
+                WHERE id = :id
+                """
+                
+                await postgres_service.execute_query(
+                    update_query,
+                    {"id": doc_id, "error_message": str(e)[:500]}
+                )
+            except Exception as update_error:
+                logger.error(f"Error updating status: {str(update_error)}")
 
 async def ensure_opensearch_doc_status_table():
     """Ensure the opensearch_doc_status table exists in the database"""
@@ -1515,77 +1591,6 @@ async def ensure_opensearch_doc_status_table():
     except Exception as e:
         logger.error(f"Error ensuring opensearch_doc_status table exists: {str(e)}")
         raise
-
-async def process_opensearch_sql_file_background(file_path, doc_id, index_name="procedure_index"):
-    """
-    Background task to process SQL file for OpenSearch
-    
-    Args:
-        file_path: Path to the SQL file
-        doc_id: Document ID in opensearch_doc_status table
-        index_name: Name of the OpenSearch index to use
-    """
-    try:
-        logger.info(f"Processing SQL file for OpenSearch: {file_path} to index: {index_name}")
-        
-        try:
-            # Process the SQL file
-            success = await opensearch_procedure_service.process_sql_file(file_path, doc_id, index_name)
-            
-            if success:
-                logger.info(f"SQL file processing for OpenSearch completed: {file_path}")
-            else:
-                logger.error(f"SQL file processing for OpenSearch failed: {file_path}")
-        except Exception as process_error:
-            # Log the specific processing error
-            logger.error(f"Error processing SQL file for OpenSearch: {file_path}, Error: {str(process_error)}")
-            
-            if "ConnectionError" in str(process_error) or "connection refused" in str(process_error).lower():
-                error_message = "OpenSearch connection failed. Please verify OpenSearch is running and connection details are correct."
-            else:
-                error_message = f"Error during processing: {str(process_error)}"
-                
-            # Update status to "connection_error" or "failed"
-            if doc_id:
-                update_query = """
-                UPDATE opensearch_doc_status 
-                SET process_status = :status, 
-                    error_message = :error_message
-                WHERE id = :id
-                """
-                
-                try:
-                    await postgres_service.execute_query(
-                        update_query,
-                        {
-                            "id": doc_id, 
-                            "status": "connection_error" if "ConnectionError" in str(process_error) else "failed",
-                            "error_message": error_message[:500]  # Limit error message length
-                        }
-                    )
-                except Exception as db_error:
-                    logger.error(f"Error updating status: {str(db_error)}")
-                    
-                # Re-raise to be caught by outer exception handler
-                raise
-        
-    except Exception as e:
-        logger.error(f"Error in background processing of SQL file for OpenSearch {file_path}: {str(e)}")
-        # Update status to "Failed" if there's an error
-        if doc_id:
-            try:
-                update_query = """
-                UPDATE opensearch_doc_status 
-                SET process_status = 'failed'
-                WHERE id = :id
-                """
-                
-                await postgres_service.execute_query(
-                    update_query,
-                    {"id": doc_id}
-                )
-            except Exception as update_error:
-                logger.error(f"Error updating status: {str(update_error)}")
 
 @app.get("/kb/opensearch/status")
 async def get_opensearch_document_status(token_data: dict = Depends(verify_token)):

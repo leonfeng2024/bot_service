@@ -137,18 +137,18 @@ Response:
                 yield {
                     "status": "success",
                     "username": self.bot_name,
-                    "message": "We provide a database table change dependency investigation service. Please let us know the table field name you want to change."
+                    "message": "データベーステーブルの変更依存関係調査サービスを提供しております。変更をご希望のテーブルフィールド名をお知らせください。"
                 }
                 
                 # Add final_answer step
                 yield {
                     "step": "final_answer",
-                    "message": "We provide a database table change dependency investigation service. Please let us know the table field name you want to change.",
+                    "message": "データベーステーブルの変更依存関係調査サービスを提供しております。変更をご希望のテーブルフィールド名をお知らせください。",
                     "type": "text"
                 }
                 
                 # Save system reply to chat history
-                self._save_chat_history(username, uuid, "We provide a database table change dependency investigation service. Please let us know the table field name you want to change.", "bot")
+                self._save_chat_history(username, uuid, "データベーステーブルの変更依存関係調査サービスを提供しております。変更をご希望のテーブルフィールド名をお知らせください。", "bot")
                 return
             
             # Identify fields

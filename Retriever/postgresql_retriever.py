@@ -14,7 +14,6 @@ from tools.token_counter import TokenCounter
 
 
 class PostgreSQLRetriever(BaseRetriever):
-    """PostgreSQL检索器，用于从PostgreSQL数据库中检索数据"""
     
     def __init__(self):
         # 使用PostgreSQLTools代替直接创建连接
@@ -25,12 +24,12 @@ class PostgreSQLRetriever(BaseRetriever):
         
         # 初始化LLM服务
         self.llm_service = LLMService()
-        self.llm_service.init_agent_llm("openai-gpt41")
+        self.llm_service.init_agent_llm("openai-gpt-4.1")
         self.llm = self.llm_service.llm_agent_instance
         
         # 设置超时和重试参数
-        self.request_timeout = int(os.environ.get("PG_REQUEST_TIMEOUT", 120))  # 默认120秒超时
-        self.max_retries = int(os.environ.get("PG_MAX_RETRIES", 3))  # 默认最多重试3次
+        self.request_timeout = int(os.environ.get("PG_REQUEST_TIMEOUT", 300))  # 默认120秒超时
+        self.max_retries = int(os.environ.get("PG_MAX_RETRIES", 1))  # 默认最多重试3次
         self.retry_delay = int(os.environ.get("PG_RETRY_DELAY", 2))  # 默认重试间隔2秒
         
         # 缓存相关设置
@@ -43,23 +42,9 @@ class PostgreSQLRetriever(BaseRetriever):
         # 初始化其他变量
         self.toolkit = None
         self.agent = None
-
-    async def _get_from_cache(self, query: str, uuid: str) -> Optional[List[Dict[str, Any]]]:
-        """尝试从缓存获取结果"""
-        if not self.use_cache or not uuid:
-            return None
-            
-        cache_key = f"pg_cache:{uuid}:{hash(query)}"
-        cached_result = self.redis_tools.get(cache_key)
-        
-        if cached_result:
-            print(f"[PostgreSQL Retriever] Cache hit for query: {query[:50]}...")
-            return cached_result
-            
-        return None
         
     def _save_to_cache(self, query: str, uuid: str, results: List[Dict[str, Any]]) -> None:
-        """将结果保存到缓存"""
+
         if not self.use_cache or not uuid:
             return
             
@@ -68,21 +53,6 @@ class PostgreSQLRetriever(BaseRetriever):
         print(f"[PostgreSQL Retriever] Saved to cache: {query[:50]}...")
 
     async def retrieve(self, query: str, uuid: str = None) -> List[Dict[str, Any]]:
-        """
-        从 PostgreSQL 数据库检索相关信息
-        
-        Args:
-            query: 用户查询
-            uuid: 会话 ID (可选)
-            
-        Returns:
-            包含检索结果的列表
-        """
-        # 尝试从缓存获取
-        cached_result = await self._get_from_cache(query, uuid)
-        if cached_result:
-            return cached_result
-            
         try:
             # 记录开始时的token使用情况
             start_usage = self.llm_service.get_token_usage()
@@ -94,68 +64,71 @@ class PostgreSQLRetriever(BaseRetriever):
             
             # 获取搜索对象（视图和表名列表）
             search_object = self.pg_tools.get_search_objects()
-            
+            print("search_object:")
+            print(search_object)
             # 创建更简洁的系统提示，减少token数量
-            system_template = """あなたは SQL データベースの専門家であり、PostgreSQL によるデータ分析を得意としています。
-                    あなたの任務は、ユーザーのクエリ要求に基づいて、正確かつ効率的な SQL 文を構築することです。
-                    クエリが正しく、漏れがないことを保証し、以下のルールに従ってください。
+            system_template = """
+            You are an SQL database expert specializing in data analysis with PostgreSQL. 
+            Your mission is to construct accurate and efficient SQL statements based on user query requirements. 
+            Ensure the queries are correct and complete, following these rules: 
 
-                    ### **データベースの構造**
-                    - **`table_fields` テーブル**:  
-                      - **概要**: 各 `テーブル` の構造情報を格納する。
-                      - **主なフィールド**:
-                        - `physical_name` → テーブルの物理名  
-                        - `logical_name` → テーブルのロジック名
-                        - `field` → そのテーブルを構成するカラム名
-                        - `field_jpn` → そのカラムの日本語名 
+                Important rules:  
+                - you should judge the user's question is about table name or field name.
+                - if the user's question is about table name, you should use `physical_name`,'view_physical_name','ds_physical_name' or `logical_name`,'view_logical_name','ds_logical_name' as where clause to generate the SQL statement.
+                - if the user's question is about field,column name, you should use `field` or `field_jpn` as where clause to generate the SQL statement.
 
-                    - **`v_view_table_field` ビュー**:  
-                      - **概要**: 各 `ビュー` の構成情報を格納する。
-                      - **主なフィールド**:
-                        - `view_physical_name` → ビューの物理名  
-                        - `view_logical_name` → ビューのロジック名
-                        - `table_physical_name` → そのビューを構成するテーブル名
-                        - `table_logical_name` → そのテーブルの日本語名 
-                        - `field` → そのテーブルを構成するカラム名
-                        - `field_jpn` → そのカラムの日本語名
+                ### **Database Structure**
+                - **`table_fields` table**:  
+                  - **Overview**: Stores structural information of each table field`.
+                  - **Key fields**:
+                    - `physical_name` → Physical table name
+                    - `logical_name` → Logical table name 
+                    - `field` → Column name in the table 
+                    - `field_jpn` → Japanese name of the column 
 
-                    - **`v_dataset_view_table_field` ビュー**:
-                      - **概要**: データセット（`dataset`）の構成情報を格納する。 
-                      - **主なフィールド**:
-                        - `ds_physical_name` → データセット名  
-                        - `ds_logical_name` → データセットのロジック名
-                        - `view_name` → そのデータセットを構成するビュー名
-                        - `table_name` → そのビューを構成するテーブル名
-                        - `field` → そのテーブルを構成するカラム名
-                        - `field_jpn` → そのテーブルを構成するカラムの日本語名
+                - **`v_view_table_field` view**:  
+                  - **Overview**: Stores composition information of each `view table field`.
+                  - **Key fields**:
+                    - `view_physical_name` → Physical view name 
+                    - `view_logical_name` → Logical view name 
+                    - `table_physical_name` → Table name composing the view 
+                    - `table_logical_name` → Japanese name of the table 
+                    - `field` → Column name in the table 
+                    - `field_jpn` → Japanese name of the column 
+
+                - **`v_dataset_view_table_field` view**:
+                  - **Overview**: Stores composition information of datasets (`dataset`). 
+                  - **Key fields**:
+                    - `ds_physical_name` → Dataset name
+                    - `ds_logical_name` → Logical dataset name 
+                    - `view_name` → View name composing the dataset 
+                    - `table_name` → Table name composing the view 
+                    - `field` → Column name in the table 
+                    - `field_jpn` → Japanese name of the column 
 
 
-                    ## **SQL 生成ルール**
-                    1. どのような質問にも、まず最初に検索用の SQL を作成してください。 
-                    2. テーブルに関するクエリの場合、`table_fields` のみ使用してください。  
-                    3. ビューに関するクエリの場合、`v_view_table_field` を使用してください。  
-                    4. データセットに関するクエリの場合、`v_dataset_view_table_field` を使用してください。  
-                    5. SQL 文を作成する際は、すべての関連するデータを取得し、必要な情報が漏れないようにしてください。  
-                    6. ユーザーの質問には必ず日本語で回答してください。  
-                    7. あなたは私の意見を求める必要はありません。最後まで実行してください。  
-
-                    ユーザーがfieldを提供する場合、以下の手順で検索してください。
-                    （1）`field_jpn` または`field` に対して`table_fields`から`physical_name`と`logical_name`を検索してください。　
-                    （2）`field_jpn` または`field` に対して`v_view_table_field` から `view_physical_name`と`view_logical_name`を検索してください。　
-                    （3）`field_jpn` または`field` に対して`v_dataset_view_table_field` から `ds_physical_name`と`ds_logical_name`を検索してください。　
-                    
-                    **注意点**：  
-                    1. 質問に「影響」「影響範囲」「関係するもの」などの語句が含まれる場合は、すべて（テーブル・ビュー・データセット）を対象にして検索してください。 
-                    2. ユーザーが特定の範囲を指定していない場合は、影響範囲を限定せず、すべて（テーブル・ビュー・データセット）を対象にして検索してください。 　
-                    
-                    ユーザが質問するものだけ回答します。それ以外の情報を回答しないでください。"""
+                ## **SQL Generation Rules**
+                1. For any question, first create a search SQL statement. 
+                2. For table field-related queries, use only `table_fields`.  
+                3. For view table field-related queries, use `v_view_table_field`.  
+                4. For dataset view table field-related queries, use `v_dataset_view_table_field`.  
+                5. When creating SQL statements, retrieve all relevant data to ensure no necessary information is missing.  
+                6. Always respond to user questions in Japanese.  
+                7. You don't need to consult my opinion. Execute through to the end.  
+                
+                **Important Notes**:  
+                1. Determine the intent of the user's input. If it contains terms like "impact", "scope of impact", or "related items" etc., you should recognize that the user intends to obtain impact-related content. Search all objects (tables/views/datasets).
+                2. When users don't specify a scope, search all objects (tables/views/datasets) without limiting the impact range. 
+                
+                Respond only to what the user asks. Do not provide any additional information.The final returned results, not the SQL statements you generated. Please execute the generated SQL statements, organize the returned content, and provide it in string list format.
+                """
 
             system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 
             # 创建对话提示
-            human_template = """ユーザ問題: {input}"""
+            human_template = """User question: {input}"""
             human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-            ai_template = "考える過程: {agent_scratchpad}"
+            ai_template = "Thinking process: {agent_scratchpad}"
             ai_message_prompt = AIMessagePromptTemplate.from_template(ai_template)
             chat_prompt = ChatPromptTemplate.from_messages(
                 [system_message_prompt, human_message_prompt, ai_message_prompt]
@@ -164,23 +137,19 @@ class PostgreSQLRetriever(BaseRetriever):
             # 获取数据库对象
             db = self.pg_tools.get_db(include_tables=search_object, view_support=True)
             
-            # 确保 self.llm 不为 None
-            if self.llm is not None:
-                # 创建带有超时设置的LLM实例
-                timeout_llm = self.llm.with_config({"timeout": self.request_timeout})
-                
-                # 创建 SQL 工具包和代理
-                self.toolkit = SQLDatabaseToolkit(db=db, llm=timeout_llm)
-                self.agent = create_sql_agent(
-                    llm=timeout_llm,
-                    toolkit=self.toolkit,
-                    agent_type=AgentType.OPENAI_FUNCTIONS,
-                    verbose=False,
-                    prompt=chat_prompt,
-                    top_k=10000  # 减少top_k参数值以减少token使用量
-                )
-            else:
-                raise ValueError("LLM instance is not initialized properly")
+            self.toolkit  = SQLDatabaseToolkit(db=db, llm=self.llm) 
+            self.agent  = create_sql_agent(
+                llm=self.llm, 
+                toolkit=self.toolkit, 
+                agent_type=AgentType.OPENAI_FUNCTIONS,
+                verbose=True,  # 开启详细日志
+                max_iterations=15,  # 调大迭代次数（默认15）
+                max_execution_time=60,  # 超时时间设为300秒（默认60）
+                top_k=1000,  # 保持您原有的设置 
+                prompt=chat_prompt,
+                handle_parsing_errors=True,
+                stop_sequence=["NO_MORE_QUERIES_NEEDED"]  # 自定义终止信号
+            )
 
             # 使用重试机制运行代理
             retries = 0
@@ -189,10 +158,8 @@ class PostgreSQLRetriever(BaseRetriever):
             
             while retries < self.max_retries:
                 try:
-                    # 运行代理，设置超时
                     result = await self.agent.ainvoke(
-                        {"input": query},
-                        config={"timeout": self.request_timeout}
+                        {"input": query}
                     )
                     break  # 成功执行，跳出循环
                 except Exception as e:
@@ -206,7 +173,9 @@ class PostgreSQLRetriever(BaseRetriever):
             
             if result is None:
                 raise last_error or Exception("Failed to execute agent after multiple retries")
-
+            else:
+                print(f"[PostgreSQL Retriever] Agent executed successfully.")
+                print(result['output'])
             # 提取代理的响应
             postgres_results = [{"content": result['output'], "score": 0.99, "source": "postgresql"}]
             

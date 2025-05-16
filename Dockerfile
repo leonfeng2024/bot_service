@@ -55,11 +55,7 @@ RUN mkdir -p /root/.config/pip && \
 RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt && \
     rm -rf /root/.cache/pip
-
-# Copy debug and test scripts
-COPY debug_mermaid.sh test_mermaid_docker.sh test_simple_mermaid.sh /app/
-RUN chmod +x /app/debug_mermaid.sh /app/test_mermaid_docker.sh /app/test_simple_mermaid.sh
-
+    
 # Copy application code
 COPY . .
 

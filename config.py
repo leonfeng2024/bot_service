@@ -2,20 +2,10 @@
 Configuration file containing all required service configurations
 """
 
-# Azure OpenAI 
-AZURE_OPENAI_MODEL_NAME = "gpt-4o"
-AZURE_OPENAI_API_BASE = "https://openai-southus-trng-app-chatbot01.openai.azure.com/"
-AZURE_OPENAI_API_KEY = ""
-AZURE_OPENAI_API_VERSION = "2024-02-15-preview"
-
 # OpenAI GPT-4.1 
 OPENAI_API_KEY = ""
 OPENAI_PROJECT_ID = "proj_VRqlWoHHTIFracPfGLymyGQq"
 OPENAI_MODEL_NAME = "gpt-4.1"
-
-# Claude 
-CLAUDE_API_KEY = "your_claude_api_key_here"
-CLAUDE_MODEL_NAME = "claude-3-sonnet-20240229"
 
 # PostgreSQL 
 POSTGRESQL_DBNAME = "local_rag"
