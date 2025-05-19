@@ -1669,8 +1669,6 @@ async def delete_opensearch_document(request: Request, token_data: dict = Depend
         try:
             # Create OpenSearch tools
             opensearch_tools = OpenSearchTools()
-            
-            # 直接使用改进后的delete_document_by_name方法删除文档
             delete_result = opensearch_tools.delete_document_by_name(index_name, document_name)
             
             if delete_result["status"] != "success":

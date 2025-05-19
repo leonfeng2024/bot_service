@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# 检查容器是否运行
+# check if the container is running
 if ! docker ps | grep -q "bot_service"; then
     echo "Error: bot_service container is not running"
     exit 1
 fi
 
-# 获取容器ID
+# get container ID
 CONTAINER_ID=$(docker ps -q -f name=bot_service)
 
-# 定义要同步的目录和文件
+# define directories and files to sync
 DIRS=(
     "Retriever"
     "service"
@@ -26,7 +26,7 @@ FILES=(
     "puppeteer-config.json"
 )
 
-# 同步目录
+# sync directories
 for dir in "${DIRS[@]}"; do
     if [ -d "$dir" ]; then
         echo "Syncing directory: $dir"
@@ -36,7 +36,7 @@ for dir in "${DIRS[@]}"; do
     fi
 done
 
-# 同步文件
+# sync files
 for file in "${FILES[@]}"; do
     if [ -f "$file" ]; then
         echo "Syncing file: $file"
@@ -46,7 +46,7 @@ for file in "${FILES[@]}"; do
     fi
 done
 
-# 重启 uvicorn 服务
+# restart uvicorn service
 echo "Restarting uvicorn service..."
 docker exec "$CONTAINER_ID" sh -c "kill $(ps aux | grep 'uvicorn' | grep -v grep | awk '{print $2}')"
 docker exec "$CONTAINER_ID" uvicorn server:app --host 0.0.0.0 --port 8000 &

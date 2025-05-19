@@ -2,25 +2,25 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
 class TableInfo(BaseModel):
-    """PostgreSQL表信息"""
+    """PostgreSQL table info"""
     table_name: str
     table_schema: str
     table_type: str
 
 class ExecuteQueryRequest(BaseModel):
-    """执行SQL查询请求模型"""
+    """Execute SQL Query Request"""
     query: str
 
 class ExecuteQueryResponse(BaseModel):
-    """SQL查询结果响应模型"""
+    """SQL Query Result Response"""
     rows: List[Dict[str, Any]]
 
 class ErrorResponse(BaseModel):
-    """错误响应模型"""
+    """Error Response"""
     error: str
 
 class ImportResponse(BaseModel):
-    """导入响应模型"""
+    """Import Response"""
     success: bool
     message: str
     tables_affected: Optional[int] = None 

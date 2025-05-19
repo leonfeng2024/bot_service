@@ -82,11 +82,6 @@ CREATE TABLE employees_history (
     CONSTRAINT fk_changed_by FOREIGN KEY (changed_by) REFERENCES employees(employee_id)
 );
 
-
-
-
-
-
 --- View
 --- v_employee_details
 --- 显示员工的详细信息，包括姓名、职位、部门名称和工资

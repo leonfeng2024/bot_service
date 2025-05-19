@@ -2,37 +2,37 @@ from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
 class IndexInfo(BaseModel):
-    """OpenSearch索引信息"""
+    """OpenSearch Index Info"""
     index: str
     doc_count: int
     status: str
     health: str
 
 class CreateIndexRequest(BaseModel):
-    """创建索引请求模型"""
+    """Create Index Request"""
     index: str
 
 class GenericResponse(BaseModel):
-    """通用响应模型"""
+    """Generic Response"""
     success: bool
     message: str
 
 class SearchRequest(BaseModel):
-    """搜索请求模型"""
+    """Search Request"""
     index: str
     query: str
 
 class SearchHit(BaseModel):
-    """搜索结果命中项"""
+    """Search Hit"""
     id: str
     index: str
     score: float
     source: Dict[str, Any]
 
 class SearchResponse(BaseModel):
-    """搜索响应模型"""
+    """Search Response"""
     hits: List[SearchHit]
 
 class ErrorResponse(BaseModel):
-    """错误响应模型"""
+    """Error Response"""
     error: str 

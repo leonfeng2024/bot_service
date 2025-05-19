@@ -379,7 +379,7 @@ class OpenSearchTools:
             
             # Extract the full procedure definition
             start_pos = match.span()[0]
-            end_marker = "--- 调用示例"
+            end_marker = "--- please call example"
             end_pos = content.find(end_marker, start_pos)
             if end_pos == -1:
                 # If no end marker, go to the next procedure or end of file

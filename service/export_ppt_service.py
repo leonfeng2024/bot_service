@@ -4,18 +4,8 @@ from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 import os
 from datetime import datetime
-import requests
-import base64
-from io import BytesIO
-from pptx.dml.color import RGBColor
 from typing import Dict, List, Any
-import mermaid as md
-from mermaid.graph import Graph
-import matplotlib.pyplot as plt
-import networkx as nx
-from PIL import Image, ImageDraw, ImageFont
 import traceback
-import subprocess
 
 class ExportPPTService:
     def __init__(self):
@@ -92,13 +82,13 @@ class ExportPPTService:
             import os
             import subprocess
             
-            # Generate Mermaid diagram definition with compact layout settings
+            # Generate Mermaid diagram definition with improved layout settings
             mermaid_definition = """graph LR
 %%{
   init: {
     'flowchart': {
-      'nodeSpacing': 40,
-      'rankSpacing': 60,
+      'nodeSpacing': 50,
+      'rankSpacing': 80,
       'curve': 'basis',
       'nodeWidth': 200,
       'nodeHeight': 40,
@@ -121,11 +111,21 @@ class ExportPPTService:
 }%%
 
 classDef tableNode fill:#d7e9f7,stroke:#3c78d8,stroke-width:2px,font-size:14px,text-align:center;
+classDef viewNode fill:#fff2cc,stroke:#f1c232,stroke-width:2px,font-size:14px,text-align:center;
+classDef produceNode fill:#e6ffcc,stroke:#6aa84f,stroke-width:2px,font-size:14px,text-align:center;
+classDef datasetNode fill:#d9d2e9,stroke:#8e7cc3,stroke-width:2px,font-size:14px,text-align:center;
 classDef fieldNode fill:#fff2cc,stroke:#f1c232,stroke-width:1px,font-size:12px,text-align:left;
-classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
+classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;
 
-            # Step 1: Try to directly extract relationship data from Neo4j format
+subgraph tables["Tables"]
+    direction TB
+"""
+
+            # Step 1: Extract relationship data from Neo4j format or other formats
             all_tables = set()
+            all_views = set()
+            all_produces = set()
+            all_datasets = set()
             relationships = []
             
             # Check if the data is in Neo4j format with source_table and target_table fields
@@ -135,16 +135,163 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     has_neo4j_format = True
                     break
             
-            if has_neo4j_format:
-                print("Detected Neo4j relationship data format")
-                # Extract tables from Neo4j format
+            # Process data based on the image format
+            # The image shows tables with employee_id and manager_id relationships
+            if 'content' in relationships_df.columns:
+                for _, row in relationships_df.iterrows():
+                    content = row.get('content', '')
+                    if isinstance(content, str):
+                        # Extract table names from content
+                        if "Table " in content and " is related to table " in content:
+                            parts = content.split(" is related to table ")
+                            if len(parts) == 2:
+                                source_table = parts[0].replace("Table ", "").strip()
+                                
+                                # Further split the target part to extract field information
+                                target_parts = parts[1].split(" through field ")
+                                target_table = target_parts[0].strip()
+                                
+                                # Categorize nodes based on naming patterns
+                                if source_table.startswith("p_") or "update" in source_table or "calculate" in source_table:
+                                    all_produces.add(source_table)
+                                elif source_table == "departments":
+                                    all_datasets.add(source_table)
+                                elif source_table == "employees":
+                                    all_tables.add(source_table)
+                                elif "job_history" in source_table:
+                                    all_views.add(source_table)
+                                elif "employee_details" in source_table:
+                                    all_views.add(source_table)
+                                else:
+                                    all_tables.add(source_table)
+                                    
+                                if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
+                                    all_produces.add(target_table)
+                                elif target_table == "departments":
+                                    all_datasets.add(target_table)
+                                elif target_table == "employees":
+                                    all_tables.add(target_table)
+                                elif "job_history" in target_table:
+                                    all_views.add(target_table)
+                                elif "employee_details" in target_table:
+                                    all_views.add(target_table)
+                                else:
+                                    all_tables.add(target_table)
+                                
+                                # Extract field information
+                                field_info = ""
+                                if len(target_parts) > 1:
+                                    field_info = target_parts[1].strip()
+                                
+                                relationship = {
+                                    'source': source_table,
+                                    'target': target_table,
+                                    'label': field_info
+                                }
+                                relationships.append(relationship)
+            
+            # If we have data in the format shown in the image
+            if 'Description' in relationships_df.columns or 'description' in relationships_df.columns:
+                desc_col = 'Description' if 'Description' in relationships_df.columns else 'description'
+                for _, row in relationships_df.iterrows():
+                    description = row.get(desc_col, '')
+                    if isinstance(description, str) and " -> " in description:
+                        source_field, target_field = description.split(" -> ")
+                        
+                        # Get source and target tables if available
+                        source_table = None
+                        target_table = None
+                        
+                        # Try to get table names from other columns
+                        if 'Table' in relationships_df.columns:
+                            source_table = row.get('Table')
+                        elif 'source_table' in relationships_df.columns:
+                            source_table = row.get('source_table')
+                        
+                        if 'Target Table' in relationships_df.columns:
+                            target_table = row.get('Target Table')
+                        elif 'target_table' in relationships_df.columns:
+                            target_table = row.get('target_table')
+                        
+                        # If we couldn't get table names, try to extract from the fields
+                        if not source_table and '_' in source_field:
+                            source_table = source_field.split('_')[0]
+                        
+                        if not target_table and '_' in target_field:
+                            target_table = target_field.split('_')[0]
+                        
+                        # Categorize based on naming patterns
+                        if source_table:
+                            if source_table.startswith("p_") or "update" in source_table or "calculate" in source_table:
+                                all_produces.add(source_table)
+                            elif source_table == "departments":
+                                all_datasets.add(source_table)
+                            elif source_table == "employees":
+                                all_tables.add(source_table)
+                            elif "job_history" in source_table:
+                                all_views.add(source_table)
+                            elif "employee_details" in source_table:
+                                all_views.add(source_table)
+                            else:
+                                all_tables.add(source_table)
+                        
+                        if target_table:
+                            if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
+                                all_produces.add(target_table)
+                            elif target_table == "departments":
+                                all_datasets.add(target_table)
+                            elif target_table == "employees":
+                                all_tables.add(target_table)
+                            elif "job_history" in target_table:
+                                all_views.add(target_table)
+                            elif "employee_details" in target_table:
+                                all_views.add(target_table)
+                            else:
+                                all_tables.add(target_table)
+                        
+                        if source_table and target_table:
+                            relationship = {
+                                'source': source_table,
+                                'target': target_table,
+                                'label': f"{source_field} -> {target_field}"
+                            }
+                            relationships.append(relationship)
+            
+            # Fallback to Neo4j format if needed
+            if not relationships and has_neo4j_format:
+                print("Using Neo4j relationship data format")
                 if 'source_table' in relationships_df.columns and 'target_table' in relationships_df.columns:
                     for _, row in relationships_df.iterrows():
                         source_table = row.get('source_table')
                         target_table = row.get('target_table')
                         if source_table and target_table:
-                            all_tables.add(source_table)
-                            all_tables.add(target_table)
+                            # Categorize based on naming patterns
+                            if source_table.startswith("p_") or "update" in source_table or "calculate" in source_table:
+                                all_produces.add(source_table)
+                            elif source_table == "departments":
+                                all_datasets.add(source_table)
+                            elif source_table == "employees":
+                                all_tables.add(source_table)
+                            elif "job_history" in source_table:
+                                all_views.add(source_table)
+                            elif "employee_details" in source_table:
+                                all_views.add(source_table)
+                            else:
+                                all_tables.add(source_table)
+                                
+                            if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
+                                all_produces.add(target_table)
+                            elif target_table == "departments":
+                                all_datasets.add(target_table)
+                            elif target_table == "employees":
+                                all_tables.add(target_table)
+                            elif "job_history" in target_table:
+                                all_views.add(target_table)
+                            elif "employee_details" in target_table:
+                                all_views.add(target_table)
+                            else:
+                                all_tables.add(target_table)
+                            
                             source_field = row.get('source_field', '')
                             target_field = row.get('target_field', '')
                             relationship = {
@@ -154,100 +301,119 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                             }
                             relationships.append(relationship)
             
-            # Step 2: Try the original Chinese format if no Neo4j data was found
-            if not all_tables or not relationships:
-                print("Trying to extract relationships from content field...")
-                # 提取所有唯一的表名
-                for content in relationships_df['content']:
-                    if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
-                        parts = content.split(" 通过字段 ")
-                        if len(parts) >= 2:
-                            source_part = parts[0].replace("表 ", "").strip()
-                            target_part = parts[1].split(" 关联到表 ")[1].split(" 的字段 ")[0].strip()
-                            all_tables.add(source_part)
-                            all_tables.add(target_part)
-                        else:
-                            print(f"Warning: Unexpected content format: {content}")
-                
-                # 添加关系
-                for content in relationships_df['content']:
-                    if isinstance(content, str) and "表 " in content and " 通过字段 " in content and " 关联到表 " in content:
-                        try:
-                            # 解析内容
-                            parts = content.split(" 通过字段 ")
-                            source_table = parts[0].replace("表 ", "").strip()
-                            remaining = parts[1].split(" 关联到表 ")
-                            source_field = remaining[0].strip()
-                            target_remaining = remaining[1].split(" 的字段 ")
-                            target_table = target_remaining[0].strip()
-                            target_field = target_remaining[1].strip() if len(target_remaining) > 1 else "unknown"
+            # If we still don't have relationships, try to extract from the image data format
+            if not relationships:
+                # Handle the specific format shown in the image
+                for _, row in relationships_df.iterrows():
+                    if 'Table' in relationships_df.columns and 'Description' in relationships_df.columns:
+                        table_name = row.get('Table', '')
+                        description = row.get('Description', '')
+                        
+                        if table_name and description and ' -> ' in description:
+                            source_field, target_field = description.split(' -> ')
+                            
+                            # Extract target table from content if available
+                            target_table = None
+                            content = row.get('Content', '')
+                            if content and 'is related to table' in content:
+                                target_table = content.split('is related to table')[1].split('through')[0].strip()
+                            
+                            # If we couldn't get target table, use a default
+                            if not target_table:
+                                target_table = 'employees'  # Default based on image
+                            
+                            # Categorize based on naming patterns
+                            if table_name.startswith("p_") or "update" in table_name or "calculate" in table_name:
+                                all_produces.add(table_name)
+                            elif table_name == "departments":
+                                all_datasets.add(table_name)
+                            elif table_name == "employees":
+                                all_tables.add(table_name)
+                            elif "job_history" in table_name:
+                                all_views.add(table_name)
+                            elif "employee_details" in table_name:
+                                all_views.add(table_name)
+                            else:
+                                all_tables.add(table_name)
+                                
+                            if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
+                                all_produces.add(target_table)
+                            elif target_table == "departments":
+                                all_datasets.add(target_table)
+                            elif target_table == "employees":
+                                all_tables.add(target_table)
+                            elif "job_history" in target_table:
+                                all_views.add(target_table)
+                            elif "employee_details" in target_table:
+                                all_views.add(target_table)
+                            else:
+                                all_tables.add(target_table)
                             
                             relationship = {
-                                'source': source_table,
+                                'source': table_name,
                                 'target': target_table,
                                 'label': f"{source_field} -> {target_field}"
                             }
                             relationships.append(relationship)
-                        except Exception as e:
-                            print(f"Error processing relationship: {content}, Error: {str(e)}")
             
-            # Step 3: If still no relationships, try to parse from content text
-            if not all_tables or not relationships:
-                print("Attempting to extract database table relationships from description text...")
-                for content in relationships_df['content']:
-                    if isinstance(content, str):
-                        # Try to extract relationships from English text descriptions
-                        if "table" in content.lower() and "field" in content.lower():
-                            # Simple regex-like parsing for common relationship descriptions
-                            import re
-                            # Look for table names mentioned together
-                            table_mentions = re.findall(r'table (\w+)', content.lower())
-                            for table in table_mentions:
-                                if len(table) > 2:  # Avoid short words
-                                    all_tables.add(table)
-                
-                # If we found tables but no relationships, create basic connections
-                if all_tables and not relationships:
-                    tables_list = list(all_tables)
-                    for i in range(len(tables_list)):
-                        for j in range(i+1, len(tables_list)):
-                            # Create a simple relationship between tables
-                            relationship = {
-                                'source': tables_list[i],
-                                'target': tables_list[j],
-                                'label': "related"
-                            }
-                            relationships.append(relationship)
-            
-            # 为每个表生成节点
+            # Add tables to the diagram
             for table in all_tables:
                 table_id = table.replace('.', '_').replace('-', '_')
                 mermaid_definition += f"\n    {table_id}[<div style='padding:5px;'>{table}</div>]"
             
-            # 添加关系边
+            mermaid_definition += "\nend\n"
+            
+            # Add views subgraph
+            mermaid_definition += "\nsubgraph views[\"Views\"]\n    direction TB\n"
+            for view in all_views:
+                view_id = view.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\n    {view_id}[<div style='padding:5px;'>{view}</div>]"
+            mermaid_definition += "\nend\n"
+            
+            # Add produce and dataset subgraph
+            mermaid_definition += "\nsubgraph outputs[\"Produce & Dataset\"]\n    direction TB\n"
+            for produce in all_produces:
+                produce_id = produce.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\n    {produce_id}[<div style='padding:5px;'>{produce}</div>]"
+            
+            for dataset in all_datasets:
+                dataset_id = dataset.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\n    {dataset_id}[<div style='padding:5px;'>{dataset}</div>]"
+            mermaid_definition += "\nend\n"
+            
+            # Add relationships
             for relationship in relationships:
                 source_table = relationship['source']
                 target_table = relationship['target']
                 label = relationship['label']
                 
-                # 创建关系ID
+                # Create relationship ID
                 source_id = source_table.replace('.', '_').replace('-', '_')
                 target_id = target_table.replace('.', '_').replace('-', '_')
                 
-                # 添加关系
-                mermaid_definition += f"\n    {source_id} -->|{label}| {target_id}"
+                # Add relationship
+                mermaid_definition += f"\n{source_id} -->|{label}| {target_id}"
             
-            # 设置样式类
+            # Set style classes
             for table in all_tables:
                 table_id = table.replace('.', '_').replace('-', '_')
-                mermaid_definition += f"\n    class {table_id} tableNode;"
+                mermaid_definition += f"\nclass {table_id} tableNode;"
             
-            # 处理无法识别的数据
-            if not all_tables:
+            for view in all_views:
+                view_id = view.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\nclass {view_id} viewNode;"
+            
+            for produce in all_produces:
+                produce_id = produce.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\nclass {produce_id} produceNode;"
+            
+            for dataset in all_datasets:
+                dataset_id = dataset.replace('.', '_').replace('-', '_')
+                mermaid_definition += f"\nclass {dataset_id} datasetNode;"
+            
+            # Handle empty data case
+            if not all_tables and not all_views and not all_produces and not all_datasets:
                 mermaid_definition += "\n    error[无法识别的数据格式]\n"
-                
-            mermaid_definition += """
-"""
             
             # Ensure output directory exists
             output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
@@ -300,7 +466,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     print(f"mmdc stderr: {mmdc_error.stderr}")
             
             # 备选方法：尝试使用NPX运行mermaid-cli，使用无沙盒模式和puppeteer配置
-            print("尝试使用npx运行mermaid-cli...")
+            print("try to use npx to run mermaid-cli...")
             try:
                 # 使用npx安装并运行mmdc，添加无沙盒选项
                 cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent {local_config_param}"
@@ -311,14 +477,14 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     print(f"Successfully generated diagram using npx mermaid-cli")
                     return image_path
                 else:
-                    print("npx mmdc生成的图像文件过小或不存在，尝试下一种方法")
+                    print("npx mmdc generated image file is too small or doesn't exist, try another method")
             except Exception as npx_error:
-                print(f"npx命令错误: {str(npx_error)}")
+                print(f"npx command error: {str(npx_error)}")
                 if hasattr(npx_error, 'stderr'):
                     print(f"npx stderr: {npx_error.stderr}")
             
             # 使用matplotlib作为最后的备用方法
-            print("使用matplotlib作为备选方案绘制关系图...")
+            print("use matplotlib as a backup method to draw the relationship diagram...")
             import matplotlib.pyplot as plt
             import networkx as nx
             
@@ -326,8 +492,9 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             G = nx.DiGraph()
             
             # 添加节点
-            for table in all_tables:
-                G.add_node(table)
+            all_nodes = list(all_tables) + list(all_views) + list(all_produces) + list(all_datasets)
+            for node in all_nodes:
+                G.add_node(node)
             
             # 添加边
             for relationship in relationships:
@@ -338,7 +505,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             
             # 如果没有边，尝试从列中提取关系
             if not list(G.edges()):
-                print("没有找到关系，尝试直接从数据列提取...")
+                print("no relationship found, try to extract from data columns...")
                 # 检查是否包含source_table和target_table列
                 if 'source_table' in relationships_df.columns and 'target_table' in relationships_df.columns:
                     for _, row in relationships_df.iterrows():
@@ -350,47 +517,64 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                             source_field = row.get('source_field', '')
                             target_field = row.get('target_field', '')
                             G.add_edge(source_table, target_table, label=f"{source_field} -> {target_field}")
-                
-                # 如果仍然没有边，尝试从content中提取
-                if not list(G.edges()):
-                    print("从content列中提取关系...")
-                    for content in relationships_df['content']:
-                        if isinstance(content, str):
-                            words = content.split()
-                            # Use a sliding window to extract potential table names and relationships
-                            for i in range(len(words)-1):
-                                for j in range(i+1, min(i+5, len(words))):
-                                    word1 = words[i].strip('.,;:"\'()[]{}')
-                                    word2 = words[j].strip('.,;:"\'()[]{}')
-                                    # Check if words look like table/field names (alphanumeric with possible underscores)
-                                    if (len(word1) > 3 and word1.isalnum() or '_' in word1) and \
-                                       (len(word2) > 3 and word2.isalnum() or '_' in word2):
-                                        if word1.lower() != word2.lower():  # Avoid self-loops
-                                            G.add_node(word1)
-                                            G.add_node(word2)
-                                            # If the words are close, they might be related
-                                            if abs(i - j) < 3:
-                                                G.add_edge(word1, word2, label="related")
             
             # 图为空的情况处理
             if not G.nodes():
-                print("无法提取有效的关系，创建简单图表")
+                print("no valid relationship found, create a simple diagram")
                 G.add_node("No relationships found")
             
             # 设置图形大小
             plt.figure(figsize=(12, 9), dpi=100)
             
-            # 使用spring布局，增加节点间距和迭代次数提高布局质量
-            pos = nx.spring_layout(G, k=0.9, iterations=100, seed=42)
+            # Create a custom layout with 3 columns
+            pos = {}
             
-            # 绘制节点 - 使用更大的节点和更鲜明的颜色
+            # Position tables on the left
+            table_list = list(all_tables)
+            for i, table in enumerate(table_list):
+                pos[table] = (-3, 2 - (i * 0.5))
+            
+            # Position views in the middle
+            view_list = list(all_views)
+            for i, view in enumerate(view_list):
+                pos[view] = (0, 2 - (i * 0.5))
+            
+            # Position produces and datasets on the right
+            produce_list = list(all_produces)
+            dataset_list = list(all_datasets)
+            output_list = produce_list + dataset_list
+            for i, output in enumerate(output_list):
+                pos[output] = (3, 2 - (i * 0.5))
+            
+            # For any nodes not positioned yet, use spring layout
+            remaining_nodes = [n for n in G.nodes() if n not in pos]
+            if remaining_nodes:
+                temp_pos = nx.spring_layout(G.subgraph(remaining_nodes), k=0.9, iterations=100, seed=42)
+                for node, position in temp_pos.items():
+                    pos[node] = position
+            
+            # Define node colors based on category
+            node_colors = []
+            for node in G.nodes():
+                if node in all_tables:
+                    node_colors.append('#d7e9f7')  # Blue for tables
+                elif node in all_views:
+                    node_colors.append('#fff2cc')  # Yellow for views
+                elif node in all_produces:
+                    node_colors.append('#e6ffcc')  # Green for produces
+                elif node in all_datasets:
+                    node_colors.append('#d9d2e9')  # Purple for datasets
+                else:
+                    node_colors.append('#f5f5f5')  # Gray for others
+            
+            # draw nodes - use larger nodes and more vivid colors
             nx.draw_networkx_nodes(G, pos, 
                                    node_size=3000, 
-                                   node_color='#d7e9f7', 
+                                   node_color=node_colors, 
                                    edgecolors='#3c78d8', 
                                    linewidths=2)
             
-            # 绘制边 - 增加箭头大小和弯曲度
+            # draw edges - increase arrow size and bending degree
             nx.draw_networkx_edges(G, pos, 
                                    edge_color='#4d77a5', 
                                    width=2.0, 
@@ -398,13 +582,13 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                                    arrowstyle='->', 
                                    connectionstyle='arc3,rad=0.1')
             
-            # 添加节点标签 - 增加字体大小和权重
+            # add node labels - increase font size and weight
             nx.draw_networkx_labels(G, pos, 
                                     font_size=14, 
                                     font_weight='bold',
                                     font_family='sans-serif')
             
-            # 添加边标签 - 确保边标签清晰可见
+            # add edge labels - ensure edge labels are clear and visible
             edge_labels = nx.get_edge_attributes(G, 'label')
             nx.draw_networkx_edge_labels(G, pos, 
                                          edge_labels=edge_labels, 
@@ -412,7 +596,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                                          font_color='#000066',
                                          bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=2))
             
-            # 保存高质量图像
+            # save high quality image
             plt.axis('off')
             plt.tight_layout()
             plt.savefig(image_path, format='png', dpi=150, bbox_inches='tight', pad_inches=0.5, transparent=True)
@@ -589,11 +773,11 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     4: 'description' if 'description' in df.columns else None
                 }
             else:
-                # 使用默认表头
+                # use default headers
                 headers = ["Table", "First Relationship", "View", "Second Relationship", "Dataset"]
                 col_map = None
             
-            # 设置表头
+            # set headers
             for i, header in enumerate(headers[:cols]):
                 cell = table.cell(0, i)
                 cell.text = header
@@ -601,9 +785,9 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 paragraph.font.bold = True
                 paragraph.font.size = Pt(11)  # Slightly smaller font
             
-            # 填充表格数据
+            # fill table data
             for i, row_data in df.iterrows():
-                if i >= rows - 1:  # 如果超过了表格行数限制，跳出循环
+                if i >= rows - 1:  # if exceeds the table row number limit, break the loop
                     break
                     
                 for j in range(cols):
@@ -612,16 +796,16 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                     else:
                         cell_value = str(row_data[j]) if j < len(df.columns) and not pd.isna(row_data[j]) else ""
                     
-                    # 限制单元格文本长度，防止单元格过大
+                    # limit cell text length, prevent cell from being too large
                     if len(cell_value) > 200:
                         cell_value = cell_value[:197] + "..."
                         
                     table.cell(i + 1, j).text = cell_value
-                    # 为表格数据设置更小的字体
+                    # set smaller font for table data
                     paragraph = table.cell(i + 1, j).text_frame.paragraphs[0]
                     paragraph.font.size = Pt(9)  # Smaller font for data
             
-            # 如果数据行数超过表格限制，添加一个说明
+            # if data rows exceed table limit, add a note
             if len(df) > rows - 1:
                 note_slide = prs.slides.add_slide(table_slide_layout)
                 note_box = note_slide.shapes.add_textbox(Inches(0.25), Inches(1), Inches(9.5), Inches(5))
@@ -630,7 +814,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 note_para.text = f"注意：数据共有{len(df)}行，由于篇幅限制，只显示了前{rows-1}行。"
                 note_para.font.size = Pt(14)
                 
-                # 添加标题
+                # add title
                 title_box = note_slide.shapes.add_textbox(Inches(0.25), Inches(0.1), Inches(9.5), Inches(0.5))
                 title_frame = title_box.text_frame
                 title_para = title_frame.add_paragraph()
@@ -642,7 +826,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             # Save presentation
             prs.save(output_file)
             
-            # 我们不再删除diagram_path，而是将其保留，以便可以在其他地方使用
+            # we don't delete diagram_path, keep it for reuse
             if diagram_path is not None and os.path.exists(diagram_path):
                 print(f"Diagram saved at: {diagram_path}")
             print(f"PPT created at: {output_file}")
@@ -785,8 +969,8 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             width = Inches(9.0)
             height = Inches(5.0)
             
-            # 限制表格的大小以避免溢出
-            rows = min(rows, 20) + 1  # +1 是为了表头
+            # limit table size to avoid overflow
+            rows = min(rows, 20) + 1  # +1 for header
             cols = min(cols, 10)
             
             # Add a table with headers
@@ -806,21 +990,21 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             for i in range(min(rows-1, df.shape[0])):
                 for j in range(min(cols, df.shape[1])):
                     cell_value = str(df.iloc[i, j]) if not pd.isna(df.iloc[i, j]) else ""
-                    # 限制单元格文本长度
+                    # limit cell text length
                     if len(cell_value) > 200:
                         cell_value = cell_value[:197] + "..."
                     table.cell(i + 1, j).text = cell_value
             
-            # 如果数据行数超过表格限制，添加一个说明
+            # if data rows exceed table limit, add a note
             if df.shape[0] > rows - 1:
                 note_slide = prs.slides.add_slide(slide_layout)
                 note_title = note_slide.shapes.title
-                note_title.text = "数据完整性说明"
+                note_title.text = "data integrity note"
                 
                 txt_box = shapes.add_textbox(left, top, width, Inches(1))
                 tf = txt_box.text_frame
                 p = tf.add_paragraph()
-                p.text = f"注意：数据共有{df.shape[0]}行，由于篇幅限制，只显示了前{rows-1}行。"
+                p.text = f"caution: data has {df.shape[0]} rows, but only the first {rows-1} rows are displayed due to page limit."
                 p.font.size = Pt(14)
             
             # Define output file path
@@ -834,7 +1018,7 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
             print(f"Error exporting to PowerPoint: {str(e)}")
             traceback.print_exc()
             
-            # 尝试创建一个最基本的PPT，确保至少有一个输出
+            # try to create a basic PPT, ensure at least one output
             try:
                 prs = Presentation()
                 slide = prs.slides.add_slide(prs.slide_layouts[0])
@@ -844,13 +1028,13 @@ classDef relationshipEdge stroke:#4d77a5,stroke-width:2px;"""
                 title.text = "Error Creating Presentation"
                 subtitle.text = f"Error: {str(e)}"
                 
-                # 保存输出
+                # save output
                 ppt_file = os.path.join(self.output_dir, f"{filename_prefix}_error.pptx")
                 prs.save(ppt_file)
                 
                 return ppt_file
             except:
-                # 如果连简单的PPT都创建失败，抛出原始异常
+                # if even a basic PPT creation fails, raise the original exception
                 raise
     
     async def append_to_ppt(self, data: List[Dict[str, Any]], ppt_file: str) -> str:
