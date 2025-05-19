@@ -57,7 +57,7 @@ services:
     networks:
       - bibot
     volumes:
-      - ./nginx/nginx_local.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx_docker.conf:/etc/nginx/nginx.conf:ro
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
