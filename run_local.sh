@@ -1,70 +1,35 @@
 #!/bin/bash
 
-# 设置颜色输出
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-
-# 检查docker是否运行
-if ! docker info > /dev/null 2>&1; then
-    echo -e "${RED}Error: Docker is not running${NC}"
-    exit 1
+# Check if running as root or with sudo
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run with sudo: sudo ./run_local.sh"
+  exit 1
 fi
 
-# 创建必要的目录
-mkdir -p data/postgres data/redis data/neo4j data/opensearch logs
+echo "=== Setting up local environment ==="
 
-# 创建docker网络（如果不存在）
-if ! docker network ls | grep -q bibot; then
-    echo -e "${GREEN}Creating bibot network...${NC}"
-    docker network create bibot
+# 1. Replace nginx configuration
+echo "Copying nginx configuration to /etc/nginx/nginx.conf..."
+cp nginx/nginx_localhost.conf /etc/nginx/nginx.conf
+
+# 2. Restart nginx service
+echo "Restarting nginx service..."
+if [ "$(uname)" == "Darwin" ]; then
+    # macOS
+    brew services restart nginx
+else
+    # Linux
+    systemctl restart nginx
 fi
 
-# 启动服务
-start_services() {
-    echo -e "${GREEN}Starting services...${NC}"
-    docker compose -f docker-compose.yml up -d --build
-    echo -e "${GREEN}All services started successfully!${NC}"
-    echo -e "${GREEN}Services are running in the background.${NC}"
-    echo -e "${GREEN}You can access the services at:${NC}"
-    echo -e "  - Main service: http://localhost:8000"
-    echo -e "  - Nginx: http://localhost:8088"
-    echo -e "  - Neo4j Browser: http://localhost:7474"
-    echo -e "  - OpenSearch: http://localhost:9200"
-}
+# 3. Run the FastAPI application in the background
+echo "Starting FastAPI application on port 8000..."
+nohup uvicorn server:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
 
-# 停止服务
-stop_services() {
-    echo -e "${GREEN}Stopping services...${NC}"
-    docker compose -f docker-compose.yml down
-    echo -e "${GREEN}All services stopped successfully!${NC}"
-}
+# Store the PID
+echo $! > uvicorn.pid
+echo "FastAPI server started with PID $(cat uvicorn.pid)"
+echo "Log file: uvicorn.log"
 
-# 查看服务状态
-status_services() {
-    echo -e "${GREEN}Service status:${NC}"
-    docker compose -f docker-compose.yml ps
-}
-
-# 处理命令行参数
-case "$1" in
-    "start")
-        start_services
-        ;;
-    "stop")
-        stop_services
-        ;;
-    "restart")
-        stop_services
-        start_services
-        ;;
-    "status")
-        status_services
-        ;;
-    *)
-        echo "Usage: $0 {start|stop|restart|status}"
-        exit 1
-        ;;
-esac
-
-exit 0 
+echo "=== Setup complete! ==="
+echo "Service is now running at http://localhost:8000" 
