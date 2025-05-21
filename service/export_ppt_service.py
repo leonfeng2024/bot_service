@@ -75,7 +75,7 @@ class ExportPPTService:
             sandbox: Whether to use the sandbox mode
             
         Returns:
-            Path to the generated diagram
+            Path to the generated diagram or None if no relationships
         """
         try:
             # Import os module to ensure accessibility everywhere
@@ -135,8 +135,7 @@ subgraph tables["Tables"]
                     has_neo4j_format = True
                     break
             
-            # Process data based on the image format
-            # The image shows tables with employee_id and manager_id relationships
+            # Process data based on the format
             if 'content' in relationships_df.columns:
                 for _, row in relationships_df.iterrows():
                     content = row.get('content', '')
@@ -151,32 +150,9 @@ subgraph tables["Tables"]
                                 target_parts = parts[1].split(" through field ")
                                 target_table = target_parts[0].strip()
                                 
-                                # Categorize nodes based on naming patterns
-                                if source_table.startswith("p_") or "update" in source_table or "calculate" in source_table:
-                                    all_produces.add(source_table)
-                                elif source_table == "departments":
-                                    all_datasets.add(source_table)
-                                elif source_table == "employees":
-                                    all_tables.add(source_table)
-                                elif "job_history" in source_table:
-                                    all_views.add(source_table)
-                                elif "employee_details" in source_table:
-                                    all_views.add(source_table)
-                                else:
-                                    all_tables.add(source_table)
-                                    
-                                if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
-                                    all_produces.add(target_table)
-                                elif target_table == "departments":
-                                    all_datasets.add(target_table)
-                                elif target_table == "employees":
-                                    all_tables.add(target_table)
-                                elif "job_history" in target_table:
-                                    all_views.add(target_table)
-                                elif "employee_details" in target_table:
-                                    all_views.add(target_table)
-                                else:
-                                    all_tables.add(target_table)
+                                # Add to tables set without categorization
+                                all_tables.add(source_table)
+                                all_tables.add(target_table)
                                 
                                 # Extract field information
                                 field_info = ""
@@ -190,7 +166,7 @@ subgraph tables["Tables"]
                                 }
                                 relationships.append(relationship)
             
-            # If we have data in the format shown in the image
+            # If we have data in the description format
             if 'Description' in relationships_df.columns or 'description' in relationships_df.columns:
                 desc_col = 'Description' if 'Description' in relationships_df.columns else 'description'
                 for _, row in relationships_df.iterrows():
@@ -220,34 +196,12 @@ subgraph tables["Tables"]
                         if not target_table and '_' in target_field:
                             target_table = target_field.split('_')[0]
                         
-                        # Categorize based on naming patterns
+                        # Add tables to appropriate sets
                         if source_table:
-                            if source_table.startswith("p_") or "update" in source_table or "calculate" in source_table:
-                                all_produces.add(source_table)
-                            elif source_table == "departments":
-                                all_datasets.add(source_table)
-                            elif source_table == "employees":
-                                all_tables.add(source_table)
-                            elif "job_history" in source_table:
-                                all_views.add(source_table)
-                            elif "employee_details" in source_table:
-                                all_views.add(source_table)
-                            else:
-                                all_tables.add(source_table)
+                            all_tables.add(source_table)
                         
                         if target_table:
-                            if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
-                                all_produces.add(target_table)
-                            elif target_table == "departments":
-                                all_datasets.add(target_table)
-                            elif target_table == "employees":
-                                all_tables.add(target_table)
-                            elif "job_history" in target_table:
-                                all_views.add(target_table)
-                            elif "employee_details" in target_table:
-                                all_views.add(target_table)
-                            else:
-                                all_tables.add(target_table)
+                            all_tables.add(target_table)
                         
                         if source_table and target_table:
                             relationship = {
@@ -257,40 +211,17 @@ subgraph tables["Tables"]
                             }
                             relationships.append(relationship)
             
-            # Fallback to Neo4j format if needed
-            if not relationships and has_neo4j_format:
+            # Neo4j format with source_table and target_table fields
+            if has_neo4j_format:
                 print("Using Neo4j relationship data format")
                 if 'source_table' in relationships_df.columns and 'target_table' in relationships_df.columns:
                     for _, row in relationships_df.iterrows():
                         source_table = row.get('source_table')
                         target_table = row.get('target_table')
                         if source_table and target_table:
-                            # Categorize based on naming patterns
-                            if source_table.startswith("p_") or "update" in source_table or "calculate" in source_table:
-                                all_produces.add(source_table)
-                            elif source_table == "departments":
-                                all_datasets.add(source_table)
-                            elif source_table == "employees":
-                                all_tables.add(source_table)
-                            elif "job_history" in source_table:
-                                all_views.add(source_table)
-                            elif "employee_details" in source_table:
-                                all_views.add(source_table)
-                            else:
-                                all_tables.add(source_table)
-                                
-                            if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
-                                all_produces.add(target_table)
-                            elif target_table == "departments":
-                                all_datasets.add(target_table)
-                            elif target_table == "employees":
-                                all_tables.add(target_table)
-                            elif "job_history" in target_table:
-                                all_views.add(target_table)
-                            elif "employee_details" in target_table:
-                                all_views.add(target_table)
-                            else:
-                                all_tables.add(target_table)
+                            # Add tables to appropriate sets without hardcoded categorization
+                            all_tables.add(source_table)
+                            all_tables.add(target_table)
                             
                             source_field = row.get('source_field', '')
                             target_field = row.get('target_field', '')
@@ -301,60 +232,10 @@ subgraph tables["Tables"]
                             }
                             relationships.append(relationship)
             
-            # If we still don't have relationships, try to extract from the image data format
+            # If no relationships found, return None instead of creating fake data
             if not relationships:
-                # Handle the specific format shown in the image
-                for _, row in relationships_df.iterrows():
-                    if 'Table' in relationships_df.columns and 'Description' in relationships_df.columns:
-                        table_name = row.get('Table', '')
-                        description = row.get('Description', '')
-                        
-                        if table_name and description and ' -> ' in description:
-                            source_field, target_field = description.split(' -> ')
-                            
-                            # Extract target table from content if available
-                            target_table = None
-                            content = row.get('Content', '')
-                            if content and 'is related to table' in content:
-                                target_table = content.split('is related to table')[1].split('through')[0].strip()
-                            
-                            # If we couldn't get target table, use a default
-                            if not target_table:
-                                target_table = 'employees'  # Default based on image
-                            
-                            # Categorize based on naming patterns
-                            if table_name.startswith("p_") or "update" in table_name or "calculate" in table_name:
-                                all_produces.add(table_name)
-                            elif table_name == "departments":
-                                all_datasets.add(table_name)
-                            elif table_name == "employees":
-                                all_tables.add(table_name)
-                            elif "job_history" in table_name:
-                                all_views.add(table_name)
-                            elif "employee_details" in table_name:
-                                all_views.add(table_name)
-                            else:
-                                all_tables.add(table_name)
-                                
-                            if target_table.startswith("p_") or "update" in target_table or "calculate" in target_table:
-                                all_produces.add(target_table)
-                            elif target_table == "departments":
-                                all_datasets.add(target_table)
-                            elif target_table == "employees":
-                                all_tables.add(target_table)
-                            elif "job_history" in target_table:
-                                all_views.add(target_table)
-                            elif "employee_details" in target_table:
-                                all_views.add(target_table)
-                            else:
-                                all_tables.add(target_table)
-                            
-                            relationship = {
-                                'source': table_name,
-                                'target': target_table,
-                                'label': f"{source_field} -> {target_field}"
-                            }
-                            relationships.append(relationship)
+                print("No relationships found in the data. Returning None.")
+                return None
             
             # Add tables to the diagram
             for table in all_tables:
@@ -363,23 +244,25 @@ subgraph tables["Tables"]
             
             mermaid_definition += "\nend\n"
             
-            # Add views subgraph
-            mermaid_definition += "\nsubgraph views[\"Views\"]\n    direction TB\n"
-            for view in all_views:
-                view_id = view.replace('.', '_').replace('-', '_')
-                mermaid_definition += f"\n    {view_id}[<div style='padding:5px;'>{view}</div>]"
-            mermaid_definition += "\nend\n"
+            # Add views subgraph if we have any
+            if all_views:
+                mermaid_definition += "\nsubgraph views[\"Views\"]\n    direction TB\n"
+                for view in all_views:
+                    view_id = view.replace('.', '_').replace('-', '_')
+                    mermaid_definition += f"\n    {view_id}[<div style='padding:5px;'>{view}</div>]"
+                mermaid_definition += "\nend\n"
             
-            # Add produce and dataset subgraph
-            mermaid_definition += "\nsubgraph outputs[\"Produce & Dataset\"]\n    direction TB\n"
-            for produce in all_produces:
-                produce_id = produce.replace('.', '_').replace('-', '_')
-                mermaid_definition += f"\n    {produce_id}[<div style='padding:5px;'>{produce}</div>]"
-            
-            for dataset in all_datasets:
-                dataset_id = dataset.replace('.', '_').replace('-', '_')
-                mermaid_definition += f"\n    {dataset_id}[<div style='padding:5px;'>{dataset}</div>]"
-            mermaid_definition += "\nend\n"
+            # Add produce and dataset subgraph if we have any
+            if all_produces or all_datasets:
+                mermaid_definition += "\nsubgraph outputs[\"Produce & Dataset\"]\n    direction TB\n"
+                for produce in all_produces:
+                    produce_id = produce.replace('.', '_').replace('-', '_')
+                    mermaid_definition += f"\n    {produce_id}[<div style='padding:5px;'>{produce}</div>]"
+                
+                for dataset in all_datasets:
+                    dataset_id = dataset.replace('.', '_').replace('-', '_')
+                    mermaid_definition += f"\n    {dataset_id}[<div style='padding:5px;'>{dataset}</div>]"
+                mermaid_definition += "\nend\n"
             
             # Add relationships
             for relationship in relationships:
@@ -394,7 +277,7 @@ subgraph tables["Tables"]
                 # Add relationship
                 mermaid_definition += f"\n{source_id} -->|{label}| {target_id}"
             
-            # Set style classes
+            # Set style classes for existing nodes only
             for table in all_tables:
                 table_id = table.replace('.', '_').replace('-', '_')
                 mermaid_definition += f"\nclass {table_id} tableNode;"
@@ -410,10 +293,6 @@ subgraph tables["Tables"]
             for dataset in all_datasets:
                 dataset_id = dataset.replace('.', '_').replace('-', '_')
                 mermaid_definition += f"\nclass {dataset_id} datasetNode;"
-            
-            # Handle empty data case
-            if not all_tables and not all_views and not all_produces and not all_datasets:
-                mermaid_definition += "\n    error[无法识别的数据格式]\n"
             
             # Ensure output directory exists
             output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'output')
@@ -448,7 +327,7 @@ subgraph tables["Tables"]
                 env['PUPPETEER_EXECUTABLE_PATH'] = '/usr/bin/chromium' if os.path.exists('/usr/bin/chromium') else ''
                 
                 # Build mmdc command and execute - add no sandbox option
-                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent"]
+                cmd = ["mmdc", "-i", mermaid_file, "-o", image_path, "-b", "transparent", "-s", "3"]
                 if local_config_param:
                     cmd.extend(["-p", docker_config_path])
                 
@@ -469,7 +348,7 @@ subgraph tables["Tables"]
             print("try to use npx to run mermaid-cli...")
             try:
                 # 使用npx安装并运行mmdc，添加无沙盒选项
-                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent {local_config_param}"
+                cmd = f"PUPPETEER_NO_SANDBOX=true npx --yes @mermaid-js/mermaid-cli mmdc -i {mermaid_file} -o {image_path} -b transparent {local_config_param} -s 3"
                 result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, env=env)
                 print(f"npx mmdc输出: {result.stdout}")
                 
@@ -503,28 +382,13 @@ subgraph tables["Tables"]
                 label = relationship['label']
                 G.add_edge(source, target, label=label)
             
-            # 如果没有边，尝试从列中提取关系
-            if not list(G.edges()):
-                print("no relationship found, try to extract from data columns...")
-                # 检查是否包含source_table和target_table列
-                if 'source_table' in relationships_df.columns and 'target_table' in relationships_df.columns:
-                    for _, row in relationships_df.iterrows():
-                        source_table = row.get('source_table')
-                        target_table = row.get('target_table')
-                        if source_table and target_table:
-                            G.add_node(source_table)
-                            G.add_node(target_table)
-                            source_field = row.get('source_field', '')
-                            target_field = row.get('target_field', '')
-                            G.add_edge(source_table, target_table, label=f"{source_field} -> {target_field}")
-            
-            # 图为空的情况处理
+            # 图为空的情况处理 - return None instead of creating a "No relationships found" node
             if not G.nodes():
-                print("no valid relationship found, create a simple diagram")
-                G.add_node("No relationships found")
+                print("no valid relationship found, returning None")
+                return None
             
             # 设置图形大小
-            plt.figure(figsize=(12, 9), dpi=100)
+            plt.figure(figsize=(12, 9), dpi=200)
             
             # Create a custom layout with 3 columns
             pos = {}
@@ -599,7 +463,7 @@ subgraph tables["Tables"]
             # save high quality image
             plt.axis('off')
             plt.tight_layout()
-            plt.savefig(image_path, format='png', dpi=150, bbox_inches='tight', pad_inches=0.5, transparent=True)
+            plt.savefig(image_path, format='png', dpi=300, bbox_inches='tight', pad_inches=0.5, transparent=True)
             plt.close()
             
             print(f"Successfully generated diagram using matplotlib")

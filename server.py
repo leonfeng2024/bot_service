@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
+import re
 from service.chat_service import ChatService
 from service.llm_service import LLMService
 from service.embedding_service import EmbeddingService
@@ -17,6 +18,7 @@ from models.models import ChatRequest, DatabaseSchemaRequest, TokenData, LogoutR
 from models.user_models import CreateUserRequest, UpdateUserRequest, UserProfileResponse, UserResponseWithMessage, DeleteUserResponse
 from models.postgres_models import TableInfo, ExecuteQueryRequest, ExecuteQueryResponse, ErrorResponse, ImportResponse
 from models.opensearch_models import IndexInfo, CreateIndexRequest, GenericResponse, SearchRequest, SearchResponse
+from models.neo4j_models import Neo4jDatabaseInfo, Neo4jGraphData, ExecuteQueryRequest as Neo4jQueryRequest, ExecuteQueriesRequest, ExecuteQueriesResponse
 import logging
 import logging.config
 import os
@@ -34,7 +36,7 @@ from tools.excel_to_postgre import process_excel_file
 import json
 import asyncio
 from contextlib import asynccontextmanager
-from config import JWT_SECRET, JWT_EXPIRATION
+import config
 import re
 
 # Configure logging
@@ -46,10 +48,36 @@ os.makedirs('logs', exist_ok=True)
 
 # Load logging configuration
 with open('logs/logging_config.yaml', 'r') as f:
-    config = yaml.safe_load(f)
-    logging.config.dictConfig(config)
+    logging_config = yaml.safe_load(f)
+    logging.config.dictConfig(logging_config)
 
+# Get the logger for this module
 logger = logging.getLogger(__name__)
+
+# Add console handler if not already present
+console_handler_exists = False
+for handler in logger.handlers:
+    if isinstance(handler, logging.StreamHandler) and handler.stream.name == '<stdout>':
+        console_handler_exists = True
+        break
+
+if not console_handler_exists:
+    # Create console handler with INFO level
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    
+    # Add the handler to the logger
+    logger.addHandler(console_handler)
+
+# Ensure the logger level allows INFO messages
+if logger.level > logging.INFO:
+    logger.setLevel(logging.INFO)
+    
+logger.info("Logger configured with console output")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -66,7 +94,6 @@ async def lifespan(app: FastAPI):
     await export_service.close()
 
 async def ensure_doc_status_table():
-    """Ensure the postgre_doc_status table exists in the database"""
     try:
         # Check if the table exists
         check_query = """
@@ -175,10 +202,10 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
                 "user_id": 999,
                 "role": "admin",
                 "uuid": "dev-uuid",
-                "exp": int(time.time()) + JWT_EXPIRATION
+                "exp": int(time.time()) + config.JWT_EXPIRATION
             }
             
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(token, config.JWT_SECRET, algorithms=["HS256"])
         # Check if token has expired
         if payload.get("exp") < int(time.time()):
             raise HTTPException(status_code=401, detail="Token has expired")
@@ -213,9 +240,6 @@ async def chat(request: ChatRequest, token_data: dict = Depends(verify_token)):
 
 @app.post("/logout")
 async def logout(request: LogoutRequest, token_data: dict = Depends(verify_token)):
-    """
-    User logout, clear Redis cache
-    """
     try:
         # Get UUID from request
         uuid_to_delete = request.uuid
@@ -240,9 +264,6 @@ async def logout(request: LogoutRequest, token_data: dict = Depends(verify_token
 
 @app.post("/database/schema/import")
 async def import_database_schema(request: DatabaseSchemaRequest):
-    """
-    Import database schema into Neo4j
-    """
     try:
         # Import each schema
         for schema in request.schemas:
@@ -272,9 +293,6 @@ async def import_database_schema(request: DatabaseSchemaRequest):
 
 @app.post("/database/relationships/export")
 async def export_relationships():
-    """
-    Export database relationships to Excel
-    """
     try:
         success = await export_service.export_relationships_to_excel()
         if not success:
@@ -298,9 +316,6 @@ async def export_relationships():
 
 @app.post("/database/relationships/export/ppt")
 async def export_relationships_to_ppt():
-    """
-    Export database relationships to PPT
-    """
     try:
         # First ensure the Excel file exists
         if not os.path.exists("relationship.xlsx"):
@@ -334,9 +349,6 @@ async def export_relationships_to_ppt():
 
 @app.post("/file/upload")
 async def upload_file(file: UploadFile = File(...)):
-    """
-    Upload a single file and save it to the upload_documents directory
-    """
     try:
         # Validate file type
         allowed_types = ["text/plain", "application/pdf", "application/msword", 
@@ -379,9 +391,6 @@ async def upload_file(file: UploadFile = File(...)):
 
 @app.post("/file/upload/multiple")
 async def upload_multiple_files(files: List[UploadFile] = File(...)):
-    """
-    Upload multiple files and save them to the upload_documents directory
-    """
     try:
         # Create upload directory if it doesn't exist
         upload_dir = "upload_documents"
@@ -401,86 +410,8 @@ async def upload_multiple_files(files: List[UploadFile] = File(...)):
         logger.error(f"Error uploading files: {str(e)}")
         return {"status": "failed", "message": f"system error details: {str(e)}"}
 
-@app.post('/token')
-async def login(request: Request):
-    logger.info("Login attempt")
-    try:
-        data = await request.json()
-        username = data.get('username')
-        password = data.get('password')
-        logger.info(f"Login attempt - Username: {username}")
-        print(f"Login attempt - Username: {username}")
-        # Create PostgreSQL tools and validate user
-        pg_tools = PostgreSQLTools()
-        result = pg_tools.validate_user_credentials(username, password)
-        print(result)
-        # Validation failed
-        if not result:
-            logger.warning(f"Login failed - Invalid credentials for username: {username}")
-            return {
-                "status": "error",
-                "message": "Invalid username or password",
-                "code": 401
-            }
-            
-        user_info = {
-            'user_id': result['user_id'],
-            'role': result['role']
-        }
-        
-        # Generate unique UUID
-        user_uuid = str(uuid.uuid4())
-        
-        # Calculate expiration time
-        current_time = int(time.time())
-        expiry_time = current_time + JWT_EXPIRATION
-        
-        # Generate JWT token
-        payload = {
-            "user_id": user_info['user_id'],
-            "role": user_info['role'],
-            "uuid": user_uuid,
-            "exp": expiry_time
-        }
-        
-        # Create access token
-        access_token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
-        
-        # Create refresh token (usually has longer expiration time)
-        refresh_payload = {
-            "user_id": user_info['user_id'],
-            "uuid": user_uuid,
-            "exp": current_time + (JWT_EXPIRATION * 24 * 7)  # 7 days
-        }
-        refresh_token = jwt.encode(refresh_payload, JWT_SECRET, algorithm="HS256")
-        
-        # Store user information in Redis
-        initial_data = {
-            "user_id": user_info['user_id'],
-            "role": user_info['role'],
-            "username": username,
-            "login_time": current_time
-        }
-        redis_tools.set(user_uuid, initial_data)
-        
-        logger.info(f"Login successful: User ID = {user_info['user_id']}, Role = {user_info['role']}")
-        
-        # Return token information
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "expired_date": expiry_time,
-            "uuid": user_uuid
-        }
-    except Exception as e:
-        logger.error(f"Error during login: {str(e)}")
-        return {}
-
 @app.get("/user/profile", response_model=UserProfileResponse)
 async def get_user_profile(token_data: dict = Depends(verify_token)):
-    """
-    Get current user's profile information
-    """
     try:
         user_id = token_data.get("user_id")
         if not user_id:
@@ -504,9 +435,6 @@ async def get_user_profile(token_data: dict = Depends(verify_token)):
 
 @app.get("/admin/users")
 async def get_all_users(token_data: dict = Depends(verify_token)):
-    """
-    Get all users (admin only)
-    """
     try:
         # Check if user has admin role
         if token_data.get("role") != "admin":
@@ -526,9 +454,6 @@ async def get_all_users(token_data: dict = Depends(verify_token)):
 
 @app.post("/admin/users", response_model=UserResponseWithMessage)
 async def create_user(request: CreateUserRequest, token_data: dict = Depends(verify_token)):
-    """
-    Create a new user (admin only)
-    """
     try:
         # Check if user has admin role
         if token_data.get("role") != "admin":
@@ -562,9 +487,6 @@ async def update_user(
     request: UpdateUserRequest, 
     token_data: dict = Depends(verify_token)
 ):
-    """
-    Update an existing user (admin only)
-    """
     try:
         # Check if user has admin role
         if token_data.get("role") != "admin":
@@ -592,9 +514,6 @@ async def update_user(
 
 @app.delete("/admin/users/{user_id}", response_model=DeleteUserResponse)
 async def delete_user(user_id: str, token_data: dict = Depends(verify_token)):
-    """
-    Delete a user (admin only)
-    """
     try:
         # Check if user has admin role
         if token_data.get("role") != "admin":
@@ -619,9 +538,6 @@ async def delete_user(user_id: str, token_data: dict = Depends(verify_token)):
 
 @app.get("/postgres/tables", response_model=List[TableInfo])
 async def get_postgres_tables(token_data: dict = Depends(verify_token)):
-    """
-    Get all tables from PostgreSQL database
-    """
     try:
         # Check permissions (optional, depends on requirements)
         if token_data.get("role") not in ["admin", "kb_manager"]:
@@ -639,9 +555,6 @@ async def get_postgres_tables(token_data: dict = Depends(verify_token)):
 
 @app.post("/postgres/execute", response_model=ExecuteQueryResponse)
 async def execute_postgres_query(request: ExecuteQueryRequest, token_data: dict = Depends(verify_token)):
-    """
-    Execute SQL query and return results
-    """
     try:
         # Check permissions (optional, depends on requirements)
         if token_data.get("role") not in ["admin", "kb_manager"]:
@@ -659,9 +572,6 @@ async def execute_postgres_query(request: ExecuteQueryRequest, token_data: dict 
 
 @app.post("/postgres/import", response_model=ImportResponse)
 async def import_postgres_data(file: UploadFile = File(...), token_data: dict = Depends(verify_token)):
-    """
-    Import data from SQL file to PostgreSQL
-    """
     try:        
         # Check file type
         if not file.filename.endswith('.sql'):
@@ -684,9 +594,6 @@ async def import_postgres_data(file: UploadFile = File(...), token_data: dict = 
 
 @app.get("/postgres/export/{table_name}")
 async def export_postgres_data(table_name: str, token_data: dict = Depends(verify_token)):
-    """
-    Export PostgreSQL table data to CSV file
-    """
     try:
         # Check permissions (optional, depends on requirements)
         if token_data.get("role") not in ["admin", "kb_manager"]:
@@ -719,9 +626,6 @@ async def export_postgres_data(table_name: str, token_data: dict = Depends(verif
 
 @app.get("/opensearch/indices", response_model=List[IndexInfo])
 async def get_opensearch_indices(token_data: dict = Depends(verify_token)):
-    """
-    Get all indices from OpenSearch
-    """
     try:
         indices = await opensearch_service.get_indices()
         return indices
@@ -742,9 +646,6 @@ async def get_opensearch_indices(token_data: dict = Depends(verify_token)):
 
 @app.post("/opensearch/indices", response_model=GenericResponse)
 async def create_opensearch_index(request: CreateIndexRequest, token_data: dict = Depends(verify_token)):
-    """
-    Create new OpenSearch index
-    """
     try:
         result = await opensearch_service.create_index(request.index)
         if not result['success']:
@@ -764,9 +665,6 @@ async def create_opensearch_index(request: CreateIndexRequest, token_data: dict 
 
 @app.delete("/opensearch/indices/{index_name}", response_model=GenericResponse)
 async def delete_opensearch_index(index_name: str, token_data: dict = Depends(verify_token)):
-    """
-    Delete OpenSearch index
-    """
     try:
         result = await opensearch_service.delete_index(index_name)
         if not result['success']:
@@ -786,9 +684,6 @@ async def delete_opensearch_index(index_name: str, token_data: dict = Depends(ve
 
 @app.post("/opensearch/search", response_model=SearchResponse)
 async def search_opensearch(request: SearchRequest, token_data: dict = Depends(verify_token)):
-    """
-    Execute search in OpenSearch index
-    """
     try:
         result = await opensearch_service.search(request.index, request.query)
         return result
@@ -805,9 +700,6 @@ async def upload_to_opensearch(
     index: str = Form(...),
     token_data: dict = Depends(verify_token)
 ):
-    """
-    Upload document to OpenSearch index
-    """
     try:
         # Check file type
         allowed_types = ['.txt', '.doc', '.docx', '.xls', '.xlsx']
@@ -847,17 +739,6 @@ async def upload_sql_file(
     token_data: dict = Depends(verify_token),
     uploader: str = Form(None)
 ):
-    """
-    Upload and process SQL file for knowledge base
-    
-    Args:
-        file: SQL file to upload
-        token_data: User token data
-        uploader: Name of the user who uploaded the file (optional)
-        
-    Returns:
-        Response with status and message
-    """
     try:
         # Validate file type
         if not file.filename.endswith('.sql'):
@@ -925,13 +806,6 @@ async def upload_sql_file(
         )
 
 async def process_sql_file_background(file_path, doc_id):
-    """
-    Background task to process SQL file
-    
-    Args:
-        file_path: Path to the SQL file
-        doc_id: Document ID in postgre_doc_status table
-    """
     try:
         logger.info(f"Processing SQL file: {file_path}")
         
@@ -977,12 +851,6 @@ async def process_sql_file_background(file_path, doc_id):
 
 @app.get("/kb/doc/status")
 async def get_document_status(token_data: dict = Depends(verify_token)):
-    """
-    Get status of all document processing records
-    
-    Returns:
-        List of document status records
-    """
     try:
         query = """
         SELECT 
@@ -1010,15 +878,6 @@ async def get_document_status(token_data: dict = Depends(verify_token)):
 
 @app.delete("/kb/dataset/delete")
 async def delete_dataset(document_name: str, token_data: dict = Depends(verify_token)):
-    """
-    Delete dataset from dataset_view_tables based on document name
-    
-    Args:
-        document_name: Document name (e.g. "PD003_01マスタ_施設マスタ.xlsx" or "some_file.sql")
-        
-    Returns:
-        Response with status and message
-    """
     try:
         # Check file extension to determine processing logic
         file_extension = os.path.splitext(document_name)[1].lower()
@@ -1075,33 +934,12 @@ async def delete_dataset(document_name: str, token_data: dict = Depends(verify_t
         )
 
 async def delete_sql_dataset(document_name: str):
-    """
-    Delete dataset created from SQL file
-    
-    Args:
-        document_name: SQL file name
-        
-    Returns:
-        None
-    """
-    # Placeholder for future implementation
+    # TODO Placeholder for future implementation
     # This method will be implemented in the future to handle SQL file dataset deletion
     pass
 
 @app.post("/kb/dataset/delete")
 async def delete_dataset_data(request: Request, token_data: dict = Depends(verify_token)):
-    """
-    Delete dataset from dataset_view_tables and related record from postgre_doc_status
-    
-    Request body format:
-        {
-            "id": "8", 
-            "document_name": "PD003_01マスタ_施設マスタ.xlsx"
-        }
-        
-    Returns:
-        Response with status and message
-    """
     try:
         # Parse JSON request body
         data = await request.json()
@@ -1196,20 +1034,6 @@ async def upload_excel_file(
     header_row: int = Form(2),
     table_col_name: str = Form("テーブル名")
 ):
-    """
-    Upload and process Excel file for knowledge base
-    
-    Args:
-        file: Excel file to upload
-        token_data: User token data
-        uploader: Name of the user who uploaded the file (optional)
-        sheet_name: Name of the sheet containing table info
-        header_row: Row number containing headers (1-based)
-        table_col_name: Column name containing table names
-        
-    Returns:
-        Response with status and message
-    """
     try:
         # Validate file type
         file_extension = os.path.splitext(file.filename)[1].lower()
@@ -1352,18 +1176,6 @@ async def upload_opensearch_procedure(
     uploader: str = Form(None),
     process_index: str = Form("procedure_index")
 ):
-    """
-    Upload and process SQL file for OpenSearch procedure indexing
-    
-    Args:
-        file: SQL file to upload
-        token_data: User token data
-        uploader: Name of the user who uploaded the file (optional)
-        process_index: Name of the OpenSearch index to use (default: procedure_index)
-        
-    Returns:
-        Response with status and message
-    """
     try:
         # Validate file type
         if not file.filename.endswith('.sql'):
@@ -1594,12 +1406,6 @@ async def ensure_opensearch_doc_status_table():
 
 @app.get("/kb/opensearch/status")
 async def get_opensearch_document_status(token_data: dict = Depends(verify_token)):
-    """
-    Get status of all OpenSearch document processing records
-    
-    Returns:
-        List of document status records
-    """
     try:
         result = await opensearch_procedure_service.get_document_status()
         return result
@@ -1613,18 +1419,6 @@ async def get_opensearch_document_status(token_data: dict = Depends(verify_token
 
 @app.post("/kb/opensearch/delete")
 async def delete_opensearch_document(request: Request, token_data: dict = Depends(verify_token)):
-    """
-    Delete document from OpenSearch and related record from opensearch_doc_status
-    
-    Request body format:
-        {
-            "id": "8", 
-            "document_name": "procedure_mock.sql"
-        }
-        
-    Returns:
-        Response with status and message
-    """
     try:
         # Parse JSON request body
         data = await request.json()
@@ -1706,6 +1500,203 @@ async def delete_opensearch_document(request: Request, token_data: dict = Depend
             status_code=500,
             detail=f"Error deleting document: {str(e)}"
         )
+
+@app.get("/neo4j/databases", response_model=List[Neo4jDatabaseInfo])
+async def get_neo4j_databases(token_data: dict = Depends(verify_token)):
+    logger.info("Getting Neo4j databases list")
+    try:
+        # Get database list using SHOW DATABASES command (Neo4j Enterprise Edition)
+        # For Community Edition, only return the default database
+        databases = []
+        if not neo4j_service.neo4j.connected:
+            logger.warning("Not connected to Neo4j, returning empty database list")
+            return []
+            
+        try:
+            # Try to execute SHOW DATABASES command (supported in Enterprise Edition)
+            result = neo4j_service.neo4j.execute_query("SHOW DATABASES")
+            if result:
+                for record in result:
+                    db_info = {
+                        "name": record.get("name", "default"),
+                        "address": f"neo4j://{config.NEO4J_HOST}:{config.NEO4J_BOLT_PORT}",
+                        "role": record.get("role", "primary"),
+                        "status": record.get("currentStatus", "online"),
+                        "default": record.get("default", False)
+                    }
+                    databases.append(db_info)
+            else:
+                # If SHOW DATABASES returns empty result (possible permission issue)
+                logger.info("SHOW DATABASES returned no results, checking current database")
+                
+        except Exception as e:
+            # If SHOW DATABASES fails (might be Community Edition or older version), get current database info
+            logger.info(f"SHOW DATABASES failed: {str(e)}, falling back to getting current database")
+            
+        # If no database list is obtained, add the current connected database
+        if not databases:
+            try:
+                # Try to get the current database name
+                result = neo4j_service.neo4j.execute_query("CALL db.info()")
+                db_name = "neo4j"  # Default database name
+                if result and len(result) > 0:
+                    db_info = result[0].get("info", {})
+                    db_name = db_info.get("name", db_name)
+                
+                databases.append({
+                    "name": db_name,
+                    "address": f"neo4j://{config.NEO4J_HOST}:{config.NEO4J_BOLT_PORT}",
+                    "role": "primary",
+                    "status": "online",
+                    "default": True
+                })
+            except Exception as e:
+                logger.warning(f"Error getting current database info: {str(e)}")
+                # If all attempts fail, return default database
+                databases.append({
+                    "name": "neo4j",
+                    "address": f"neo4j://{config.NEO4J_HOST}:{config.NEO4J_BOLT_PORT}", 
+                    "role": "primary",
+                    "status": "online",
+                    "default": True
+                })
+                
+        return databases
+    except Exception as e:
+        logger.error(f"Error getting Neo4j databases: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error getting Neo4j databases: {str(e)}")
+
+@app.post("/neo4j/execute-query", response_model=Neo4jGraphData)
+async def execute_neo4j_query(request: Neo4jQueryRequest, token_data: dict = Depends(verify_token)):
+    logger.info(f"Executing Neo4j relationship query: {request.query}")
+    try:
+        # Check if the query contains case-sensitive CONTAINS for labels
+        original_query = request.query
+        modified_query = original_query
+        
+        # If query contains "label CONTAINS 'something'", modify it to use case-insensitive toLower()
+        if "label CONTAINS" in original_query:
+            # Use regex to properly handle the string parameter
+            modified_query = re.sub(
+                r"label CONTAINS '([^']*)'", 
+                r"toLower(label) CONTAINS toLower('\1')",
+                modified_query
+            )
+        
+        # If query contains "toString(n[prop]) CONTAINS", modify for case insensitivity
+        if "toString(n[prop]) CONTAINS" in modified_query:
+            modified_query = re.sub(
+                r"toString\(n\[prop\]\) CONTAINS '([^']*)'", 
+                r"toLower(toString(n[prop])) CONTAINS toLower('\1')",
+                modified_query
+            )
+            
+        # If query contains "toString(m[prop]) CONTAINS", modify for case insensitivity
+        if "toString(m[prop]) CONTAINS" in modified_query:
+            modified_query = re.sub(
+                r"toString\(m\[prop\]\) CONTAINS '([^']*)'", 
+                r"toLower(toString(m[prop])) CONTAINS toLower('\1')",
+                modified_query
+            )
+            
+        # Log if query was modified
+        if modified_query != original_query:
+            logger.info(f"Modified query for case-insensitivity: {modified_query}")
+            
+        # Call service layer to process the query
+        result = await neo4j_service.execute_graph_query(modified_query, request.database)
+        logger.info(f"Query processed: {len(result['nodes'])} nodes, {len(result['relationships'])} relationships")
+        return result
+    except Exception as e:
+        logger.error(f"Error executing Neo4j query: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error executing Neo4j query: {str(e)}")
+
+@app.post("/neo4j/execute-queries", response_model=ExecuteQueriesResponse)
+async def execute_neo4j_queries(request: ExecuteQueriesRequest, token_data: dict = Depends(verify_token)):
+    logger.info("Executing Neo4j relationship import queries")
+    try:
+        # Call service layer to process multiple queries
+        result = await neo4j_service.execute_queries(request.queries, request.database)
+        logger.info(f"Queries execution result: {result['created']} relationships created in {result['elapsed']}ms")
+        return result
+    except Exception as e:
+        logger.error(f"Error executing Neo4j queries: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error executing Neo4j queries: {str(e)}")
+
+@app.post('/token')
+async def login(request: Request):
+    logger.info("Login attempt")
+    try:
+        data = await request.json()
+        username = data.get('username')
+        password = data.get('password')
+        logger.info(f"Login attempt - Username: {username}")
+        print(f"Login attempt - Username: {username}")
+        # Create PostgreSQL tools and validate user
+        pg_tools = PostgreSQLTools()
+        result = pg_tools.validate_user_credentials(username, password)
+        print(result)
+        # Validation failed
+        if not result:
+            logger.warning(f"Login failed - Invalid credentials for username: {username}")
+            return {
+                "status": "error",
+                "message": "Invalid username or password",
+                "code": 401
+            }
+            
+        user_info = {
+            'user_id': result['user_id'],
+            'role': result['role']
+        }
+        
+        # Generate unique UUID
+        user_uuid = str(uuid.uuid4())
+        
+        # Calculate expiration time
+        current_time = int(time.time())
+        expiry_time = current_time + config.JWT_EXPIRATION
+        
+        # Generate JWT token
+        payload = {
+            "user_id": user_info['user_id'],
+            "role": user_info['role'],
+            "uuid": user_uuid,
+            "exp": expiry_time
+        }
+        
+        # Create access token
+        access_token = jwt.encode(payload, config.JWT_SECRET, algorithm="HS256")
+        
+        # Create refresh token (usually has longer expiration time)
+        refresh_payload = {
+            "user_id": user_info['user_id'],
+            "uuid": user_uuid,
+            "exp": current_time + (config.JWT_EXPIRATION * 24 * 7)  # 7 days
+        }
+        refresh_token = jwt.encode(refresh_payload, config.JWT_SECRET, algorithm="HS256")
+        
+        # Store user information in Redis
+        initial_data = {
+            "user_id": user_info['user_id'],
+            "role": user_info['role'],
+            "username": username,
+            "login_time": current_time
+        }
+        redis_tools.set(user_uuid, initial_data)
+        
+        logger.info(f"Login successful: User ID = {user_info['user_id']}, Role = {user_info['role']}")
+        
+        # Return token information
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "expired_date": expiry_time,
+            "uuid": user_uuid
+        }
+    except Exception as e:
+        logger.error(f"Error during login: {str(e)}")
+        return {}
 
 if __name__ == "__main__":
     import uvicorn

@@ -687,4 +687,142 @@ class Neo4jService:
             import traceback
             print(f"Error finding view node connections: {str(e)}")
             print(traceback.format_exc())
-            return {"nodes": [], "relationships": []} 
+            return {"nodes": [], "relationships": []}
+
+    async def execute_graph_query(self, query: str, database: str = "neo4j") -> Dict[str, Any]:
+        """
+        Execute a Cypher query to retrieve nodes and relationships for visualization.
+        
+        Args:
+            query: Cypher query to execute
+            database: Neo4j database name (currently not used, future use)
+            
+        Returns:
+            Dictionary containing nodes and relationships data
+        """
+        try:
+            # Execute query
+            results = self.neo4j.execute_query(query)
+            
+            # Process results
+            nodes = {}
+            relationships = []
+            
+            for record in results:
+                # Process path type results
+                if 'path' in record and record['path'] is not None:
+                    path = record['path']
+                    
+                    # Process nodes in path
+                    for node in path.nodes:
+                        if node.id not in nodes:
+                            node_data = {
+                                "id": str(node.id),
+                                "labels": list(node.labels),
+                                "properties": dict(node)
+                            }
+                            nodes[node.id] = node_data
+                    
+                    # Process relationships in path
+                    for rel in path.relationships:
+                        rel_data = {
+                            "id": str(rel.id),
+                            "type": rel.type,
+                            "startNodeId": str(rel.start_node.id),
+                            "endNodeId": str(rel.end_node.id),
+                            "properties": dict(rel)
+                        }
+                        relationships.append(rel_data)
+                
+                # Process individual node/relationship results
+                for key in record.keys():
+                    value = record[key]
+                    # Skip null values and non-node/relationship types
+                    if value is None:
+                        continue
+                        
+                    # Process node type values
+                    if hasattr(value, 'labels'):  # This is a node
+                        if value.id not in nodes:
+                            node_data = {
+                                "id": str(value.id),
+                                "labels": list(value.labels),
+                                "properties": dict(value)
+                            }
+                            nodes[value.id] = node_data
+                    
+                    # Process relationship type values
+                    elif hasattr(value, 'type') and hasattr(value, 'start_node'):  # This is a relationship
+                        rel_data = {
+                            "id": str(value.id),
+                            "type": value.type,
+                            "startNodeId": str(value.start_node.id),
+                            "endNodeId": str(value.end_node.id),
+                            "properties": dict(value)
+                        }
+                        relationships.append(rel_data)
+            
+            return {
+                "nodes": list(nodes.values()),
+                "relationships": relationships
+            }
+            
+        except Exception as e:
+            import traceback
+            print(f"Error executing graph query: {str(e)}")
+            print(traceback.format_exc())
+            return {"nodes": [], "relationships": []}
+            
+    async def execute_queries(self, queries: List[str], database: str = "neo4j") -> Dict[str, Any]:
+        """
+        Execute multiple Cypher queries to create relationships between existing nodes.
+        
+        Args:
+            queries: List of Cypher queries to execute
+            database: Neo4j database name (currently not used, future use)
+            
+        Returns:
+            Dictionary containing execution results
+        """
+        try:
+            import time
+            
+            # 执行查询并跟踪指标
+            start_time = time.time()
+            created_count = 0
+            
+            for query in queries:
+                try:
+                    # 执行查询
+                    result = self.neo4j.execute_query(query)
+                    
+                    # 假设每个查询创建关系并返回计数
+                    if result and len(result) > 0:
+                        for record in result:
+                            if 'count' in record:
+                                created_count += record['count']
+                            else:
+                                # 如果没有count字段，假设每个结果记录创建1个关系
+                                created_count += 1
+                except Exception as query_error:
+                    print(f"Error executing query '{query}': {str(query_error)}")
+                    # 继续下一个查询
+            
+            elapsed_time = int((time.time() - start_time) * 1000)  # 转换为毫秒
+            
+            return {
+                "created": created_count,
+                "elapsed": elapsed_time,
+                "status": "success"
+            }
+            
+        except Exception as e:
+            import traceback
+            print(f"Error executing queries: {str(e)}")
+            print(traceback.format_exc())
+            return {
+                "created": 0,
+                "elapsed": 0,
+                "status": "error",
+                "message": str(e)
+            } 
