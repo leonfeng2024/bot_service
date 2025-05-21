@@ -1,0 +1,1450 @@
+2025-04-25 08:49:31,356 - openai._base_client - INFO - Retrying request to /models in 0.499972 seconds
+2025-04-25 08:49:41,866 - openai._base_client - INFO - Retrying request to /models in 0.895358 seconds
+2025-04-25 08:49:52,855 - tools.redis_tools - ERROR - Failed to connect to Redis: Error 8 connecting to bibot_redis:6379. nodename nor servname provided, or not known.
+2025-04-25 08:49:52,856 - tools.redis_tools - WARNING - Running with Redis disabled. Cache operations will be no-ops.
+2025-04-25 08:52:25,465 - openai._base_client - INFO - Retrying request to /models in 0.485730 seconds
+2025-04-25 08:52:35,960 - openai._base_client - INFO - Retrying request to /models in 0.962613 seconds
+2025-04-25 08:52:46,952 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 08:52:47,462 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 08:52:47,465 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 08:52:47,488 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 08:52:51,704 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 08:52:51,731 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 08:52:51,755 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 08:52:51,756 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 08:52:51,929 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.172s]
+2025-04-25 08:52:51,929 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 08:54:04,697 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 08:54:04,698 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 08:54:04,700 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 08:54:04,701 - server - INFO - Login attempt
+2025-04-25 08:54:04,701 - server - INFO - Login attempt - Username: user1
+2025-04-25 08:54:04,768 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 08:54:04,784 - tools.redis_tools - INFO - Successfully set key in Redis: 348a9656-a71d-4922-ac8f-063f98d36912
+2025-04-25 08:54:04,784 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 08:54:04,784 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 08:54:04,787 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 08:54:04,787 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 08:54:04,789 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 08:54:04,798 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 08:54:17,859 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 08:54:17,860 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 08:54:17,861 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段 employees', 'uuid': '348a9656-a71d-4922-ac8f-063f98d36912'}
+2025-04-25 08:54:17,863 - server - INFO - Received chat request - User: user1, UUID: 348a9656-a71d-4922-ac8f-063f98d36912
+2025-04-25 08:54:19,317 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 08:54:19,540 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 08:54:19,544 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 08:54:20,120 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 08:54:20,135 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 08:54:20,215 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.080s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x146a15520>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 08:54:20,230 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1464aba70>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 08:54:20,235 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x146403e00>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 08:54:20,238 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1464aacf0>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 08:54:20,280 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 08:54:20,284 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 08:54:30,360 - openai._base_client - INFO - Retrying request to /models in 0.430689 seconds
+2025-04-25 08:54:40,801 - openai._base_client - INFO - Retrying request to /models in 0.903906 seconds
+2025-04-25 08:54:51,761 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 08:54:53,477 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 08:54:53,480 - tools.redis_tools - INFO - Successfully set key in Redis: 348a9656-a71d-4922-ac8f-063f98d36912:opensearch
+2025-04-25 08:56:08,959 - openai._base_client - INFO - Retrying request to /chat/completions in 0.454040 seconds
+2025-04-25 08:57:24,727 - openai._base_client - INFO - Retrying request to /chat/completions in 0.945886 seconds
+2025-04-25 08:58:38,204 - langchain_core.callbacks.manager - WARNING - Error in ErrorCallbackHandler.on_llm_error callback: APIConnectionError('Connection error.')
+2025-04-25 09:03:51,134 - openai._base_client - INFO - Retrying request to /models in 0.464396 seconds
+2025-04-25 09:04:01,608 - openai._base_client - INFO - Retrying request to /models in 0.831436 seconds
+2025-04-25 09:04:12,471 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:04:12,691 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:12,695 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:04:12,721 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:17,190 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:04:17,221 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:17,245 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:17,247 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 09:04:17,307 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.060s]
+2025-04-25 09:04:17,308 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 09:04:24,564 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-25 09:04:24,565 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-25 09:04:24,567 - server - INFO - API调用: POST /logout, 参数: {'uuid': '348a9656-a71d-4922-ac8f-063f98d36912'}
+2025-04-25 09:04:24,569 - server - INFO - 接收到登出请求，UUID: 348a9656-a71d-4922-ac8f-063f98d36912
+2025-04-25 09:04:24,570 - server - INFO - 成功删除用户缓存数据，UUID: 348a9656-a71d-4922-ac8f-063f98d36912
+2025-04-25 09:04:24,571 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 09:04:27,221 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 09:04:27,221 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 09:04:27,222 - server - INFO - API调用: POST /token, 参数: {'username': 'admin', 'password': '123'}
+2025-04-25 09:04:27,223 - server - INFO - Login attempt
+2025-04-25 09:04:27,223 - server - INFO - Login attempt - Username: admin
+2025-04-25 09:04:27,252 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:27,258 - tools.redis_tools - INFO - Successfully set key in Redis: 554046dc-8d8d-442c-b80f-c7233015f0fe
+2025-04-25 09:04:27,258 - server - INFO - 登录成功: 用户ID = admin, 角色 = admin
+2025-04-25 09:04:27,259 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:04:27,261 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 09:04:27,262 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 09:04:27,263 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:04:27,269 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:04:27,355 - server - INFO - API调用: OPTIONS /admin/users, 参数: {}
+2025-04-25 09:04:27,355 - server - INFO - API完成: OPTIONS /admin/users, 状态码: 200
+2025-04-25 09:04:27,357 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-25 09:04:27,361 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-25 09:04:27,364 - server - INFO - API调用: GET /admin/users, 参数: {}
+2025-04-25 09:04:27,376 - server - INFO - API完成: GET /admin/users, 状态码: 200
+2025-04-25 09:04:31,201 - server - INFO - API调用: POST /logout, 参数: {'uuid': '554046dc-8d8d-442c-b80f-c7233015f0fe'}
+2025-04-25 09:04:31,202 - server - INFO - 接收到登出请求，UUID: 554046dc-8d8d-442c-b80f-c7233015f0fe
+2025-04-25 09:04:31,203 - server - INFO - 成功删除用户缓存数据，UUID: 554046dc-8d8d-442c-b80f-c7233015f0fe
+2025-04-25 09:04:31,204 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 09:04:33,935 - server - INFO - API调用: POST /token, 参数: {'username': 'kb_manager', 'password': '123'}
+2025-04-25 09:04:33,935 - server - INFO - Login attempt
+2025-04-25 09:04:33,936 - server - INFO - Login attempt - Username: kb_manager
+2025-04-25 09:04:33,965 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:33,970 - tools.redis_tools - INFO - Successfully set key in Redis: 02418b72-1812-4617-b1a2-bf87d63bacac
+2025-04-25 09:04:33,970 - server - INFO - 登录成功: 用户ID = kb_manager, 角色 = kb_manager
+2025-04-25 09:04:33,970 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:04:33,973 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:04:33,976 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:04:34,046 - server - INFO - API调用: OPTIONS /postgres/tables, 参数: {}
+2025-04-25 09:04:34,047 - server - INFO - API完成: OPTIONS /postgres/tables, 状态码: 200
+2025-04-25 09:04:34,048 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-25 09:04:34,076 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-25 09:04:34,079 - server - INFO - API调用: GET /postgres/tables, 参数: {}
+2025-04-25 09:04:34,086 - server - INFO - API完成: GET /postgres/tables, 状态码: 200
+2025-04-25 09:04:39,240 - server - INFO - API调用: OPTIONS /opensearch/indices, 参数: {}
+2025-04-25 09:04:39,240 - server - INFO - API完成: OPTIONS /opensearch/indices, 状态码: 200
+2025-04-25 09:04:39,242 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-25 09:04:39,511 - opensearch - INFO - GET http://localhost:9200/_cat/indices?format=json [status:200 request:0.268s]
+2025-04-25 09:04:39,535 - opensearch - INFO - GET http://localhost:9200/_cluster/health [status:200 request:0.024s]
+2025-04-25 09:04:39,535 - server - INFO - API完成: GET /opensearch/indices, 状态码: 200
+2025-04-25 09:04:39,537 - server - INFO - API调用: GET /opensearch/indices, 参数: {}
+2025-04-25 09:04:39,669 - opensearch - INFO - GET http://localhost:9200/_cat/indices?format=json [status:200 request:0.130s]
+2025-04-25 09:04:39,693 - opensearch - INFO - GET http://localhost:9200/_cluster/health [status:200 request:0.024s]
+2025-04-25 09:04:39,693 - server - INFO - API完成: GET /opensearch/indices, 状态码: 200
+2025-04-25 09:04:46,068 - server - INFO - API调用: POST /logout, 参数: {'uuid': '02418b72-1812-4617-b1a2-bf87d63bacac'}
+2025-04-25 09:04:46,069 - server - INFO - 接收到登出请求，UUID: 02418b72-1812-4617-b1a2-bf87d63bacac
+2025-04-25 09:04:46,070 - server - INFO - 成功删除用户缓存数据，UUID: 02418b72-1812-4617-b1a2-bf87d63bacac
+2025-04-25 09:04:46,070 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 09:04:48,504 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 09:04:48,504 - server - INFO - Login attempt
+2025-04-25 09:04:48,504 - server - INFO - Login attempt - Username: user1
+2025-04-25 09:04:48,532 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:04:48,536 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b
+2025-04-25 09:04:48,537 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 09:04:48,537 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:04:48,539 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:04:48,543 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:05:01,289 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 09:05:01,290 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 09:05:01,292 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我要修改表字段employees', 'uuid': '367ad85f-95f8-476e-96a7-3e6c5340023b'}
+2025-04-25 09:05:01,294 - server - INFO - Received chat request - User: user1, UUID: 367ad85f-95f8-476e-96a7-3e6c5340023b
+2025-04-25 09:05:02,873 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:05:03,097 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 09:05:03,101 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 09:05:03,628 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:05:03,642 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:05:03,645 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.003s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x15141fe00>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:05:03,658 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x16efd6f60>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:05:03,662 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x15141f590>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:05:03,666 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x15141f470>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:05:03,716 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:05:03,722 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:05:13,749 - openai._base_client - INFO - Retrying request to /models in 0.417086 seconds
+2025-04-25 09:05:24,174 - openai._base_client - INFO - Retrying request to /models in 0.902120 seconds
+2025-04-25 09:05:35,126 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:05:36,661 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:05:36,666 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b:opensearch
+2025-04-25 09:06:52,211 - openai._base_client - INFO - Retrying request to /chat/completions in 0.469556 seconds
+2025-04-25 09:08:07,939 - openai._base_client - INFO - Retrying request to /chat/completions in 0.828758 seconds
+2025-04-25 09:09:24,059 - langchain_core.callbacks.manager - WARNING - Error in ErrorCallbackHandler.on_llm_error callback: APIConnectionError('Connection error.')
+2025-04-25 09:09:24,085 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b:postgresql
+2025-04-25 09:09:24,087 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b
+2025-04-25 09:09:24,092 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b:opensearch
+2025-04-25 09:09:24,093 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b:postgresql
+2025-04-25 09:09:24,095 - tools.redis_tools - INFO - Successfully set key in Redis: 367ad85f-95f8-476e-96a7-3e6c5340023b:neo4j
+2025-04-25 09:09:25,356 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:23:10,146 - openai._base_client - INFO - Retrying request to /models in 0.416305 seconds
+2025-04-25 09:23:20,564 - openai._base_client - INFO - Retrying request to /models in 0.916826 seconds
+2025-04-25 09:23:31,506 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:23:31,666 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:23:31,669 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:23:31,693 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:23:35,522 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:23:35,553 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:23:35,575 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:23:35,577 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 09:23:35,826 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.249s]
+2025-04-25 09:23:35,826 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 09:23:50,013 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-25 09:23:50,013 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-25 09:23:50,015 - server - INFO - API调用: POST /logout, 参数: {'uuid': '367ad85f-95f8-476e-96a7-3e6c5340023b'}
+2025-04-25 09:23:50,017 - server - INFO - 接收到登出请求，UUID: 367ad85f-95f8-476e-96a7-3e6c5340023b
+2025-04-25 09:23:50,017 - server - INFO - 成功删除用户缓存数据，UUID: 367ad85f-95f8-476e-96a7-3e6c5340023b
+2025-04-25 09:23:50,018 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 09:23:53,101 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 09:23:53,101 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 09:23:53,103 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 09:23:53,103 - server - INFO - Login attempt
+2025-04-25 09:23:53,104 - server - INFO - Login attempt - Username: user1
+2025-04-25 09:23:53,149 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:23:53,157 - tools.redis_tools - INFO - Successfully set key in Redis: 1573a0cb-febd-41ff-88b8-8bcbedf1e1a1
+2025-04-25 09:23:53,157 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 09:23:53,158 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:23:53,160 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 09:23:53,161 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 09:23:53,162 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:23:53,167 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:23:54,661 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 09:23:54,661 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 09:23:54,663 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我要修改表字段employees', 'uuid': '1573a0cb-febd-41ff-88b8-8bcbedf1e1a1'}
+2025-04-25 09:23:54,664 - server - INFO - Received chat request - User: user1, UUID: 1573a0cb-febd-41ff-88b8-8bcbedf1e1a1
+2025-04-25 09:23:56,413 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:23:56,649 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 09:23:56,652 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 09:27:50,881 - openai._base_client - INFO - Retrying request to /models in 0.431660 seconds
+2025-04-25 09:28:01,320 - openai._base_client - INFO - Retrying request to /models in 0.936353 seconds
+2025-04-25 09:28:12,287 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:28:12,447 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:28:12,450 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:28:12,473 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:28:14,972 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:28:14,996 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:28:15,019 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:28:15,020 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 09:28:15,068 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.048s]
+2025-04-25 09:28:15,069 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 09:28:19,875 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 09:28:19,875 - server - INFO - Login attempt
+2025-04-25 09:28:19,876 - server - INFO - Login attempt - Username: user1
+2025-04-25 09:28:19,905 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:28:19,910 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600
+2025-04-25 09:28:19,910 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 09:28:19,911 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:28:19,913 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:28:19,919 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:28:22,651 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我要修改表字段employees', 'uuid': '98a6813d-d8b6-4c32-ba24-bb63b0f5a600'}
+2025-04-25 09:28:22,653 - server - INFO - Received chat request - User: user1, UUID: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600
+2025-04-25 09:28:29,565 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:28:29,765 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 09:28:29,767 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 09:28:30,291 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:28:30,307 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:28:30,309 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1506a4d10>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:28:30,323 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x14fb54e60>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:28:30,326 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.002s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x1506a4cb0>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:28:30,331 - opensearch - WARNING - GET http://bibot_opensearch:9200/ [status:N/A request:0.003s]
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/socket.py", line 978, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/opensearchpy/connection/http_urllib3.py", line 280, in perform_request
+    response = self.pool.urlopen(
+               ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 445, in request
+    self.endheaders()
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1093, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1037, in send
+    self.connect()
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/Users/fengliang/GitHub/bot_service/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 205, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: <urllib3.connection.HTTPConnection object at 0x14fc01a30>: Failed to resolve 'bibot_opensearch' ([Errno 8] nodename nor servname provided, or not known)
+2025-04-25 09:28:30,361 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:28:30,365 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:28:30,403 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:28:31,374 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:28:31,377 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600:opensearch
+2025-04-25 09:28:32,841 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:28:33,998 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:28:34,592 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:28:34,627 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:28:35,028 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:28:36,426 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:28:36,430 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600:postgresql
+2025-04-25 09:28:36,433 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600
+2025-04-25 09:28:36,435 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600:opensearch
+2025-04-25 09:28:36,438 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600:postgresql
+2025-04-25 09:28:36,441 - tools.redis_tools - INFO - Successfully set key in Redis: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600:neo4j
+2025-04-25 09:28:37,868 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:44:35,597 - openai._base_client - INFO - Retrying request to /models in 0.471176 seconds
+2025-04-25 09:44:46,079 - openai._base_client - INFO - Retrying request to /models in 0.989219 seconds
+2025-04-25 09:44:57,103 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:44:57,315 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:44:57,318 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:44:57,340 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:45:01,541 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:45:01,573 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:45:01,595 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:45:01,597 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 09:45:01,790 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.192s]
+2025-04-25 09:45:01,790 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 09:46:48,057 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-25 09:46:48,058 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-25 09:46:48,060 - server - INFO - API调用: POST /logout, 参数: {'uuid': '98a6813d-d8b6-4c32-ba24-bb63b0f5a600'}
+2025-04-25 09:46:48,063 - server - INFO - 接收到登出请求，UUID: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600
+2025-04-25 09:46:48,064 - server - INFO - 成功删除用户缓存数据，UUID: 98a6813d-d8b6-4c32-ba24-bb63b0f5a600
+2025-04-25 09:46:48,064 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 09:46:50,375 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 09:46:50,376 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 09:46:50,377 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 09:46:50,377 - server - INFO - Login attempt
+2025-04-25 09:46:50,378 - server - INFO - Login attempt - Username: user1
+2025-04-25 09:46:50,424 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:46:50,435 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e
+2025-04-25 09:46:50,435 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 09:46:50,436 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:46:50,438 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 09:46:50,439 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 09:46:50,440 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:46:50,447 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:46:59,434 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 09:46:59,435 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 09:46:59,436 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees', 'uuid': 'ea8d1427-5fa3-4b9b-be29-3b63de50df9e'}
+2025-04-25 09:46:59,438 - server - INFO - Received chat request - User: user1, UUID: ea8d1427-5fa3-4b9b-be29-3b63de50df9e
+2025-04-25 09:47:01,020 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:01,237 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 09:47:01,239 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 09:47:01,779 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:01,801 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:47:01,840 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.038s]
+2025-04-25 09:47:01,871 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:47:01,874 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:47:01,915 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:47:02,461 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:02,949 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.094s]
+2025-04-25 09:47:02,969 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.020s]
+2025-04-25 09:47:03,878 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.908s]
+2025-04-25 09:47:03,880 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e:opensearch
+2025-04-25 09:47:03,881 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e
+2025-04-25 09:47:05,533 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:10,819 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:11,875 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:12,494 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:12,639 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:13,418 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:14,029 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:14,230 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:15,054 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:15,562 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:15,785 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:16,585 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:17,380 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:18,019 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:19,144 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:19,766 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:19,974 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:20,702 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:25,084 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:25,872 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:27,038 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:27,854 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:27,929 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:28,862 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:29,490 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:29,732 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:30,510 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:31,522 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:32,220 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:32,682 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:33,368 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:33,729 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:34,491 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:35,186 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:35,501 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:36,187 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:36,889 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:37,224 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:37,942 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:38,609 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:38,772 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 09:47:39,496 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:39,502 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e:postgresql
+2025-04-25 09:47:41,064 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:47:41,102 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e
+2025-04-25 09:47:41,104 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e:neo4j
+2025-04-25 09:47:41,106 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e:opensearch
+2025-04-25 09:47:41,108 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e:postgresql
+2025-04-25 09:47:41,109 - tools.redis_tools - INFO - Successfully set key in Redis: ea8d1427-5fa3-4b9b-be29-3b63de50df9e:neo4j
+2025-04-25 09:47:41,676 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:52:43,625 - openai._base_client - INFO - Retrying request to /models in 0.493296 seconds
+2025-04-25 09:52:54,127 - openai._base_client - INFO - Retrying request to /models in 0.975708 seconds
+2025-04-25 09:53:05,136 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:53:05,299 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:53:05,302 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:53:05,328 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:53:09,212 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:53:09,237 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:53:09,259 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:53:09,260 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 09:53:09,329 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.069s]
+2025-04-25 09:53:09,329 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 09:53:18,370 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'ea8d1427-5fa3-4b9b-be29-3b63de50df9e'}
+2025-04-25 09:53:18,372 - server - INFO - 接收到登出请求，UUID: ea8d1427-5fa3-4b9b-be29-3b63de50df9e
+2025-04-25 09:53:18,373 - server - INFO - 成功删除用户缓存数据，UUID: ea8d1427-5fa3-4b9b-be29-3b63de50df9e
+2025-04-25 09:53:18,373 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 09:53:21,487 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 09:53:21,488 - server - INFO - Login attempt
+2025-04-25 09:53:21,488 - server - INFO - Login attempt - Username: user1
+2025-04-25 09:53:21,521 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:53:21,528 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:53:21,528 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 09:53:21,529 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 09:53:21,531 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 09:53:21,536 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 09:53:23,129 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees', 'uuid': '22da551c-4054-479c-9449-b446a2e34b60'}
+2025-04-25 09:53:23,130 - server - INFO - Received chat request - User: user1, UUID: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:53:24,571 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:53:24,760 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 09:53:24,762 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 09:53:25,653 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:53:25,666 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:53:25,689 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.023s]
+2025-04-25 09:53:25,720 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:53:25,723 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:53:25,764 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:53:27,751 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:53:28,124 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.074s]
+2025-04-25 09:53:28,152 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.027s]
+2025-04-25 09:53:28,713 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.560s]
+2025-04-25 09:53:28,715 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:opensearch
+2025-04-25 09:53:28,718 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:53:28,728 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:postgresql
+2025-04-25 09:53:28,735 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:53:29,482 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:53:29,505 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:53:29,506 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:neo4j
+2025-04-25 09:53:29,510 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:opensearch
+2025-04-25 09:53:29,511 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:postgresql
+2025-04-25 09:53:29,515 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:neo4j
+2025-04-25 09:53:30,266 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:56:22,588 - openai._base_client - INFO - Retrying request to /models in 0.423757 seconds
+2025-04-25 09:56:33,021 - openai._base_client - INFO - Retrying request to /models in 0.899825 seconds
+2025-04-25 09:56:43,952 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:56:44,112 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:56:44,115 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:56:44,139 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:56:47,939 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:56:47,967 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:56:47,991 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:56:47,992 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 09:56:48,018 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.026s]
+2025-04-25 09:56:48,019 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 09:56:52,076 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees', 'uuid': '22da551c-4054-479c-9449-b446a2e34b60'}
+2025-04-25 09:56:52,079 - server - INFO - Received chat request - User: user1, UUID: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:56:53,618 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:56:53,835 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 09:56:53,838 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 09:56:55,460 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:56:55,474 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:56:55,499 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.024s]
+2025-04-25 09:56:55,535 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 09:56:55,568 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:56:55,613 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 09:56:56,106 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:56:56,423 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.023s]
+2025-04-25 09:56:56,445 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.022s]
+2025-04-25 09:56:57,096 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.650s]
+2025-04-25 09:56:57,099 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:opensearch
+2025-04-25 09:56:57,101 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:56:57,107 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:postgresql
+2025-04-25 09:56:57,109 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:56:58,117 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 09:56:58,144 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 09:56:58,147 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:neo4j
+2025-04-25 09:56:58,153 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:opensearch
+2025-04-25 09:56:58,157 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:postgresql
+2025-04-25 09:56:58,170 - tools.redis_tools - INFO - Successfully set key in Redis: 22da551c-4054-479c-9449-b446a2e34b60:neo4j
+2025-04-25 09:56:58,758 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:02:13,097 - openai._base_client - INFO - Retrying request to /models in 0.387022 seconds
+2025-04-25 10:02:23,491 - openai._base_client - INFO - Retrying request to /models in 0.966859 seconds
+2025-04-25 10:02:34,487 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:02:34,656 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:02:34,669 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:02:34,703 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:02:38,688 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:02:38,716 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:02:38,740 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:02:38,740 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:02:38,772 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.031s]
+2025-04-25 10:02:38,772 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:02:50,981 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 10:02:50,982 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 10:02:50,984 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees\n', 'uuid': '22da551c-4054-479c-9449-b446a2e34b60'}
+2025-04-25 10:02:50,986 - server - INFO - Received chat request - User: user1, UUID: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 10:02:53,405 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:02:53,603 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:02:53,606 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:03:41,005 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees', 'uuid': '22da551c-4054-479c-9449-b446a2e34b60'}
+2025-04-25 10:03:41,006 - server - INFO - Received chat request - User: user1, UUID: 22da551c-4054-479c-9449-b446a2e34b60
+2025-04-25 10:03:43,205 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:03:43,210 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:05:17,072 - openai._base_client - INFO - Retrying request to /models in 0.401950 seconds
+2025-04-25 10:05:27,485 - openai._base_client - INFO - Retrying request to /models in 0.858854 seconds
+2025-04-25 10:05:38,370 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:05:38,516 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:05:38,519 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:05:38,542 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:05:41,146 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:05:41,170 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:05:41,192 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:05:41,193 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:05:41,308 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.115s]
+2025-04-25 10:05:41,308 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:05:42,204 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 10:05:42,205 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 10:05:42,207 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:05:42,207 - server - INFO - Login attempt
+2025-04-25 10:05:42,208 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:05:42,236 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:05:42,241 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:05:42,241 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:05:42,242 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:05:42,244 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 10:05:42,244 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 10:05:42,246 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:05:42,250 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:05:47,977 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees', 'uuid': 'fe58d737-1671-4390-877f-1ea1642a5762'}
+2025-04-25 10:05:47,979 - server - INFO - Received chat request - User: user1, UUID: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:05:51,600 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:05:51,811 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:05:51,813 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:05:54,747 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:05:54,761 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:05:54,785 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.023s]
+2025-04-25 10:05:54,814 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:05:54,817 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:05:54,856 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:05:55,531 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:05:55,881 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.065s]
+2025-04-25 10:05:55,901 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.020s]
+2025-04-25 10:05:56,227 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.325s]
+2025-04-25 10:05:56,228 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:opensearch
+2025-04-25 10:05:56,231 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:05:56,240 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:postgresql
+2025-04-25 10:05:56,243 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:05:56,737 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:05:56,764 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:05:56,765 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:neo4j
+2025-04-25 10:05:56,769 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:opensearch
+2025-04-25 10:05:56,770 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:postgresql
+2025-04-25 10:05:56,775 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:neo4j
+2025-04-25 10:05:57,271 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:06:13,222 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改表字段employees', 'uuid': 'fe58d737-1671-4390-877f-1ea1642a5762'}
+2025-04-25 10:06:13,223 - server - INFO - Received chat request - User: user1, UUID: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:06:14,522 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:06:14,524 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:06:15,296 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:06:15,305 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:06:15,345 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.039s]
+2025-04-25 10:06:15,389 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:06:15,392 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:06:15,428 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:06:16,048 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:06:16,246 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.048s]
+2025-04-25 10:06:16,264 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.017s]
+2025-04-25 10:06:16,544 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.279s]
+2025-04-25 10:06:16,546 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:opensearch
+2025-04-25 10:06:16,548 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:06:16,553 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:postgresql
+2025-04-25 10:06:16,556 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:06:17,239 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:06:17,265 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:06:17,266 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:neo4j
+2025-04-25 10:06:17,268 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:opensearch
+2025-04-25 10:06:17,270 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:postgresql
+2025-04-25 10:06:17,272 - tools.redis_tools - INFO - Successfully set key in Redis: fe58d737-1671-4390-877f-1ea1642a5762:neo4j
+2025-04-25 10:06:17,851 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:09:58,865 - openai._base_client - INFO - Retrying request to /models in 0.426001 seconds
+2025-04-25 10:10:09,297 - openai._base_client - INFO - Retrying request to /models in 0.855632 seconds
+2025-04-25 10:10:20,184 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:10:20,349 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:10:20,353 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:10:20,376 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:10:23,439 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:10:23,464 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:10:23,486 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:10:23,487 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:10:23,619 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.132s]
+2025-04-25 10:10:23,619 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:11:43,928 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-25 10:11:43,929 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-25 10:11:43,931 - server - INFO - API调用: POST /logout, 参数: {'uuid': 'fe58d737-1671-4390-877f-1ea1642a5762'}
+2025-04-25 10:11:43,932 - server - INFO - 接收到登出请求，UUID: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:11:43,933 - server - INFO - 成功删除用户缓存数据，UUID: fe58d737-1671-4390-877f-1ea1642a5762
+2025-04-25 10:11:43,934 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 10:11:47,188 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:11:47,189 - server - INFO - Login attempt
+2025-04-25 10:11:47,190 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:11:47,233 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:11:47,239 - tools.redis_tools - INFO - Successfully set key in Redis: 7b2e4636-436e-4782-8325-cfb3922a9d8e
+2025-04-25 10:11:47,239 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:11:47,239 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:11:47,242 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:11:47,246 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:11:56,283 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我想修改表字段employees', 'uuid': '7b2e4636-436e-4782-8325-cfb3922a9d8e'}
+2025-04-25 10:11:56,284 - server - INFO - Received chat request - User: user1, UUID: 7b2e4636-436e-4782-8325-cfb3922a9d8e
+2025-04-25 10:11:58,265 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:11:58,502 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:11:58,506 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:12:41,464 - openai._base_client - INFO - Retrying request to /models in 0.440154 seconds
+2025-04-25 10:12:51,911 - openai._base_client - INFO - Retrying request to /models in 0.816920 seconds
+2025-04-25 10:13:02,757 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:13:02,897 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:13:02,900 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:13:02,924 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:13:05,828 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:13:05,852 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:13:05,874 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:13:05,874 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:13:05,897 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.023s]
+2025-04-25 10:13:05,898 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:13:06,611 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 10:13:06,612 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 10:13:06,614 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees，帮我看看有哪些影响', 'uuid': '7b2e4636-436e-4782-8325-cfb3922a9d8e'}
+2025-04-25 10:13:06,616 - server - INFO - Received chat request - User: user1, UUID: 7b2e4636-436e-4782-8325-cfb3922a9d8e
+2025-04-25 10:13:08,184 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:13:08,360 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:13:08,362 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:13:13,456 - server - INFO - API调用: POST /logout, 参数: {'uuid': '7b2e4636-436e-4782-8325-cfb3922a9d8e'}
+2025-04-25 10:13:13,457 - server - INFO - 接收到登出请求，UUID: 7b2e4636-436e-4782-8325-cfb3922a9d8e
+2025-04-25 10:13:13,458 - server - INFO - 成功删除用户缓存数据，UUID: 7b2e4636-436e-4782-8325-cfb3922a9d8e
+2025-04-25 10:13:13,458 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 10:13:16,491 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:13:16,492 - server - INFO - Login attempt
+2025-04-25 10:13:16,493 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:13:16,524 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:13:16,529 - tools.redis_tools - INFO - Successfully set key in Redis: 0eadb5f5-fad7-4e36-a1b6-dc06c4b0607c
+2025-04-25 10:13:16,529 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:13:16,529 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:13:16,532 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:13:16,536 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:13:17,850 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要修改employees，帮我看看有哪些影响', 'uuid': '0eadb5f5-fad7-4e36-a1b6-dc06c4b0607c'}
+2025-04-25 10:13:17,851 - server - INFO - Received chat request - User: user1, UUID: 0eadb5f5-fad7-4e36-a1b6-dc06c4b0607c
+2025-04-25 10:13:19,464 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:13:19,467 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:14:24,710 - openai._base_client - INFO - Retrying request to /models in 0.477154 seconds
+2025-04-25 10:14:35,196 - openai._base_client - INFO - Retrying request to /models in 0.875114 seconds
+2025-04-25 10:14:46,105 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:14:46,245 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:14:46,248 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:14:46,271 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:14:49,006 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:14:49,047 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:14:49,229 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:14:49,231 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:14:49,281 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.050s]
+2025-04-25 10:14:49,282 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:14:52,282 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:14:52,282 - server - INFO - Login attempt
+2025-04-25 10:14:52,283 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:14:52,313 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:14:52,317 - tools.redis_tools - INFO - Successfully set key in Redis: 59ced5e3-d7b4-41fb-8a3e-3103cd87d722
+2025-04-25 10:14:52,317 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:14:52,318 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:14:52,320 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:14:52,326 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:14:54,812 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '59ced5e3-d7b4-41fb-8a3e-3103cd87d722'}
+2025-04-25 10:14:54,815 - server - INFO - Received chat request - User: user1, UUID: 59ced5e3-d7b4-41fb-8a3e-3103cd87d722
+2025-04-25 10:14:56,307 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:14:56,532 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:14:56,534 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:15:13,355 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '59ced5e3-d7b4-41fb-8a3e-3103cd87d722'}
+2025-04-25 10:15:13,357 - server - INFO - Received chat request - User: user1, UUID: 59ced5e3-d7b4-41fb-8a3e-3103cd87d722
+2025-04-25 10:15:14,651 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:15:14,654 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:20:18,511 - openai._base_client - INFO - Retrying request to /models in 0.461155 seconds
+2025-04-25 10:20:28,982 - openai._base_client - INFO - Retrying request to /models in 0.900529 seconds
+2025-04-25 10:20:39,916 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:20:40,075 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:20:40,078 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:20:40,103 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:20:43,102 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:20:43,130 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:20:43,156 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:20:43,157 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:20:43,191 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.033s]
+2025-04-25 10:20:43,191 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:20:45,871 - server - INFO - API调用: POST /logout, 参数: {'uuid': '59ced5e3-d7b4-41fb-8a3e-3103cd87d722'}
+2025-04-25 10:20:45,873 - server - INFO - 接收到登出请求，UUID: 59ced5e3-d7b4-41fb-8a3e-3103cd87d722
+2025-04-25 10:20:45,875 - server - INFO - 成功删除用户缓存数据，UUID: 59ced5e3-d7b4-41fb-8a3e-3103cd87d722
+2025-04-25 10:20:45,875 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 10:20:48,431 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 10:20:48,432 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 10:20:48,435 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:20:48,435 - server - INFO - Login attempt
+2025-04-25 10:20:48,437 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:20:48,491 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:20:48,498 - tools.redis_tools - INFO - Successfully set key in Redis: 2101ea73-21b5-4008-bc7c-7df8b0c1c62a
+2025-04-25 10:20:48,498 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:20:48,499 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:20:48,502 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 10:20:48,503 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 10:20:48,505 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:20:48,510 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:20:50,438 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '你好', 'uuid': '2101ea73-21b5-4008-bc7c-7df8b0c1c62a'}
+2025-04-25 10:20:50,442 - server - INFO - Received chat request - User: user1, UUID: 2101ea73-21b5-4008-bc7c-7df8b0c1c62a
+2025-04-25 10:20:52,954 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:20:53,157 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:20:53,160 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:20:59,830 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '今天天气如何', 'uuid': '2101ea73-21b5-4008-bc7c-7df8b0c1c62a'}
+2025-04-25 10:20:59,831 - server - INFO - Received chat request - User: user1, UUID: 2101ea73-21b5-4008-bc7c-7df8b0c1c62a
+2025-04-25 10:21:01,174 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:21:01,178 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:24:21,737 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-25 10:24:21,739 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-25 10:24:21,741 - server - INFO - API调用: POST /logout, 参数: {'uuid': '2101ea73-21b5-4008-bc7c-7df8b0c1c62a'}
+2025-04-25 10:24:21,743 - server - INFO - 接收到登出请求，UUID: 2101ea73-21b5-4008-bc7c-7df8b0c1c62a
+2025-04-25 10:24:21,744 - server - INFO - 成功删除用户缓存数据，UUID: 2101ea73-21b5-4008-bc7c-7df8b0c1c62a
+2025-04-25 10:24:21,745 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 10:24:24,838 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:24:24,839 - server - INFO - Login attempt
+2025-04-25 10:24:24,840 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:24:24,912 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:24:24,918 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:24:24,918 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:24:24,919 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:24:24,922 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:24:24,926 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:24:39,958 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 10:24:39,958 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 10:24:39,960 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我想更新表字段employees', 'uuid': '35339fb9-ca83-475c-b34b-e1b77b122e96'}
+2025-04-25 10:24:39,961 - server - INFO - Received chat request - User: user1, UUID: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:24:42,150 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:24:42,153 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:24:48,056 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我想更新表字段employees', 'uuid': '35339fb9-ca83-475c-b34b-e1b77b122e96'}
+2025-04-25 10:24:48,056 - server - INFO - Received chat request - User: user1, UUID: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:24:50,751 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:24:50,754 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:26:18,624 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': 'nihao', 'uuid': '35339fb9-ca83-475c-b34b-e1b77b122e96'}
+2025-04-25 10:26:18,626 - server - INFO - Received chat request - User: user1, UUID: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:26:20,150 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:26:20,153 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:26:53,395 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要变更表字段employees请告诉我影响范围', 'uuid': '35339fb9-ca83-475c-b34b-e1b77b122e96'}
+2025-04-25 10:26:53,396 - server - INFO - Received chat request - User: user1, UUID: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:26:54,798 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:26:54,801 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:26:55,323 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:26:55,332 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:26:55,381 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.048s]
+2025-04-25 10:26:55,456 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:26:55,460 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:26:55,507 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:26:56,397 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:26:56,784 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.091s]
+2025-04-25 10:26:56,802 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.019s]
+2025-04-25 10:26:57,143 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.339s]
+2025-04-25 10:26:57,145 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96:opensearch
+2025-04-25 10:26:57,146 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:26:57,158 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96:postgresql
+2025-04-25 10:26:57,160 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:26:57,863 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:26:57,890 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:26:57,891 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96:neo4j
+2025-04-25 10:26:57,895 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96:opensearch
+2025-04-25 10:26:57,897 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96:postgresql
+2025-04-25 10:26:57,903 - tools.redis_tools - INFO - Successfully set key in Redis: 35339fb9-ca83-475c-b34b-e1b77b122e96:neo4j
+2025-04-25 10:26:58,530 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:08,155 - openai._base_client - INFO - Retrying request to /models in 0.466040 seconds
+2025-04-25 10:34:18,630 - openai._base_client - INFO - Retrying request to /models in 0.841974 seconds
+2025-04-25 10:34:29,505 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:34:29,706 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:34:29,710 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:34:29,747 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:34:33,901 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:34:33,929 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:34:33,953 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:34:33,954 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:34:34,050 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.095s]
+2025-04-25 10:34:34,050 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:34:40,958 - server - INFO - API调用: OPTIONS /logout, 参数: {}
+2025-04-25 10:34:40,959 - server - INFO - API完成: OPTIONS /logout, 状态码: 200
+2025-04-25 10:34:40,962 - server - INFO - API调用: POST /logout, 参数: {'uuid': '35339fb9-ca83-475c-b34b-e1b77b122e96'}
+2025-04-25 10:34:40,965 - server - INFO - 接收到登出请求，UUID: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:34:40,967 - server - INFO - 成功删除用户缓存数据，UUID: 35339fb9-ca83-475c-b34b-e1b77b122e96
+2025-04-25 10:34:40,967 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 10:34:43,195 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 10:34:43,196 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 10:34:43,197 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:34:43,198 - server - INFO - Login attempt
+2025-04-25 10:34:43,198 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:34:43,240 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:34:43,246 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:34:43,246 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:34:43,246 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:34:43,249 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 10:34:43,250 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 10:34:43,251 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:34:43,256 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:34:44,370 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 10:34:44,371 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 10:34:44,372 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要变更表字段employees请告诉我影响范围', 'uuid': '10e85ec1-a9e9-495c-9d78-7484159ebee5'}
+2025-04-25 10:34:44,374 - server - INFO - Received chat request - User: user1, UUID: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:34:46,020 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:46,230 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:34:46,233 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:34:48,830 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要变更表字段employees请告诉我影响范围', 'uuid': '10e85ec1-a9e9-495c-9d78-7484159ebee5'}
+2025-04-25 10:34:48,831 - server - INFO - Received chat request - User: user1, UUID: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:34:49,683 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:49,685 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:34:50,687 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:50,702 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:34:50,733 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.030s]
+2025-04-25 10:34:50,767 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:34:50,788 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:34:50,831 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:34:51,349 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:51,721 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.074s]
+2025-04-25 10:34:51,734 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.012s]
+2025-04-25 10:34:52,100 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.365s]
+2025-04-25 10:34:52,102 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5:opensearch
+2025-04-25 10:34:52,105 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:34:53,591 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:53,625 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 10:34:54,067 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:55,141 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 10:34:55,726 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:57,987 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 10:34:57,993 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5:postgresql
+2025-04-25 10:34:57,995 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:34:59,720 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:34:59,777 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:34:59,789 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5:neo4j
+2025-04-25 10:34:59,793 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5:opensearch
+2025-04-25 10:34:59,810 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5:postgresql
+2025-04-25 10:34:59,817 - tools.redis_tools - INFO - Successfully set key in Redis: 10e85ec1-a9e9-495c-9d78-7484159ebee5:neo4j
+2025-04-25 10:35:00,580 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:40:02,739 - openai._base_client - INFO - Retrying request to /models in 0.398383 seconds
+2025-04-25 10:40:13,141 - openai._base_client - INFO - Retrying request to /models in 0.930267 seconds
+2025-04-25 10:40:24,100 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:40:24,256 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:40:24,259 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:40:24,282 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:40:27,757 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:40:27,785 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:40:27,807 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:40:27,808 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 10:40:28,040 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.231s]
+2025-04-25 10:40:28,040 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 10:40:47,431 - server - INFO - API调用: POST /logout, 参数: {'uuid': '10e85ec1-a9e9-495c-9d78-7484159ebee5'}
+2025-04-25 10:40:47,435 - server - INFO - 接收到登出请求，UUID: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:40:47,436 - server - INFO - 成功删除用户缓存数据，UUID: 10e85ec1-a9e9-495c-9d78-7484159ebee5
+2025-04-25 10:40:47,436 - server - INFO - API完成: POST /logout, 状态码: 200
+2025-04-25 10:40:49,791 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 10:40:49,791 - server - INFO - Login attempt
+2025-04-25 10:40:49,792 - server - INFO - Login attempt - Username: user1
+2025-04-25 10:40:49,949 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:40:49,956 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a
+2025-04-25 10:40:49,956 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 10:40:49,956 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 10:40:49,960 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 10:40:49,967 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 10:40:51,897 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '我需要变更表字段employees请告诉我影响范围', 'uuid': '63687306-60f1-4736-9ac9-48b6013a279a'}
+2025-04-25 10:40:51,899 - server - INFO - Received chat request - User: user1, UUID: 63687306-60f1-4736-9ac9-48b6013a279a
+2025-04-25 10:40:53,178 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:40:53,400 - tools.token_counter - INFO - Created encoder for model: gpt-4o
+2025-04-25 10:40:53,403 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 10:40:53,854 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:40:53,870 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:40:53,938 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.068s]
+2025-04-25 10:40:53,970 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 10:40:53,975 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:40:54,017 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 10:40:54,589 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:40:55,120 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.136s]
+2025-04-25 10:40:55,145 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.025s]
+2025-04-25 10:40:55,676 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.529s]
+2025-04-25 10:40:55,678 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a:opensearch
+2025-04-25 10:40:55,680 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a
+2025-04-25 10:40:57,356 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:40:57,369 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 10:40:57,810 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:40:59,220 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 10:40:59,665 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:41:02,533 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 10:41:02,538 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a:postgresql
+2025-04-25 10:41:02,540 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a
+2025-04-25 10:41:03,932 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 10:41:04,123 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a
+2025-04-25 10:41:04,125 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a:neo4j
+2025-04-25 10:41:04,143 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a:opensearch
+2025-04-25 10:41:04,145 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a:postgresql
+2025-04-25 10:41:04,147 - tools.redis_tools - INFO - Successfully set key in Redis: 63687306-60f1-4736-9ac9-48b6013a279a:neo4j
+2025-04-25 10:41:04,760 - httpx - INFO - HTTP Request: POST https://openai-southus-trng-app-chatbot01.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview "HTTP/1.1 200 OK"
+2025-04-25 12:31:00,101 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-25 12:31:00,151 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 12:31:00,718 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 12:31:00,721 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 12:31:00,748 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 12:31:07,170 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 12:31:07,215 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 12:31:07,247 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 12:31:07,249 - service.opensearch_service - INFO - Connecting to OpenSearch at localhost:9200 (SSL: False, Verify: False)
+2025-04-25 12:31:07,364 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.114s]
+2025-04-25 12:31:07,364 - service.opensearch_service - INFO - Successfully connected to OpenSearch 2.19.0 at localhost:9200
+2025-04-25 12:31:08,497 - server - INFO - API调用: OPTIONS /token, 参数: {}
+2025-04-25 12:31:08,497 - server - INFO - API完成: OPTIONS /token, 状态码: 200
+2025-04-25 12:31:08,499 - server - INFO - API调用: POST /token, 参数: {'username': 'user1', 'password': '123'}
+2025-04-25 12:31:08,500 - server - INFO - Login attempt
+2025-04-25 12:31:08,501 - server - INFO - Login attempt - Username: user1
+2025-04-25 12:31:08,541 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 12:31:08,554 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363
+2025-04-25 12:31:08,554 - server - INFO - 登录成功: 用户ID = user1, 角色 = user
+2025-04-25 12:31:08,554 - server - INFO - API完成: POST /token, 状态码: 200
+2025-04-25 12:31:08,559 - server - INFO - API调用: OPTIONS /user/profile, 参数: {}
+2025-04-25 12:31:08,560 - server - INFO - API完成: OPTIONS /user/profile, 状态码: 200
+2025-04-25 12:31:08,562 - server - INFO - API调用: GET /user/profile, 参数: {}
+2025-04-25 12:31:08,571 - server - INFO - API完成: GET /user/profile, 状态码: 200
+2025-04-25 12:31:15,045 - server - INFO - API调用: OPTIONS /chat, 参数: {}
+2025-04-25 12:31:15,046 - server - INFO - API完成: OPTIONS /chat, 状态码: 200
+2025-04-25 12:31:15,052 - server - INFO - API调用: POST /chat, 参数: {'username': 'user1', 'query': '修改表字段employees', 'uuid': '88ff82d8-3eae-43a9-83f9-d8b067dc3363'}
+2025-04-25 12:31:15,062 - server - INFO - Received chat request - User: user1, UUID: 88ff82d8-3eae-43a9-83f9-d8b067dc3363
+2025-04-25 12:31:20,376 - openai._base_client - INFO - Retrying request to /chat/completions in 0.416796 seconds
+2025-04-25 12:31:23,573 - openai._base_client - INFO - Retrying request to /chat/completions in 0.847119 seconds
+2025-04-25 12:31:28,207 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-25 12:31:28,454 - tools.token_counter - INFO - Created encoder for model: gpt-4.1
+2025-04-25 12:31:28,461 - server - INFO - API完成: POST /chat, 状态码: 200
+2025-04-25 12:31:30,633 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-25 12:31:30,664 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 12:31:30,697 - opensearch - INFO - GET http://localhost:9200/ [status:200 request:0.032s]
+2025-04-25 12:31:30,763 - tools.postgresql_tools - INFO - Successfully connected to PostgreSQL database at localhost:5432 with connection pool
+2025-04-25 12:31:30,768 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 12:31:36,046 - httpx - INFO - HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
+2025-04-25 12:31:36,097 - tools.redis_tools - INFO - Redis connection established successfully to localhost:6379
+2025-04-25 12:31:39,115 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-25 12:31:39,569 - opensearch - INFO - HEAD http://localhost:9200/procedure_index [status:200 request:0.059s]
+2025-04-25 12:31:39,604 - opensearch - INFO - GET http://localhost:9200/procedure_index/_mapping [status:200 request:0.035s]
+2025-04-25 12:31:40,058 - opensearch - INFO - POST http://localhost:9200/procedure_index/_search [status:200 request:0.453s]
+2025-04-25 12:31:40,060 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363:opensearch
+2025-04-25 12:31:40,062 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363
+2025-04-25 12:31:46,181 - openai._base_client - INFO - Retrying request to /chat/completions in 0.473855 seconds
+2025-04-25 12:31:49,272 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-25 12:31:50,010 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 12:31:51,609 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-25 12:32:00,225 - langchain_core.callbacks.manager - WARNING - Error in TokenCallbackHandler.on_llm_end callback: TypeError("argument of type 'NoneType' is not iterable")
+2025-04-25 12:32:00,229 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363:postgresql
+2025-04-25 12:32:03,180 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-25 12:32:03,216 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363
+2025-04-25 12:32:03,218 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363:neo4j
+2025-04-25 12:32:03,227 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363:opensearch
+2025-04-25 12:32:03,230 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363:postgresql
+2025-04-25 12:32:03,235 - tools.redis_tools - INFO - Successfully set key in Redis: 88ff82d8-3eae-43a9-83f9-d8b067dc3363:neo4j
+2025-04-25 12:32:05,170 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
